@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Opciones">
+
+    <TextView
+        android:id="@+id/activity_opciones_lbl_bodega"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="180dp"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="29dp"
+        tools:layout_editor_absoluteY="47dp"
+        tools:text="Bodega" />
+
+    <TextView
+        android:id="@+id/activity_opciones_lbl_grupo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="280dp"
+        android:text="Grupo" />
+
+    <TextView
+        android:id="@+id/activity_opciones_lbl_subgrupo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="380dp"
+        android:text="Subgrupo" />
+
+    <TextView
+        android:id="@+id/activity_opciones_lbl_clase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="480dp"
+        android:text="Clase" />
+
+    <Spinner
+        android:id="@+id/activity_opciones_spn_bodega"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="210dp" />
+
+    <Spinner
+        android:id="@+id/activity_opciones_spn_grupo"
+        android:layout_width="328dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="310dp" />
+
+    <Spinner
+        android:id="@+id/activity_opciones_spn_subgrupo"
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="410dp" />
+
+    <Spinner
+        android:id="@+id/activity_opciones_spn_clase"
+        android:layout_width="326dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="510dp" />
+
+    <Button
+        android:id="@+id/activity_opciones_btn_aceptar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="570dp"
+        android:text="Aceptar" />
+</android.widget.RelativeLayout>

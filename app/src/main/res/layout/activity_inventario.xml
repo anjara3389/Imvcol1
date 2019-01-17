@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Inventario">
+
+    <TextView
+        android:id="@+id/activity_inventario_lbl_producto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="140dp"
+        android:text="Producto" />
+
+    <EditText
+        android:id="@+id/activity_inventario_txt_producto"
+        android:layout_width="326dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="180dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Producto" />
+
+    <RadioGroup
+        android:id="@+id/activity_inventario_rbgroup_opciones"
+        android:layout_width="337dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="270dp">
+
+        <RadioButton
+            android:id="@+id/activity_inventario_rbtn_codigo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Código" />
+
+        <RadioButton
+            android:id="@+id/activity_inventario_rbtn_lectura"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Lectura" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/activity_inventario_txt_numero"
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="360dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Número" />
+
+    <TextView
+        android:id="@+id/activity_inventario_lbl_cantidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="450dp"
+        android:text="Cantidad" />
+
+    <EditText
+        android:id="@+id/activity_inventario_txt_cantidad"
+        android:layout_width="326dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="490dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Cantidad" />
+
+    <Button
+        android:id="@+id/activity_inventario_btn_aceptar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="110dp"
+        android:layout_marginTop="590dp"
+        android:text=" Aceptar " />
+
+    <Button
+        android:id="@+id/activity_inventario_btn_cancelar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="220dp"
+        android:layout_marginTop="590dp"
+        android:text="Cancelar" />
+</android.widget.RelativeLayout>
