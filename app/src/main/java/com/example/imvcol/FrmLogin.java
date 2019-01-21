@@ -1,33 +1,15 @@
 package com.example.imvcol;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import com.example.imvcol.FrmOpciones;
-
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class FrmLogin extends AppCompatActivity {
 
@@ -48,79 +30,64 @@ public class FrmLogin extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //Toast.makeText(v.getContext(), "entra", Toast.LENGTH_LONG).show();
-                //ExecuteRemoteQuery("",v.getContext());
-                ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery();
-                remoteQuery.setContext(v.getContext());
-                remoteQuery.setQuery("SELECT * FROM USUARIOS WHERE USUARIO='AROSERO'");
-                remoteQuery.execute();
-
-                //Intent i = new Intent(v.getContext(), FrmOpciones.class);
-                //i.putExtra("isNew",true);
-                //startActivityForResult(i, 1);
-            }
-        });
-    }
-
-    private void ExecuteRemoteQuery(final String query, final Context ctx) throws IOException {
-        // final Context ctx= this;
-        System.out.print("entra");
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
                 try {
-                    URL url = new URL("http://190.66.24.90:4111/w1/webservices.php");
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    try {
-                        String response = "";
+                    ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery();
+                    remoteQuery.setContext(v.getContext());
 
-                        urlConnection.setDoOutput(true);
-                        urlConnection.setChunkedStreamingMode(0);
+                    ArrayList queryUsers=new ArrayList();
 
-                        OutputStream os = urlConnection.getOutputStream();
+                    queryUsers.add("SELECT * " +
+                            "FROM USUARIOS " +
+                            "WHERE USUARIO='" + usuario.getText() + "' " +
+                            "AND CLAVE='" + contrasenia.getText() + "'");
 
-                        OutputStream out = new BufferedOutputStream(os);
-                        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    remoteQuery.setQuery(queryUsers);
+                    ArrayList resultAsync = remoteQuery.execute().get();
 
-                        BufferedWriter writer = new BufferedWriter(
-                                new OutputStreamWriter(os, "UTF-8"));
-                        writer.write(query);
+                    if (resultAsync.get(0).equals("[]")) {
+                        Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
+                    } else {
+                        //Toast.makeText(v.getContext(), "Si"+resultAsync, Toast.LENGTH_LONG).show();
+                        ExecuteRemoteQuery remote = new ExecuteRemoteQuery();
+                        remote.setContext(v.getContext());
 
-                        writer.flush();
-                        writer.close();
-                        //os.close();
-                        int responseCode = urlConnection.getResponseCode();
+                        ArrayList queryDatos = new ArrayList();
+                        queryDatos.add("SELECT * FROM BODEGAS");
+                        queryDatos.add("SELECT * FROM REFERENCIAS_GRU");
+                        queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
+                        queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
+                        queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
 
-                        if (responseCode == HttpsURLConnection.HTTP_OK) {
-                            String line;
-                            BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                            while ((line = br.readLine()) != null) {
-                                response += line;
-                            }
-                            //Toast.makeText(ctx, "entra", Toast.LENGTH_LONG);
-                            System.out.print("HERE........ " + response);
-                        } else {
-                            response = "";
+                        remote.setQuery(queryDatos);
 
-                            //Toast.makeText(ctx, "NO", Toast.LENGTH_LONG);
-                            System.out.print("NO");
-                        }
-                    } finally {
-                        urlConnection.disconnect();
+                        ArrayList resultsDatos = remote.execute().get();
+                        System.out.println("RESULT/////////");
+
+                        /*for (int i=0;i<resultsDatos.size();i++){
+                            System.out.println("RESULT/////////"+resultsDatos.get(i));
+                        }*/
+
+                        Intent i = new Intent(v.getContext(), FrmOpciones.class);
+                        i.putExtra("datos", resultsDatos);
+                        startActivityForResult(i, 1);
+                        /*
+                        SELECT *
+                        FROM REFERENCIAS_FIS F
+                        LEFT JOIN REFERENCIAS R ON R.CODIGO=F.CODIGO
+                        WHERE F.BODEGA=104;
+
+
+                        */
                     }
-                } catch (IOException e) {
+                    //System.out.print("resultado!!!" + result);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            public void onResul() {
-                Toast.makeText(ctx, "NO", Toast.LENGTH_LONG);
-            }
-
-
         });
-
-
     }
 }
 

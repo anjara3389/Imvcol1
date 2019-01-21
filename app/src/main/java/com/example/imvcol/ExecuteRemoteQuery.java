@@ -1,6 +1,7 @@
 package com.example.imvcol;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -16,19 +17,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
 
-public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, String> {
+public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
 
-    private String query;
+    private ArrayList query;
     private Context ctx;
     private final String USER_AGENT = "Mozilla/5.0";
 
-    public void setQuery(String query) {
+    public void setQuery(ArrayList query) {
         this.query = query;
     }
 
@@ -36,45 +39,51 @@ public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, String> {
         this.ctx = context;
     }
 
-    protected String doInBackground(URL... urls) {
-        String json = "No";
+    protected ArrayList doInBackground(URL... urls) {
+        //String json = "No";
+
+        ArrayList respuestas = new ArrayList();
         try {
-            URL url = new URL("http://190.66.24.90:4111/w1/webservices.php");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            for (int i = 0; i < query.size(); i++) {
 
-            //add reuqest header
-            con.setRequestMethod("POST");
-            con.setRequestProperty("User-Agent", USER_AGENT);
-            con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+                URL url = new URL("http://190.66.24.90:4111/w1/webservices.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-            String urlParameters = query;
 
-            // Send post request
-            con.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.flush();
-            wr.close();
+                //añade request header
+                con.setRequestMethod("POST");
+                con.setRequestProperty("User-Agent", USER_AGENT);
+                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+                con.setDoOutput(true);
+                String urlParameters = (String) query.get(i);
 
-            int responseCode = con.getResponseCode();
-            System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices.php");
-            System.out.println("Post parameters : " + urlParameters);
-            System.out.println("Response Code : " + responseCode);
+                // Envía post request
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr.writeBytes(urlParameters);
+                wr.flush();
+                wr.close();
 
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+                int responseCode = con.getResponseCode();
+                System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices.php");
+                System.out.println("Post parameters : " + urlParameters);
+                System.out.println("Response Code : " + responseCode);
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                respuestas.add(response.toString());
             }
-            in.close();
-            json = response.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return json;
+        return respuestas;
     }
 
     protected void onProgressUpdate(Integer... progress) {
@@ -83,7 +92,6 @@ public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, String> {
 
     protected void onPostExecute(String result) {
         //showDialog("Downloaded " + result + " bytes");
-        Toast.makeText(ctx, "POST EXECUTE " + result, Toast.LENGTH_LONG).show();
-        System.out.print("resultado!!!" + result);
+
     }
 }
