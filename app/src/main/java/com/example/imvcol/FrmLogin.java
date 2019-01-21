@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class FrmLogin extends AppCompatActivity {
     private EditText usuario;
     private EditText contrasenia;
     private Button btnIngresar;
+    private ProgressBar progresBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,14 +27,18 @@ public class FrmLogin extends AppCompatActivity {
         usuario = findViewById(R.id.frm_login_txt_usuario);
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
+        progresBar = findViewById(R.id.frm_login_progressbar);
+        progresBar.setVisibility(View.GONE);
 
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //progresBar.setVisibility(v.VISIBLE);
                 try {
+
                     ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery();
                     remoteQuery.setContext(v.getContext());
+                    remoteQuery.setBar(progresBar);
 
                     ArrayList queryUsers=new ArrayList();
 
@@ -45,9 +51,12 @@ public class FrmLogin extends AppCompatActivity {
                     ArrayList resultAsync = remoteQuery.execute().get();
 
                     if (resultAsync.get(0).equals("[]")) {
+                        //progresBar.setVisibility(View.GONE);
                         Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
+                        progresBar.setVisibility(View.GONE);
                     } else {
                         //Toast.makeText(v.getContext(), "Si"+resultAsync, Toast.LENGTH_LONG).show();
+                        //progresBar.setVisibility(View.GONE);
                         ExecuteRemoteQuery remote = new ExecuteRemoteQuery();
                         remote.setContext(v.getContext());
 
