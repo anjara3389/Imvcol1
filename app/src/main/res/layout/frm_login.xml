@@ -4,59 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".FrmLogin">
 
     <TextView
-        android:id="@+id/activity_login_lbl_usuario"
+        android:id="@+id/frm_login_lbl_usuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="190dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="140dp"
         android:text="Usuario:"
         tools:layout_editor_absoluteX="47dp"
         tools:layout_editor_absoluteY="204dp" />
 
     <TextView
-        android:id="@+id/activity_login_lbl_contrasenia"
+        android:id="@+id/frm_login_lbl_contrasenia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="250dp"
         android:text="Contraseña:"
         tools:layout_editor_absoluteX="47dp"
         tools:layout_editor_absoluteY="338dp" />
 
     <EditText
-        android:id="@+id/activity_login_txt_usuario"
-        android:layout_width="310dp"
+        android:id="@+id/frm_login_txt_usuario"
+        android:layout_width="351dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="210dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginRight="20dp"
         android:ems="10"
+        android:hint="Usuario"
         android:inputType="textPersonName"
-        android:text="Usuario"
         tools:layout_editor_absoluteX="47dp"
         tools:layout_editor_absoluteY="240dp" />
 
     <EditText
-        android:id="@+id/activity_login_txt_contrasenia"
-        android:layout_width="312dp"
+        android:id="@+id/frm_login_txt_contrasenia"
+        android:layout_width="347dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="320dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="270dp"
+        android:layout_marginRight="20dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Contraseña"
-        tools:layout_editor_absoluteX="47dp"
-        tools:layout_editor_absoluteY="371dp" />
+        android:hint="Contraseña"
+        android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/activity_login_btn_ingresar"
+        android:id="@+id/frm_login_btn_ingresar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="150dp"
-        android:layout_marginTop="420dp"
+        android:layout_marginTop="370dp"
         android:text="Ingresar"
         tools:layout_editor_absoluteX="169dp"
         tools:layout_editor_absoluteY="500dp" />
+
 </android.widget.RelativeLayout>

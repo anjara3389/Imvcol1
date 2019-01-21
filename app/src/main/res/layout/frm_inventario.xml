@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Inventario">
+    tools:context=".FrmInventario">
 
     <TextView
-        android:id="@+id/activity_inventario_lbl_producto"
+        android:id="@+id/frm_inventario_lbl_producto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -15,7 +15,7 @@
         android:text="Producto" />
 
     <EditText
-        android:id="@+id/activity_inventario_txt_producto"
+        android:id="@+id/frm_inventario_txt_producto"
         android:layout_width="326dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -25,21 +25,21 @@
         android:text="Producto" />
 
     <RadioGroup
-        android:id="@+id/activity_inventario_rbgroup_opciones"
+        android:id="@+id/frm_inventario_rbgroup_opciones"
         android:layout_width="337dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="270dp">
 
         <RadioButton
-            android:id="@+id/activity_inventario_rbtn_codigo"
+            android:id="@+id/frm_inventario_rbtn_codigo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Código" />
 
         <RadioButton
-            android:id="@+id/activity_inventario_rbtn_lectura"
+            android:id="@+id/frm_inventario_rbtn_lectura"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -47,7 +47,7 @@
     </RadioGroup>
 
     <EditText
-        android:id="@+id/activity_inventario_txt_numero"
+        android:id="@+id/frm_inventario_txt_numero"
         android:layout_width="325dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -57,7 +57,7 @@
         android:text="Número" />
 
     <TextView
-        android:id="@+id/activity_inventario_lbl_cantidad"
+        android:id="@+id/frm_inventario_lbl_cantidad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -65,7 +65,7 @@
         android:text="Cantidad" />
 
     <EditText
-        android:id="@+id/activity_inventario_txt_cantidad"
+        android:id="@+id/frm_inventario_txt_cantidad"
         android:layout_width="326dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -75,7 +75,7 @@
         android:text="Cantidad" />
 
     <Button
-        android:id="@+id/activity_inventario_btn_aceptar"
+        android:id="@+id/frm_inventario_btn_aceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="110dp"
@@ -83,7 +83,7 @@
         android:text=" Aceptar " />
 
     <Button
-        android:id="@+id/activity_inventario_btn_cancelar"
+        android:id="@+id/frm_inventario_btn_cancelar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="220dp"

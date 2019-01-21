@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Opciones">
+    tools:context=".FrmOpciones">
 
     <TextView
-        android:id="@+id/activity_opciones_lbl_bodega"
+        android:id="@+id/frm_opciones_lbl_bodega"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -18,7 +18,7 @@
         tools:text="Bodega" />
 
     <TextView
-        android:id="@+id/activity_opciones_lbl_grupo"
+        android:id="@+id/frm_opciones_lbl_grupo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -26,7 +26,7 @@
         android:text="Grupo" />
 
     <TextView
-        android:id="@+id/activity_opciones_lbl_subgrupo"
+        android:id="@+id/frm_opciones_lbl_subgrupo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -34,7 +34,7 @@
         android:text="Subgrupo" />
 
     <TextView
-        android:id="@+id/activity_opciones_lbl_clase"
+        android:id="@+id/frm_opciones_lbl_clase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
@@ -42,35 +42,35 @@
         android:text="Clase" />
 
     <Spinner
-        android:id="@+id/activity_opciones_spn_bodega"
+        android:id="@+id/frm_opciones_spn_bodega"
         android:layout_width="330dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="210dp" />
 
     <Spinner
-        android:id="@+id/activity_opciones_spn_grupo"
+        android:id="@+id/frm_opciones_spn_grupo"
         android:layout_width="328dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="310dp" />
 
     <Spinner
-        android:id="@+id/activity_opciones_spn_subgrupo"
+        android:id="@+id/frm_opciones_spn_subgrupo"
         android:layout_width="325dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="410dp" />
 
     <Spinner
-        android:id="@+id/activity_opciones_spn_clase"
+        android:id="@+id/frm_opciones_spn_clase"
         android:layout_width="326dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="510dp" />
 
     <Button
-        android:id="@+id/activity_opciones_btn_aceptar"
+        android:id="@+id/frm_opciones_btn_aceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="150dp"
