@@ -66,6 +66,7 @@ public class FrmLogin extends AppCompatActivity {
                         queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
                         queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
                         queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
+                        queryDatos.add("SELECT * FROM referencias_cla");
 
                         remote.setQuery(queryDatos);
 

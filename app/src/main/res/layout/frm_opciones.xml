@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="110dp"
+        android:layout_marginTop="10dp"
         android:text="Bodega"
         tools:layout_editor_absoluteX="29dp"
         tools:layout_editor_absoluteY="47dp"
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="210dp"
+        android:layout_marginTop="110dp"
         android:text="Grupo" />
 
     <TextView
@@ -30,50 +30,98 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="310dp"
+        android:layout_marginTop="210dp"
         android:text="Subgrupo" />
 
     <TextView
-        android:id="@+id/frm_opciones_lbl_clase"
+        android:id="@+id/frm_opciones_lbl_subgrupo_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="310dp"
+        android:text="Subgrupo 2" />
+
+    <TextView
+        android:id="@+id/frm_opciones_lbl_subgrupo_3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="410dp"
-        android:text="Clase" />
+        android:text="Subgrupo 3"
+        tools:layout_editor_absoluteX="29dp"
+        tools:layout_editor_absoluteY="47dp"
+        tools:text="Subgrupo 3" />
+
+    <TextView
+        android:id="@+id/frm_opciones_lbl_clase_"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="510dp"
+        android:text="Clase"
+        tools:layout_editor_absoluteX="29dp"
+        tools:layout_editor_absoluteY="47dp"
+        tools:text="Clase" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_bodega"
         android:layout_width="330dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="140dp" />
+        android:layout_marginTop="40dp"
+        android:background="@android:color/darker_gray"
+        android:padding="10dp" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_grupo"
         android:layout_width="328dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="240dp" />
+        android:layout_marginTop="140dp"
+        android:background="@android:color/darker_gray"
+        android:padding="10dp" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_subgrupo"
         android:layout_width="325dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="340dp" />
+        android:layout_marginTop="240dp"
+        android:background="@android:color/darker_gray"
+        android:padding="10dp" />
+
+    <Spinner
+        android:id="@+id/frm_opciones_spn_subgrupo_2"
+        android:layout_width="326dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="340dp"
+        android:background="@android:color/darker_gray"
+        android:padding="10dp" />
+
+    <Spinner
+        android:id="@+id/frm_opciones_spn_subgrupo_3"
+        android:layout_width="326dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="440dp"
+        android:background="@android:color/darker_gray"
+        android:padding="10dp" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_clase"
         android:layout_width="326dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="440dp" />
+        android:layout_marginTop="540dp"
+        android:background="@android:color/darker_gray"
+        android:padding="10dp" />
 
     <Button
         android:id="@+id/frm_opciones_btn_aceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="150dp"
-        android:layout_marginTop="500dp"
+        android:layout_marginTop="590dp"
         android:text="Aceptar" />
 </android.widget.RelativeLayout>
