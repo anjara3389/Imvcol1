@@ -1,29 +1,43 @@
 package com.example.imvcol;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
-public class ArrayUtils
-{
-    public static ArrayList<Object> convert(JSONArray jArr)
-    {
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class ArrayUtils {
+    public static ArrayList<Object> convertToArrayList(JSONArray jArr) {
         ArrayList<Object> list = new ArrayList<Object>();
         try {
-            for (int i=0, l=jArr.length(); i<l; i++){
+            for (int i = 0, l = jArr.length(); i < l; i++) {
                 list.add(jArr.get(i));
             }
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+        }
 
         return list;
     }
 
-    public static JSONArray convert(Collection<Object> list)
-    {
-        return new JSONArray(list);
+    public static ArrayList<String[]> mapObjects(String nameId, String name, ArrayList objects) {
+        try {
+            String[] spinnerArray = new String[objects.size()];
+            final HashMap<Integer, String> spinnerMap = new HashMap<Integer, String>();
+
+            for (int i = 0; i < objects.size(); i++) {
+                spinnerMap.put(i, ((JSONObject) objects.get(i)).getString(nameId));
+                spinnerArray[i] = ((JSONObject) objects.get(i)).getString(name);
+            }
+
+            ArrayList result = new ArrayList();
+            result.add(spinnerArray);
+            result.add(spinnerMap);
+            return result;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-
-
-
 }

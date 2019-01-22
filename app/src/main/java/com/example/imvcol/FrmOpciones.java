@@ -11,12 +11,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FrmOpciones extends AppCompatActivity {
 
     private Spinner spnBodega;
+    private ArrayList wholeBodegas;
+    private ArrayList wholeGrupos;
+    private ArrayList wholeSubgrupos;
+    private ArrayList wholeSubgrupos1;
+    private ArrayList wholeSubgrupos2;
 
 
     @Override
@@ -32,42 +38,23 @@ public class FrmOpciones extends AppCompatActivity {
             Bundle bundle = getIntent().getExtras();
             ArrayList datos = bundle.getParcelableArrayList("datos");
 
+            ArrayList wholeBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(0)));
+            final ArrayList rawBodegas = ArrayUtils.mapObjects("BODEGA", "DESCRIPCION", wholeBodegas);
+            String[] spnBodegas = (String[]) rawBodegas.get(0);
 
-            ArrayList bodegas = ArrayUtils.convert(new JSONArray((String) datos.get(0)));
-            ArrayList grupos = ArrayUtils.convert(new JSONArray((String) datos.get(1)));
-            ArrayList subgrupos = ArrayUtils.convert(new JSONArray((String) datos.get(2)));
-            ArrayList subgrupos1 = ArrayUtils.convert(new JSONArray((String) datos.get(3)));
-            ArrayList subgrupos2 = ArrayUtils.convert(new JSONArray((String) datos.get(4)));
-
-            //spnBodega.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, bodegas));
-            System.out.println("BODEGAS" + bodegas.get(0));
-            System.out.println("grupos" + grupos.get(0));
-            System.out.println("subgrupos" + subgrupos.get(0));
-            System.out.println("subgrupos1" + subgrupos1.get(0));
-            System.out.println("subgrupos2" + subgrupos2.get(0));
-
-            String[] spinnerArray = new String[bodegas.size()];
-            final HashMap<Integer, String> spinnerMap = new HashMap<Integer, String>();
-            for (int i = 0; i < bodegas.size(); i++) {
-                spinnerMap.put(i, ((JSONObject) bodegas.get(i)).getString("BODEGA"));
-                spinnerArray[i] = ((JSONObject) bodegas.get(i)).getString("DESCRIPCION");
-            }
-
-
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, spinnerArray);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, spnBodegas);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spnBodega.setAdapter(adapter);
 
-            //String name = spnBodega.getSelectedItem().toString();
-            //String id = spinnerMap.get(spnBodega.getSelectedItemPosition());
 
             spnBodega.setOnItemSelectedListener(
                     new AdapterView.OnItemSelectedListener() {
                         public void onItemSelected(AdapterView<?> spn, android.view.View v, int posicion, long id) {
                             Toast.makeText(spn.getContext(), "Has seleccionado " +
-                                            spn.getItemAtPosition(posicion).toString() + spinnerMap.get(spnBodega.getSelectedItemPosition()),
+                                            spn.getItemAtPosition(posicion).toString() + ((HashMap<Integer, String>) rawBodegas.get(1)).get(spnBodega.getSelectedItemPosition()),
                                     Toast.LENGTH_LONG).show();
+                            //String name = spnBodega.getSelectedItem().toString();
+                            //String id = spinnerMap.get(spnBodega.getSelectedItemPosition());
                         }
 
                         public void onNothingSelected(AdapterView<?> spn) {
@@ -75,7 +62,18 @@ public class FrmOpciones extends AppCompatActivity {
                     });
 
 
-            //Toast.makeText(this.getApplicationContext(),"AQUÍ"+bodegas.get(0),Toast.LENGTH_LONG).show();
+            ArrayList wholeGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(1)));
+            ArrayList wholeSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(2)));
+            ArrayList wholeSubgrupos1 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(3)));
+            ArrayList wholeSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(4)));
+
+            //spnBodega.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, bodegas));
+            //System.out.println("BODEGAS" + bodegas.get(0));
+            //System.out.println("grupos" + grupos.get(0));
+            //System.out.println("subgrupos" + subgrupos.get(0));
+            //System.out.println("subgrupos1" + subgrupos1.get(0));
+            //System.out.println("subgrupos2" + subgrupos2.get(0));
+
 
         } catch (JSONException e) {
             e.printStackTrace();
