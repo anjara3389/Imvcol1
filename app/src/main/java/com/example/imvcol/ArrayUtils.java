@@ -28,7 +28,7 @@ public class ArrayUtils {
 
             for (int i = 0; i < objects.size(); i++) {
                 spinnerMap.put(i, ((JSONObject) objects.get(i)).getString(nameId));
-                spinnerArray[i] = ((JSONObject) objects.get(i)).getString(name);
+                spinnerArray[i] = ((JSONObject) objects.get(i)).getString(nameId)+" - "+((JSONObject) objects.get(i)).getString(name);
             }
 
             ArrayList result = new ArrayList();
