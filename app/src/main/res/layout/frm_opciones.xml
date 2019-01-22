@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="110dp"
-        android:text="TextView"
+        android:text="Bodega"
         tools:layout_editor_absoluteX="29dp"
         tools:layout_editor_absoluteY="47dp"
         tools:text="Bodega" />

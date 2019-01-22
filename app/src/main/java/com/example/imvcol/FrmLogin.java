@@ -61,7 +61,7 @@ public class FrmLogin extends AppCompatActivity {
                         remote.setContext(v.getContext());
 
                         ArrayList queryDatos = new ArrayList();
-                        queryDatos.add("SELECT * FROM BODEGAS");
+                        queryDatos.add("SELECT BODEGA, DESCRIPCION FROM BODEGAS");
                         queryDatos.add("SELECT * FROM REFERENCIAS_GRU");
                         queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
                         queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
