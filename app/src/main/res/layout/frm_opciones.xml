@@ -15,10 +15,10 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
 
-        android:text="Bodega"
+        android:text="Bodega*"
         tools:layout_editor_absoluteX="29dp"
         tools:layout_editor_absoluteY="47dp"
-        tools:text="Bodega" />
+        tools:text="Bodega*" />
 
     <TextView
         android:id="@+id/frm_opciones_lbl_grupo"

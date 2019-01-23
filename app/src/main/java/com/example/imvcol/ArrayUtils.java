@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ArrayUtils {
-    public static ArrayList<Object> convertToArrayList(JSONArray jArr) {
+    public static ArrayList<Object> convertToArrayList(JSONArray jArr, JSONObject begObject) {
         ArrayList<Object> list = new ArrayList<Object>();
+        list.add(begObject);
         try {
             for (int i = 0, l = jArr.length(); i < l; i++) {
                 list.add(jArr.get(i));
@@ -28,7 +29,7 @@ public class ArrayUtils {
 
             for (int i = 0; i < objects.size(); i++) {
                 spinnerMap.put(i, ((JSONObject) objects.get(i)).getString(nameId));
-                spinnerArray[i] = ((JSONObject) objects.get(i)).getString(nameId)+" - "+((JSONObject) objects.get(i)).getString(name);
+                spinnerArray[i] = ((JSONObject) objects.get(i)).getString(nameId) + " - " + ((JSONObject) objects.get(i)).getString(name);
             }
 
             ArrayList result = new ArrayList();
