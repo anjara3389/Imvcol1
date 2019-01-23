@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.text.Layout;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -29,13 +30,14 @@ public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
     public void setContext(Context context) {
         this.ctx = context;
     }
+
     public void setBar(ProgressBar pBar) {
         this.progressBar = pBar;
         progressBar.setVisibility(View.VISIBLE);
     }
 
     protected ArrayList doInBackground(URL... urls) {
-          //To show ProgressBar
+        //To show ProgressBar
         //String json = "No";
 
         ArrayList respuestas = new ArrayList();
@@ -62,22 +64,30 @@ public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
                 wr.close();
 
                 int responseCode = con.getResponseCode();
-                System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices.php");
-                System.out.println("Post parameters : " + urlParameters);
-                System.out.println("Response Code : " + responseCode);
 
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
+                if (responseCode != 200) {
+                    throw new Exception("Error " + responseCode);
+                } else {
+                    System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices.php");
+                    System.out.println("Post parameters : " + urlParameters);
+                    System.out.println("Response Code : " + responseCode);
 
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    respuestas.add(response.toString());
                 }
-                in.close();
-                respuestas.add(response.toString());
             }
         } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(ctx, "Error de entrada/salida /" + e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return respuestas;
@@ -87,9 +97,8 @@ public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
         //progressBar.setVisibility(View.VISIBLE);  //To show ProgressBar
 
 
-
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-          //      WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        //      WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
         //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         //setProgressPercent(progress[0]);

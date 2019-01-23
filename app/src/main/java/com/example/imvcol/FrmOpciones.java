@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -43,21 +42,29 @@ public class FrmOpciones extends AppCompatActivity {
             datos = bundle.getParcelableArrayList("datos");
 
             wholeBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(0)));
-            wholeGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(1)));
-            wholeSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(2)));
-            wholeSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(3)));
-            wholeSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(4)));
 
+            if (datos.get(0) == null || datos.get(1) == null || datos.get(2) == null || datos.get(3) == null || datos.get(4) == null) {
+                throw new Exception("No se han podido cargar los datos");
+            } else {
+                wholeGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(1)));
+                wholeSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(2)));
+                wholeSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(3)));
+                wholeSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(4)));
 
-            prepareBodegas();
-            prepareGrupos();
+                prepareBodegas();
+                prepareClases();
+                prepareGrupos();
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Error/"+e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private void prepareBodegas() throws JSONException {
+    private void prepareBodegas() {
 
         rawBodegas = ArrayUtils.mapObjects("BODEGA", "DESCRIPCION", wholeBodegas);
         dataSpnBodegas = (String[]) rawBodegas.get(0);
@@ -82,7 +89,7 @@ public class FrmOpciones extends AppCompatActivity {
 
     }
 
-    private void prepareGrupos() throws JSONException {
+    private void prepareGrupos() {
         rawGrupos = ArrayUtils.mapObjects("grupo", "descripcion", wholeGrupos);
         dataSpnGrupos = (String[]) rawGrupos.get(0);
 
@@ -218,7 +225,7 @@ public class FrmOpciones extends AppCompatActivity {
 
     private void prepareClases() throws JSONException {
         wholeClases = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(5)));
-        rawClases = ArrayUtils.mapObjects("Clase", "DESCRIPCION", wholeClases);
+        rawClases = ArrayUtils.mapObjects("clase", "descripcion", wholeClases);
         dataSpnClases = (String[]) rawClases.get(0);
 
         adapterClases = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnClases);

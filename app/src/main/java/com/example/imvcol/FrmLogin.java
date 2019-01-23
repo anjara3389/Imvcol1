@@ -10,7 +10,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 public class FrmLogin extends AppCompatActivity {
 
@@ -35,28 +37,29 @@ public class FrmLogin extends AppCompatActivity {
             public void onClick(View v) {
                 //progresBar.setVisibility(v.VISIBLE);
                 try {
-
                     ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery();
                     remoteQuery.setContext(v.getContext());
                     remoteQuery.setBar(progresBar);
 
-                    ArrayList queryUsers=new ArrayList();
+                    ArrayList queryUsers = new ArrayList();
 
                     queryUsers.add("SELECT * " +
                             "FROM USUARIOS " +
-                            "WHERE USUARIO='" + usuario.getText() + "' " +
-                            "AND CLAVE='" + contrasenia.getText() + "'");
+                            "WHERE USUARIO=UPPER('" + usuario.getText() + "') " +
+                            "AND CLAVE=UPPER('" + contrasenia.getText() + "')");
 
                     remoteQuery.setQuery(queryUsers);
                     ArrayList resultAsync = remoteQuery.execute().get();
-
+                    if (resultAsync.get(0) == null) {
+                        throw new Exception("No se han podido cargar el usuario, intente nuevamente");
+                    }
                     if (resultAsync.get(0).equals("[]")) {
                         //progresBar.setVisibility(View.GONE);
                         Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
                         progresBar.setVisibility(View.GONE);
                     } else {
-                        //Toast.makeText(v.getContext(), "Si"+resultAsync, Toast.LENGTH_LONG).show();
                         //progresBar.setVisibility(View.GONE);
+
                         ExecuteRemoteQuery remote = new ExecuteRemoteQuery();
                         remote.setContext(v.getContext());
 
@@ -73,27 +76,32 @@ public class FrmLogin extends AppCompatActivity {
                         ArrayList resultsDatos = remote.execute().get();
                         System.out.println("RESULT/////////");
 
-                        /*for (int i=0;i<resultsDatos.size();i++){
-                            System.out.println("RESULT/////////"+resultsDatos.get(i));
-                        }*/
+                        if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
+                            throw new Exception("No se han podido cargar los datos, intente nuevamente");
+                        } else {
+                            Intent i = new Intent(v.getContext(), FrmOpciones.class);
+                            i.putExtra("datos", resultsDatos);
+                            startActivityForResult(i, 1);
+                        }
 
-                        Intent i = new Intent(v.getContext(), FrmOpciones.class);
-                        i.putExtra("datos", resultsDatos);
-                        startActivityForResult(i, 1);
                         /*
                         SELECT *
                         FROM REFERENCIAS_FIS F
                         LEFT JOIN REFERENCIAS R ON R.CODIGO=F.CODIGO
-                        WHERE F.BODEGA=104;
-
-
-                        */
+                        WHERE F.BODEGA=104;*/
                     }
-                    //System.out.print("resultado!!!" + result);
                 } catch (ExecutionException e) {
                     e.printStackTrace();
+                    Toast.makeText(v.getContext(), "Error de ejecución /" + e.getMessage(), Toast.LENGTH_LONG).show();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    Toast.makeText(v.getContext(), "Error de interrupción /" + e.getMessage(), Toast.LENGTH_LONG).show();
+                } catch (CancellationException e) {
+                    e.printStackTrace();
+                    Toast.makeText(v.getContext(), "Operación cancelada /" + e.getMessage(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(v.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
 
