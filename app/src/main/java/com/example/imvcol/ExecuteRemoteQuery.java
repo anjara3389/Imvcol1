@@ -1,9 +1,14 @@
 package com.example.imvcol;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.text.Layout;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -16,12 +21,18 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
+public abstract class  ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
 
     private ArrayList query;
     private Context ctx;
+
     private final String USER_AGENT = "Mozilla/5.0";
-    private ProgressBar progressBar;
+
+    public abstract void receiveData(Object object) throws Exception;
+
+    public ExecuteRemoteQuery() {
+
+    }
 
     public void setQuery(ArrayList query) {
         this.query = query;
@@ -31,15 +42,11 @@ public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
         this.ctx = context;
     }
 
-    public void setBar(ProgressBar pBar) {
-        this.progressBar = pBar;
-        progressBar.setVisibility(View.VISIBLE);
+    protected void onPreExecute() {
+
     }
 
     protected ArrayList doInBackground(URL... urls) {
-        //To show ProgressBar
-        //String json = "No";
-
         ArrayList respuestas = new ArrayList();
         try {
 
@@ -94,26 +101,18 @@ public class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
     }
 
     protected void onProgressUpdate(Integer... progress) {
-        //progressBar.setVisibility(View.VISIBLE);  //To show ProgressBar
 
-
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-        //      WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-        //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-        //setProgressPercent(progress[0]);
-        //prog = new ProgressDialog(ctx);
-        //prog.setTitle("Cargando");
-        //prog.setMessage("Por favor espere...");
-        //prog.setCancelable(false); // disable dismiss by tapping outside of the dialog
-        //prog.show();
-// To dismiss the dialog
 
     }
 
     protected void onPostExecute(ArrayList result) {
-        //prog.dismiss();
-        //showDialog("Downloaded " + result + " bytes");
-        //progressBar.setVisibility(View.GONE);     // To Hide ProgressBar
+        if(result!=null)
+        {
+            try {
+                receiveData(result);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
