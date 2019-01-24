@@ -24,7 +24,6 @@ public class FrmLogin extends AppCompatActivity {
     private EditText usuario;
     private EditText contrasenia;
     private Button btnIngresar;
-    private ProgressBar progresBar;
     private ProgressDialog dialog;
 
     @Override
@@ -35,8 +34,6 @@ public class FrmLogin extends AppCompatActivity {
         usuario = findViewById(R.id.frm_login_txt_usuario);
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
-        progresBar = findViewById(R.id.frm_login_progressbar);
-        progresBar.setVisibility(View.GONE);
         dialog= new ProgressDialog(this);
         dialog.setMessage("Cargando");
         dialog.setCanceledOnTouchOutside(true);
