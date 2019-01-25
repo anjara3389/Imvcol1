@@ -1,9 +1,13 @@
 package com.example.imvcol;
 
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -18,6 +22,7 @@ public class FrmOpciones extends AppCompatActivity {
 
     private ArrayList datos;
 
+    private Button btnAceptar;
     private Spinner spnBodega, spnGrupo, spnSubgrupo, spnSubgrupo3, spnSubgrupo2, spnClase;
     private Object[][] wholeBodegas, wholeGrupos, wholeSubgrupos, wholeSubgrupos3, wholeSubgrupos2, wholeClases;
     private ArrayList rawBodegas, rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
@@ -29,13 +34,37 @@ public class FrmOpciones extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_opciones);
 
-
+        btnAceptar = findViewById(R.id.frm_opciones_btn_aceptar);
         spnBodega = findViewById(R.id.frm_opciones_spn_bodega);
         spnGrupo = findViewById(R.id.frm_opciones_spn_grupo);
         spnSubgrupo = findViewById(R.id.frm_opciones_spn_subgrupo);
         spnSubgrupo2 = findViewById(R.id.frm_opciones_spn_subgrupo_2);
         spnSubgrupo3 = findViewById(R.id.frm_opciones_spn_subgrupo_3);
         spnClase = findViewById(R.id.frm_opciones_spn_clase);
+
+        btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(FrmOpciones.this, spnBodega.getSelectedItem()+" ------"+spnBodega.getSelectedItemId(), Toast.LENGTH_LONG).show();
+                if (spnBodega.getSelectedItemId() == -1) {
+                    Toast.makeText(FrmOpciones.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
+                } else {
+                    SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                    Usuario currUsu = new Usuario(null, null, changeValue(spnBodega.getSelectedItem()),
+                            changeValue(spnGrupo.getSelectedItemId()),
+                            changeValue(spnSubgrupo.getSelectedItemId()),
+                            changeValue(spnSubgrupo2.getSelectedItemId()),
+                            changeValue(spnSubgrupo3.getSelectedItemId()),
+                            changeValue(spnClase.getSelectedItemId()));
+                    currUsu.updateCurrent(db);
+                    BaseHelper.tryClose(db);
+
+                    Intent i = new Intent(v.getContext(), FrmInventario.class);
+                    //i.putExtra("datos", resultsDatos);
+                    startActivityForResult(i, 1);
+                }
+            }
+        });
 
         try {
             Bundle bundle = getIntent().getExtras();
@@ -59,6 +88,15 @@ public class FrmOpciones extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private String changeValue(Object object) {
+        if (object.toString().equals("-1")) {
+            return null;
+        } else {
+            return object.toString();
+        }
+
     }
 
     private void prepareBodegas() {

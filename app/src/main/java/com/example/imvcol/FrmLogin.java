@@ -83,6 +83,11 @@ public class FrmLogin extends AppCompatActivity {
                     Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
                 } else {
                     SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+
+                    new Usuario().delete(db);
+                    Usuario u = new Usuario(usuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null);
+                    u.insert(db);
+
                     if (new Bodega().countBodegas(db) == 0) {
                         getWebserviceData(v, db);
                     } else {

@@ -24,11 +24,6 @@ public class Grupo {
         return c;
     }
 
-    public int countGrupos(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM grupo");
-        return sq.getInteger(db);
-    }
-
     public int insert(SQLiteDatabase db) {
         return (int) db.insert("grupo", null, getValues());
     }
