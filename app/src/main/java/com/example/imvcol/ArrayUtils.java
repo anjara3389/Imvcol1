@@ -22,23 +22,35 @@ public class ArrayUtils {
         return list;
     }
 
-    public static ArrayList<String[]> mapObjects(String nameId, String name, ArrayList objects) {
-        try {
-            String[] spinnerArray = new String[objects.size()];
-            final HashMap<Integer, String> spinnerMap = new HashMap<Integer, String>();
+    public static ArrayList<String[]> mapObjects(Object[][] objects) {
+        String[] spinnerArray = new String[objects.length];
+        final HashMap<Integer, String> spinnerMap = new HashMap<Integer, String>();
 
-            for (int i = 0; i < objects.size(); i++) {
-                spinnerMap.put(i, ((JSONObject) objects.get(i)).getString(nameId));
-                spinnerArray[i] = ((JSONObject) objects.get(i)).getString(nameId) + " - " + ((JSONObject) objects.get(i)).getString(name);
-            }
-
-            ArrayList result = new ArrayList();
-            result.add(spinnerArray);
-            result.add(spinnerMap);
-            return result;
-        } catch (JSONException e) {
-            e.printStackTrace();
+        for (int i = 0; i < objects.length; i++) {
+            spinnerMap.put(i, (String) objects[i][0]);
+            spinnerArray[i] = objects[i][0] + " - " + objects[i][1];
         }
-        return null;
+
+        ArrayList result = new ArrayList();
+        result.add(spinnerArray);
+        result.add(spinnerMap);
+        return result;
+    }
+
+    public static ArrayList<String[]> mapObjects(ArrayList objects) {
+        String[] spinnerArray = new String[objects.size()];
+        final HashMap<Integer, String> spinnerMap = new HashMap<Integer, String>();
+
+        for (int i = 0; i < objects.size(); i++) {
+            String id = (String) ((Object[]) objects.get(i))[0];
+            String descripcion = (String) ((Object[]) objects.get(i))[1];
+            spinnerMap.put(i, id);
+            spinnerArray[i] = id + " - " + descripcion;
+        }
+
+        ArrayList result = new ArrayList();
+        result.add(spinnerArray);
+        result.add(spinnerMap);
+        return result;
     }
 }

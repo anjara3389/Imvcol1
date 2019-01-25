@@ -10,14 +10,14 @@ public class BaseHelper extends SQLiteOpenHelper {
     private static BaseHelper sInstance;
 
     private static final String DATABASE_NAME = "imvcol";
-    public static final int VERSION = 1;
-    String bodega = "CREATE TABLE bodega(bodega TEXT PRIMARY KEY,descripcion TEXT)";
-    String grupo = "CREATE TABLE grupo(grupo TEXT PRIMARY KEY,descripcion TEXT)";
-    String clase = "CREATE TABLE clase(clase TEXT PRIMARY KEY,descripcion TEXT)";
-    String usuario = "CREATE TABLE usuario(usuario TEXT PRIMARY KEY,clave TEXT)";
-    String subgrupo = "CREATE TABLE subgrupo(subgrupo TEXT PRIMARY KEY, descripcion TEXT,grupo TEXT,FOREIGN KEY(grupo) REFERENCES grupo(grupo))";
-    String subgrupo2 = "CREATE TABLE subgrupo2(subgrupo2 TEXT PRIMARY KEY, descripcion TEXT,grupo TEXT,subgrupo TEXT,FOREIGN KEY(grupo) REFERENCES grupo(grupo),FOREIGN KEY(subgrupo) REFERENCES subgrupo(subgrupo))";
-    String subgrupo3 = "CREATE TABLE subgrupo3(subgrupo3 TEXT PRIMARY KEY, descripcion TEXT,grupo TEXT,subgrupo TEXT,subgrupo2 TEXT,FOREIGN KEY(grupo) REFERENCES grupo(grupo),FOREIGN KEY(subgrupo) REFERENCES subgrupo(subgrupo),FOREIGN KEY(subgrupo2) REFERENCES subgrupo2(subgrupo2))";
+    public static final int VERSION = 2;
+    String bodega = "CREATE TABLE bodega(bodega TEXT,descripcion TEXT)";
+    String grupo = "CREATE TABLE grupo(grupo TEXT,descripcion TEXT)";
+    String clase = "CREATE TABLE clase(clase TEXT,descripcion TEXT)";
+    String usuario = "CREATE TABLE usuario(usuario TEXT,clave TEXT)";
+    String subgrupo = "CREATE TABLE subgrupo(subgrupo TEXT, descripcion TEXT,grupo TEXT)";
+    String subgrupo2 = "CREATE TABLE subgrupo2(subgrupo2 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT)";
+    String subgrupo3 = "CREATE TABLE subgrupo3(subgrupo3 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT,subgrupo2 TEXT)";
 
 
     private BaseHelper(Context context) {

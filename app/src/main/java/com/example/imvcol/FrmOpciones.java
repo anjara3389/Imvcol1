@@ -19,7 +19,7 @@ public class FrmOpciones extends AppCompatActivity {
     private ArrayList datos;
 
     private Spinner spnBodega, spnGrupo, spnSubgrupo, spnSubgrupo3, spnSubgrupo2, spnClase;
-    private ArrayList wholeBodegas, wholeGrupos, wholeSubgrupos, wholeSubgrupos3, wholeSubgrupos2, wholeClases;
+    private Object[][] wholeBodegas, wholeGrupos, wholeSubgrupos, wholeSubgrupos3, wholeSubgrupos2, wholeClases;
     private ArrayList rawBodegas, rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
     private String[] dataSpnBodegas, dataSpnGrupos, dataSpnSubgrupos, dataSpnSubgrupos3, dataSpnSubgrupos2, dataSpnClases;
     private ArrayAdapter<String> adapterBodegas, adapterGrupos, adapterSubgrupos, adapterSubgrupos3, adapterSubgrupos2, adapterClases;
@@ -41,39 +41,15 @@ public class FrmOpciones extends AppCompatActivity {
             Bundle bundle = getIntent().getExtras();
             datos = bundle.getParcelableArrayList("datos");
 
-            JSONObject zeroBodega = new JSONObject();
-            zeroBodega.put("BODEGA", "-1");
-            zeroBodega.put("DESCRIPCION", "Seleccione una bodega");
-            JSONObject zeroGrupo = new JSONObject();
-            zeroGrupo.put("grupo", "-1");
-            zeroGrupo.put("descripcion", "Seleccione un grupo");
-            JSONObject zeroSubgrupo = new JSONObject();
-            zeroSubgrupo.put("grupo", "-1");
-            zeroSubgrupo.put("subgrupo", "-1");
-            zeroSubgrupo.put("descripcion", "Seleccione un subgrupo");
-            JSONObject zeroSubgrupo2 = new JSONObject();
-            zeroSubgrupo2.put("grupo", -1);
-            zeroSubgrupo2.put("subgrupo", -1);
-            zeroSubgrupo2.put("subgrupo2", -1);
-            zeroSubgrupo2.put("descripcion", "Seleccione un subgrupo2");
-            JSONObject zeroSubgrupo3 = new JSONObject();
-            zeroSubgrupo3.put("grupo", -1);
-            zeroSubgrupo3.put("subgrupo", -1);
-            zeroSubgrupo3.put("subgrupo2", -1);
-            zeroSubgrupo3.put("subgrupo3", -1);
-            zeroSubgrupo3.put("descripcion", "Seleccione un subgrupo3");
-            JSONObject zeroClase = new JSONObject();
-            zeroClase.put("clase", -1);
-            zeroClase.put("descripcion", "Seleccione una clase");
 
-
-            wholeBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(0)), zeroBodega);
-            wholeGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(1)), zeroGrupo);
-            wholeSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(2)), zeroSubgrupo);
-            wholeSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(3)), zeroSubgrupo2);
-            wholeSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(4)), zeroSubgrupo3);
-            System.out.println("wholeSubgrupos3" + wholeSubgrupos3);
-            wholeClases = ArrayUtils.convertToArrayList(new JSONArray((String) datos.get(5)), zeroClase);
+            wholeBodegas = (Object[][]) datos.get(0);
+            wholeGrupos = (Object[][]) datos.get(1);
+            wholeSubgrupos = (Object[][]) datos.get(2);
+            wholeSubgrupos2 = (Object[][]) datos.get(3);
+            wholeSubgrupos3 = (Object[][]) datos.get(4);
+            wholeClases = (Object[][]) datos.get(5);
+            System.out.println("BODEGAS/////////////////////" + wholeBodegas[0][0]);
+            System.out.println("BODEGAS/////////////////////" + wholeBodegas[0][1]);
 
             prepareBodegas();
             prepareClases();
@@ -86,8 +62,7 @@ public class FrmOpciones extends AppCompatActivity {
     }
 
     private void prepareBodegas() {
-
-        rawBodegas = ArrayUtils.mapObjects("BODEGA", "DESCRIPCION", wholeBodegas);
+        rawBodegas = ArrayUtils.mapObjects(wholeBodegas);
         dataSpnBodegas = (String[]) rawBodegas.get(0);
 
         adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
@@ -111,7 +86,7 @@ public class FrmOpciones extends AppCompatActivity {
     }
 
     private void prepareGrupos() {
-        rawGrupos = ArrayUtils.mapObjects("grupo", "descripcion", wholeGrupos);
+        rawGrupos = ArrayUtils.mapObjects(wholeGrupos);
         dataSpnGrupos = (String[]) rawGrupos.get(0);
 
         adapterGrupos = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnGrupos);
@@ -121,16 +96,13 @@ public class FrmOpciones extends AppCompatActivity {
         spnGrupo.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> spn, android.view.View v, int posicion, long id) {
-                        try {
                             /*Toast.makeText(spn.getContext(), "Has seleccionado " +
                                             spn.getItemAtPosition(posicion).toString() + ((HashMap<Integer, String>) rawGrupos.get(1)).get(spnGrupo.getSelectedItemPosition()),
                                     Toast.LENGTH_LONG).show();*/
-                            //String name = spnGrupo.getSelectedItem().toString();
-                            //String id = spinnerMap.get(spnGrupo.getSelectedItemPosition());
-                            prepareSubgrupos(((HashMap<Integer, String>) rawGrupos.get(1)).get(spnGrupo.getSelectedItemPosition()));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        //String name = spnGrupo.getSelectedItem().toString();
+                        //String id = spinnerMap.get(spnGrupo.getSelectedItemPosition());
+                        prepareSubgrupos(((HashMap<Integer, String>) rawGrupos.get(1)).get(spnGrupo.getSelectedItemPosition()));
+
                     }
 
                     public void onNothingSelected(AdapterView<?> spn) {
@@ -139,17 +111,17 @@ public class FrmOpciones extends AppCompatActivity {
 
     }
 
-    private void prepareSubgrupos(final String grupoId) throws JSONException {
+    private void prepareSubgrupos(final String grupoId) {
         ArrayList selected = new ArrayList();
 
-        for (int i = 0; i < wholeSubgrupos.size(); i++) {
-            JSONObject subgrupo = ((JSONObject) wholeSubgrupos.get(i));
-            if (subgrupo.getString("subgrupo").equals("-1") || subgrupo.getString("grupo").equals(grupoId)) {
-                selected.add(wholeSubgrupos.get(i));
+        for (int i = 0; i < wholeSubgrupos.length; i++) {
+            Object[] subgrupo = wholeSubgrupos[i];
+            if (subgrupo[0].equals("-1") || subgrupo[2].equals(grupoId)) {
+                selected.add(subgrupo);
             }
         }
 
-        rawSubgrupos = ArrayUtils.mapObjects("subgrupo", "descripcion", selected);
+        rawSubgrupos = ArrayUtils.mapObjects(selected);
         dataSpnSubgrupos = (String[]) rawSubgrupos.get(0);
 
         adapterSubgrupos = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnSubgrupos);
@@ -159,11 +131,7 @@ public class FrmOpciones extends AppCompatActivity {
         spnSubgrupo.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> spn, android.view.View v, int posicion, long id) {
-                        try {
-                            prepareSubgrupos2(grupoId, ((HashMap<Integer, String>) rawSubgrupos.get(1)).get(spnSubgrupo.getSelectedItemPosition()));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        prepareSubgrupos2(grupoId, ((HashMap<Integer, String>) rawSubgrupos.get(1)).get(spnSubgrupo.getSelectedItemPosition()));
                         //String name = spnSubgrupo.getSelectedItem().toString();
                         //String id = spinnerMap.get(spnSubgrupo.getSelectedItemPosition());
                     }
@@ -174,19 +142,18 @@ public class FrmOpciones extends AppCompatActivity {
 
     }
 
-    private void prepareSubgrupos2(final String grupoId, final String subgrupoId) throws JSONException {
+    private void prepareSubgrupos2(final String grupoId, final String subgrupoId) {
 
         ArrayList selected = new ArrayList();
 
-        for (int i = 0; i < wholeSubgrupos2.size(); i++) {
-            JSONObject subgrupo2 = (JSONObject) wholeSubgrupos2.get(i);
-            if (subgrupo2.getString("subgrupo2").equals("-1") ||
-                    (subgrupo2.getString("grupo").equals(grupoId) && subgrupo2.getString("subgrupo").equals(subgrupoId))) {
-                selected.add(wholeSubgrupos2.get(i));
+        for (int i = 0; i < wholeSubgrupos2.length; i++) {
+            Object[] subgrupo2 = wholeSubgrupos2[i];
+            if (subgrupo2[0].equals("-1") || (subgrupo2[2].equals(grupoId) && subgrupo2[3].equals(subgrupoId))) {
+                selected.add(subgrupo2);
             }
         }
 
-        rawSubgrupos2 = ArrayUtils.mapObjects("subgrupo2", "descripcion", selected);
+        rawSubgrupos2 = ArrayUtils.mapObjects(selected);
         dataSpnSubgrupos2 = (String[]) rawSubgrupos2.get(0);
 
         adapterSubgrupos2 = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnSubgrupos2);
@@ -216,15 +183,14 @@ public class FrmOpciones extends AppCompatActivity {
 
     private void prepareSubgrupos3(String grupoId, String subgrupoId, String subgrupo2Id) throws JSONException {
         ArrayList selected = new ArrayList();
-        for (int i = 0; i < wholeSubgrupos3.size(); i++) {
-            JSONObject subgrupo3 = (JSONObject) wholeSubgrupos3.get(i);
-            if (subgrupo3.getString("subgrupo3").equals("-1")||(subgrupo3.getString("grupo").equals(grupoId) &&
-                    (subgrupo3.getString("subgrupo").equals(subgrupoId) &&
-                            subgrupo3.getString("subgrupo2").equals(subgrupo2Id)))) {
-                selected.add(wholeSubgrupos3.get(i));
+
+        for (int i = 0; i < wholeSubgrupos3.length; i++) {
+            Object[] subgrupo3 = wholeSubgrupos3[i];
+            if (subgrupo3[0].equals("-1") || (subgrupo3[2].equals(grupoId) && (subgrupo3[3].equals(subgrupoId) && subgrupo3[4].equals(subgrupo2Id)))) {
+                selected.add(subgrupo3);
             }
         }
-        rawSubgrupos3 = ArrayUtils.mapObjects("subgrupo3", "descripcion", selected);
+        rawSubgrupos3 = ArrayUtils.mapObjects(selected);
         dataSpnSubgrupos3 = (String[]) rawSubgrupos3.get(0);
 
         adapterSubgrupos3 = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnSubgrupos3);
@@ -249,7 +215,7 @@ public class FrmOpciones extends AppCompatActivity {
 
     private void prepareClases() throws JSONException {
 
-        rawClases = ArrayUtils.mapObjects("clase", "descripcion", wholeClases);
+        rawClases = ArrayUtils.mapObjects(wholeClases);
         dataSpnClases = (String[]) rawClases.get(0);
 
         adapterClases = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnClases);
@@ -271,4 +237,6 @@ public class FrmOpciones extends AppCompatActivity {
                 });
 
     }
+
+
 }

@@ -1,30 +1,32 @@
 package com.example.imvcol;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.Location;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.strictmode.SqliteObjectLeakedViolation;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 
 
-
 public class FrmLogin extends AppCompatActivity {
 
-    private EditText usuario;
-    private EditText contrasenia;
+    private EditText usuario, contrasenia;
     private Button btnIngresar;
     private ProgressDialog dialog;
+    private JSONObject zeroBodega, zeroGrupo, zeroSubgrupo, zeroSubgrupo2, zeroSubgrupo3, zeroClase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +36,7 @@ public class FrmLogin extends AppCompatActivity {
         usuario = findViewById(R.id.frm_login_txt_usuario);
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
-        dialog= new ProgressDialog(this);
+        dialog = new ProgressDialog(this);
         dialog.setMessage("Cargando");
         dialog.setCanceledOnTouchOutside(true);
         dialog.setCancelable(false);
@@ -43,78 +45,13 @@ public class FrmLogin extends AppCompatActivity {
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (!dialog.isShowing()) {
-                    dialog.show();
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                }
                 try {
-                    @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
-                        @Override
-                        public void receiveData(Object object) throws Exception {
-                            ArrayList resultAsync = (ArrayList) object;
-                            if (resultAsync.get(0) == null) {
-                                throw new Exception("No se han podido cargar el usuario, intente nuevamente");
-                            }
-                            if (resultAsync.get(0).equals("[]")) {
-                                closeDialog();
-                                Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
-                            } else {
-                                ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-                                    @Override
-                                    public void receiveData(Object object) throws Exception {
-                                        ArrayList resultsDatos = (ArrayList) object;
-                                        if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
-                                            closeDialog();
-                                            throw new Exception("No se han podido cargar los datos, intente nuevamente");
-
-                                        } else {
-                                            closeDialog();
-                                            Intent i = new Intent(v.getContext(), FrmOpciones.class);
-                                            i.putExtra("datos", resultsDatos);
-                                            startActivityForResult(i, 1);
-
-                                        }
-
-                        /*
-                        SELECT *
-                        FROM REFERENCIAS_FIS F
-                        LEFT JOIN REFERENCIAS R ON R.CODIGO=F.CODIGO
-                        WHERE F.BODEGA=104;*/
-                                    }
-
-
-                                };
-                                remote.setContext(v.getContext());
-
-                                ArrayList queryDatos = new ArrayList();
-                                queryDatos.add("SELECT BODEGA, DESCRIPCION FROM BODEGAS");
-                                queryDatos.add("SELECT * FROM REFERENCIAS_GRU");
-                                queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
-                                queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
-                                queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
-                                queryDatos.add("SELECT * FROM referencias_cla");
-
-                                remote.setQuery(queryDatos);
-                                remote.execute();
-                            }
-                        }
-                    };
-
-                    remoteQuery.setContext(v.getContext());
-                    ArrayList queryUsers = new ArrayList();
-
-                    queryUsers.add("SELECT * " +
-                            "FROM USUARIOS " +
-                            "WHERE USUARIO=UPPER('" + usuario.getText() + "') " +
-                            "AND CLAVE=UPPER('" + contrasenia.getText() + "')");
-
-                    remoteQuery.setQuery(queryUsers);
-                    remoteQuery.execute();
-
+                    if (!dialog.isShowing()) {
+                        dialog.show();
+                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    }
+                    checkUserOnWebService(v);
                 } catch (CancellationException e) {
                     e.printStackTrace();
                     Toast.makeText(v.getContext(), "Operación cancelada /" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -127,10 +64,174 @@ public class FrmLogin extends AppCompatActivity {
         });
     }
 
-    private void closeDialog(){
+    private void closeDialog() {
         if (dialog.isShowing()) {
             dialog.dismiss();
         }
+    }
+
+    private void checkUserOnWebService(final View v) {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) throws Exception {
+                ArrayList resultAsync = (ArrayList) object;
+                if (resultAsync.get(0) == null) {
+                    throw new Exception("No se han podido cargar el usuario, intente nuevamente");
+                }
+                if (resultAsync.get(0).equals("[]")) {
+                    closeDialog();
+                    Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
+                } else {
+                    SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                    if (new Bodega().countBodegas(db) == 0) {
+                        getWebserviceData(v, db);
+                    } else {
+                        getDataFromDB(db, v);
+                    }
+
+                }
+            }
+        };
+
+        remoteQuery.setContext(v.getContext());
+        ArrayList queryUsers = new ArrayList();
+
+        queryUsers.add("SELECT * " +
+                "FROM USUARIOS " +
+                "WHERE USUARIO=UPPER('" + usuario.getText() + "') " +
+                "AND CLAVE=UPPER('" + contrasenia.getText() + "')");
+
+        remoteQuery.setQuery(queryUsers);
+        remoteQuery.execute();
+    }
+
+    private void getWebserviceData(final View v, final SQLiteDatabase db) {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) throws Exception {
+                ArrayList resultsDatos = (ArrayList) object;
+                if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
+                    closeDialog();
+                    throw new Exception("No se han podido cargar los datos, intente nuevamente");
+
+                } else {
+                    closeDialog();
+                    fillDatabase(db, resultsDatos);
+                    getDataFromDB(db, v);
+                }
+                        /*
+                        SELECT *
+                        FROM REFERENCIAS_FIS F
+                        LEFT JOIN REFERENCIAS R ON R.CODIGO=F.CODIGO
+                        WHERE F.BODEGA=104;*/
+            }
+
+
+        };
+        remote.setContext(v.getContext());
+
+        ArrayList queryDatos = new ArrayList();
+        queryDatos.add("SELECT BODEGA, DESCRIPCION FROM BODEGAS");
+        queryDatos.add("SELECT * FROM REFERENCIAS_GRU");
+        queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
+        queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
+        queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
+        queryDatos.add("SELECT * FROM referencias_cla");
+
+        remote.setQuery(queryDatos);
+        remote.execute();
+    }
+
+    private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {
+        putZeros();
+
+        System.out.println("bodegas1" + (String) resultsDatos.get(0));
+        System.out.println("grupos" + (String) resultsDatos.get(1));
+        System.out.println("rawSubgrupos" + (String) resultsDatos.get(2));
+        System.out.println("rawSubgrupos2" + (String) resultsDatos.get(3));
+        System.out.println("rawSubgrupos3" + (String) resultsDatos.get(4));
+        System.out.println("rawClases" + (String) resultsDatos.get(5));
+        ArrayList rawBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), zeroBodega);
+        ArrayList rawGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), zeroGrupo);
+        ArrayList rawSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(2)), zeroSubgrupo);
+        ArrayList rawSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(3)), zeroSubgrupo2);
+        ArrayList rawSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(4)), zeroSubgrupo3);
+        ArrayList rawClases = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(5)), zeroClase);
+
+
+        for (int i = 0; i < rawBodegas.size(); i++) {
+            JSONObject rawBodega = ((JSONObject) rawBodegas.get(i));
+            Bodega bodega = new Bodega(rawBodega.getString("BODEGA"), rawBodega.getString("DESCRIPCION"));
+            bodega.insert(db);
+        }
+        for (int i = 0; i < rawGrupos.size(); i++) {
+            JSONObject rawGrupo = ((JSONObject) rawGrupos.get(i));
+            Grupo grupo = new Grupo(rawGrupo.getString("grupo"), rawGrupo.getString("descripcion"));
+            grupo.insert(db);
+        }
+        for (int i = 0; i < rawSubgrupos.size(); i++) {
+            JSONObject rawSubgrupo = ((JSONObject) rawSubgrupos.get(i));
+            Subgrupo subgrupo = new Subgrupo(rawSubgrupo.getString("subgrupo"), rawSubgrupo.getString("grupo"), rawSubgrupo.getString("descripcion"));
+            subgrupo.insert(db);
+        }
+        for (int i = 0; i < rawSubgrupos2.size(); i++) {
+            JSONObject rawSubgrupo2 = ((JSONObject) rawSubgrupos2.get(i));
+            Subgrupo2 subgrupo2 = new Subgrupo2(rawSubgrupo2.getString("subgrupo2"), rawSubgrupo2.getString("grupo"), rawSubgrupo2.getString("subgrupo"), rawSubgrupo2.getString("descripcion"));
+            subgrupo2.insert(db);
+        }
+        for (int i = 0; i < rawSubgrupos3.size(); i++) {
+            JSONObject rawSubgrupo3 = ((JSONObject) rawSubgrupos3.get(i));
+            Subgrupo3 subgrupo3 = new Subgrupo3(rawSubgrupo3.getString("subgrupo3"), rawSubgrupo3.getString("grupo"), rawSubgrupo3.getString("subgrupo"), rawSubgrupo3.getString("subgrupo2"), rawSubgrupo3.getString("descripcion"));
+            subgrupo3.insert(db);
+        }
+        for (int i = 0; i < rawClases.size(); i++) {
+            JSONObject rawClase = ((JSONObject) rawClases.get(i));
+            Clase clase = new Clase(rawClase.getString("clase"), rawClase.getString("descripcion"));
+            clase.insert(db);
+        }
+    }
+
+    private void getDataFromDB(SQLiteDatabase db, View v) throws Exception {
+        ArrayList resultsDatos = new ArrayList<>();
+        resultsDatos.add(new Bodega().selectBodegas(db));
+        resultsDatos.add(new Grupo().selectGrupos(db));
+        resultsDatos.add(new Subgrupo().selectSubgrupos(db));
+        resultsDatos.add(new Subgrupo2().selectSubgrupos2(db));
+        resultsDatos.add(new Subgrupo3().selectSubgrupos3(db));
+        resultsDatos.add(new Clase().selectClases(db));
+
+        Intent i = new Intent(v.getContext(), FrmOpciones.class);
+        i.putExtra("datos", resultsDatos);
+        startActivityForResult(i, 1);
+
+        BaseHelper.tryClose(db);
+    }
+
+    private void putZeros() throws JSONException {
+        zeroBodega = new JSONObject();
+        zeroBodega.put("BODEGA", "-1");
+        zeroBodega.put("DESCRIPCION", "Seleccione una bodega");
+        zeroGrupo = new JSONObject();
+        zeroGrupo.put("grupo", "-1");
+        zeroGrupo.put("descripcion", "Seleccione un grupo");
+        zeroSubgrupo = new JSONObject();
+        zeroSubgrupo.put("grupo", "-1");
+        zeroSubgrupo.put("subgrupo", "-1");
+        zeroSubgrupo.put("descripcion", "Seleccione un subgrupo");
+        zeroSubgrupo2 = new JSONObject();
+        zeroSubgrupo2.put("grupo", -1);
+        zeroSubgrupo2.put("subgrupo", -1);
+        zeroSubgrupo2.put("subgrupo2", -1);
+        zeroSubgrupo2.put("descripcion", "Seleccione un subgrupo2");
+        zeroSubgrupo3 = new JSONObject();
+        zeroSubgrupo3.put("grupo", -1);
+        zeroSubgrupo3.put("subgrupo", -1);
+        zeroSubgrupo3.put("subgrupo2", -1);
+        zeroSubgrupo3.put("subgrupo3", -1);
+        zeroSubgrupo3.put("descripcion", "Seleccione un subgrupo3");
+        zeroClase = new JSONObject();
+        zeroClase.put("clase", -1);
+        zeroClase.put("descripcion", "Seleccione una clase");
     }
 }
 

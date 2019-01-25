@@ -1,26 +1,44 @@
 package com.example.imvcol;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+
+import java.util.ArrayList;
+
 public class Bodega {
 
-    private int id;
+    private String bodega;
     private String descripcion;
 
+    public Bodega() {
 
-    public int getId() {
-        return this.id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDescripcion() {
-        return this.descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
+    public Bodega(String bodega, String descripcion) {
+        this.bodega = bodega;
         this.descripcion = descripcion;
     }
 
+    public ContentValues getValues() {
+        ContentValues c = new ContentValues();
+        c.put("bodega", bodega);
+        c.put("descripcion", descripcion);
+        return c;
+    }
+
+    public int countBodegas(SQLiteDatabase db) throws Exception {
+        SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM bodega");
+        return sq.getInteger(db);
+    }
+
+    public int insert(SQLiteDatabase db) {
+        return (int) db.insert("bodega", null, getValues());
+    }
+
+    public Object[][] selectBodegas(SQLiteDatabase db) throws Exception {
+        SQLiteQuery sq = new SQLiteQuery("SELECT bodega,descripcion " +
+                "FROM bodega");
+        return sq.getRecords(db);
+    }
 
 }
