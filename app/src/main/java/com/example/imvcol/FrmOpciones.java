@@ -45,19 +45,43 @@ public class FrmOpciones extends AppCompatActivity {
         btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(FrmOpciones.this, spnBodega.getSelectedItem()+" ------"+spnBodega.getSelectedItemId(), Toast.LENGTH_LONG).show();
-                if (spnBodega.getSelectedItemId() == -1) {
+                HashMap<Integer, String> mapBodega = (HashMap<Integer, String>) rawBodegas.get(1);
+                HashMap<Integer, String> mapGrupo = (HashMap<Integer, String>) rawGrupos.get(1);
+                HashMap<Integer, String> mapSubgrupo = (HashMap<Integer, String>) rawSubgrupos.get(1);
+                HashMap<Integer, String> mapSubgrupo2 = (HashMap<Integer, String>) rawSubgrupos2.get(1);
+                HashMap<Integer, String> mapSubgrupo3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
+                HashMap<Integer, String> mapClase = (HashMap<Integer, String>) rawClases.get(1);
+                //Toast.makeText(FrmOpciones.this, spnBodega.getSelectedItem() + " ------" + spnBodega.getSelectedItemId(), Toast.LENGTH_LONG).show();
+                if (changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())) == null) {
                     Toast.makeText(FrmOpciones.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
                 } else {
                     SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                    Usuario currUsu = new Usuario(null, null, changeValue(spnBodega.getSelectedItem()),
-                            changeValue(spnGrupo.getSelectedItemId()),
-                            changeValue(spnSubgrupo.getSelectedItemId()),
-                            changeValue(spnSubgrupo2.getSelectedItemId()),
-                            changeValue(spnSubgrupo3.getSelectedItemId()),
-                            changeValue(spnClase.getSelectedItemId()));
+
+                    Usuario currUsu = new Usuario(null, null, changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())),
+                            changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())),
+                            changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())),
+                            changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())),
+                            changeValue(mapSubgrupo3.get(spnSubgrupo3.getSelectedItemPosition())),
+                            changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
                     currUsu.updateCurrent(db);
+                    try {
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[0]);
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[1]);
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[2]);
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[3]);
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[4]);
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[5]);
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[6]);
+                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[7]);
+
+
+                    } catch (Exception e) {
+                        System.out.println("AQUIIIIIIII/////NOOOOOOOOOOOOOOO");
+                        e.printStackTrace();
+                    }
                     BaseHelper.tryClose(db);
+
+
 
                     Intent i = new Intent(v.getContext(), FrmInventario.class);
                     //i.putExtra("datos", resultsDatos);
@@ -267,7 +291,7 @@ public class FrmOpciones extends AppCompatActivity {
                                         spn.getItemAtPosition(posicion).toString() + ((HashMap<Integer, String>) rawClases.get(1)).get(spnClase.getSelectedItemPosition()),
                                 Toast.LENGTH_LONG).show();
                         //String name = spnClase.getSelectedItem().toString();
-                        //String id = spinnerMap.get(spnClase.getSelectedItemPosition());
+
                     }
 
                     public void onNothingSelected(AdapterView<?> spn) {

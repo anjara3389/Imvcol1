@@ -70,7 +70,7 @@ public class Usuario {
     }
 
     public Object[] selectUsuario(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT usuario,clave,curr_bodega,curr_grupo,curr_subgr,curr_subgr2,curr_cubgr3,curr_clase " +
+        SQLiteQuery sq = new SQLiteQuery("SELECT usuario,clave,curr_bodega,curr_grupo,curr_subgr,curr_subgr2,curr_subgr3,curr_clase " +
                 "FROM usuario");
         return sq.getRecord(db);
     }
