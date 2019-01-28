@@ -44,7 +44,7 @@ public class FrmLogin extends AppCompatActivity {
             public void onClick(final View v) {
                 try {
                     dialogUtils.showDialog(getWindow());
-                    checkUserOnWebService(v);
+                    checkUserOnWebService(v, dialogUtils);
                 } catch (CancellationException e) {
                     e.printStackTrace();
                     Toast.makeText(v.getContext(), "Operación cancelada /" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -58,7 +58,7 @@ public class FrmLogin extends AppCompatActivity {
     }
 
 
-    private void checkUserOnWebService(final View v) {
+    private void checkUserOnWebService(final View v, final DialogUtils dialogU) {
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
@@ -67,9 +67,9 @@ public class FrmLogin extends AppCompatActivity {
                     throw new Exception("No se han podido cargar el usuario, intente nuevamente");
                 }
                 if (resultAsync.get(0).equals("[]")) {
-                    if (dialogUtils != null) {
-                        dialogUtils.dissmissDialog();
-                    }
+                    //if (dialogUtils != null) {
+                    dialogU.dissmissDialog();
+                    //}
                     Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
                 } else {
                     SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
