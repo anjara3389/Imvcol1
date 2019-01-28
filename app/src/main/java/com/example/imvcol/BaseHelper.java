@@ -10,7 +10,7 @@ public class BaseHelper extends SQLiteOpenHelper {
     private static BaseHelper sInstance;
 
     private static final String DATABASE_NAME = "imvcol";
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
     String bodega = "CREATE TABLE bodega(bodega TEXT,descripcion TEXT)";
     String grupo = "CREATE TABLE grupo(grupo TEXT,descripcion TEXT)";
     String clase = "CREATE TABLE clase(clase TEXT,descripcion TEXT)";
@@ -18,6 +18,7 @@ public class BaseHelper extends SQLiteOpenHelper {
     String subgrupo = "CREATE TABLE subgrupo(subgrupo TEXT, descripcion TEXT,grupo TEXT)";
     String subgrupo2 = "CREATE TABLE subgrupo2(subgrupo2 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT)";
     String subgrupo3 = "CREATE TABLE subgrupo3(subgrupo3 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT,subgrupo2 TEXT)";
+    String producto = "CREATE TABLE producto(producto TEXT,descripcion TEXT, cantidad INTEGER)";
 
 
     private BaseHelper(Context context) {
@@ -40,6 +41,7 @@ public class BaseHelper extends SQLiteOpenHelper {
         db.execSQL(subgrupo3);
         db.execSQL(clase);
         db.execSQL(usuario);
+        db.execSQL(producto);
     }
 
     @Override
@@ -52,6 +54,7 @@ public class BaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS SUBGRUPO3");
         db.execSQL("DROP TABLE IF EXISTS CLASE");
         db.execSQL("DROP TABLE IF EXISTS USUARIO");
+        db.execSQL("DROP TABLE IF EXISTS PRODUCTO");
         onCreate(db);
     }
 

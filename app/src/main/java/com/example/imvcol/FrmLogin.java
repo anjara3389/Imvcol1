@@ -25,8 +25,8 @@ public class FrmLogin extends AppCompatActivity {
 
     private EditText usuario, contrasenia;
     private Button btnIngresar;
-    private ProgressDialog dialog;
     private JSONObject zeroBodega, zeroGrupo, zeroSubgrupo, zeroSubgrupo2, zeroSubgrupo3, zeroClase;
+    private DialogUtils dialogUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,21 +36,14 @@ public class FrmLogin extends AppCompatActivity {
         usuario = findViewById(R.id.frm_login_txt_usuario);
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("Cargando");
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(false);
+        final DialogUtils dialogUtils = new DialogUtils(this, "Cargando");
 
 
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 try {
-                    if (!dialog.isShowing()) {
-                        dialog.show();
-                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    }
+                    dialogUtils.showDialog(getWindow());
                     checkUserOnWebService(v);
                 } catch (CancellationException e) {
                     e.printStackTrace();
@@ -64,11 +57,6 @@ public class FrmLogin extends AppCompatActivity {
         });
     }
 
-    private void closeDialog() {
-        if (dialog.isShowing()) {
-            dialog.dismiss();
-        }
-    }
 
     private void checkUserOnWebService(final View v) {
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
@@ -79,7 +67,9 @@ public class FrmLogin extends AppCompatActivity {
                     throw new Exception("No se han podido cargar el usuario, intente nuevamente");
                 }
                 if (resultAsync.get(0).equals("[]")) {
-                    closeDialog();
+                    if (dialogUtils != null) {
+                        dialogUtils.dissmissDialog();
+                    }
                     Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
                 } else {
                     SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -93,7 +83,6 @@ public class FrmLogin extends AppCompatActivity {
                     } else {
                         getDataFromDB(db, v);
                     }
-
                 }
             }
         };
@@ -115,23 +104,16 @@ public class FrmLogin extends AppCompatActivity {
             @Override
             public void receiveData(Object object) throws Exception {
                 ArrayList resultsDatos = (ArrayList) object;
+                if (dialogUtils != null) {
+                    dialogUtils.dissmissDialog();
+                }
                 if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
-                    closeDialog();
                     throw new Exception("No se han podido cargar los datos, intente nuevamente");
-
                 } else {
-                    closeDialog();
                     fillDatabase(db, resultsDatos);
                     getDataFromDB(db, v);
                 }
-                        /*
-                        SELECT *
-                        FROM REFERENCIAS_FIS F
-                        LEFT JOIN REFERENCIAS R ON R.CODIGO=F.CODIGO
-                        WHERE F.BODEGA=104;*/
             }
-
-
         };
         remote.setContext(v.getContext());
 
@@ -156,12 +138,12 @@ public class FrmLogin extends AppCompatActivity {
         System.out.println("rawSubgrupos2" + (String) resultsDatos.get(3));
         System.out.println("rawSubgrupos3" + (String) resultsDatos.get(4));
         System.out.println("rawClases" + (String) resultsDatos.get(5));
-        ArrayList rawBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), zeroBodega);
-        ArrayList rawGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), zeroGrupo);
-        ArrayList rawSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(2)), zeroSubgrupo);
-        ArrayList rawSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(3)), zeroSubgrupo2);
-        ArrayList rawSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(4)), zeroSubgrupo3);
-        ArrayList rawClases = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(5)), zeroClase);
+        ArrayList rawBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), zeroBodega, this);
+        ArrayList rawGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), zeroGrupo, this);
+        ArrayList rawSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(2)), zeroSubgrupo, this);
+        ArrayList rawSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(3)), zeroSubgrupo2, this);
+        ArrayList rawSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(4)), zeroSubgrupo3, this);
+        ArrayList rawClases = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(5)), zeroClase, this);
 
 
         for (int i = 0; i < rawBodegas.size(); i++) {
@@ -208,8 +190,10 @@ public class FrmLogin extends AppCompatActivity {
         Intent i = new Intent(v.getContext(), FrmOpciones.class);
         i.putExtra("datos", resultsDatos);
         startActivityForResult(i, 1);
-
         BaseHelper.tryClose(db);
+        if (dialogUtils != null) {
+            dialogUtils.dissmissDialog();
+        }
     }
 
     private void putZeros() throws JSONException {

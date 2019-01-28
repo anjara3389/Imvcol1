@@ -1,5 +1,6 @@
 package com.example.imvcol;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 public class FrmOpciones extends AppCompatActivity {
 
     private ArrayList datos;
+    DialogUtils dialogUtils;
 
     private Button btnAceptar;
     private Spinner spnBodega, spnGrupo, spnSubgrupo, spnSubgrupo3, spnSubgrupo2, spnClase;
@@ -28,6 +30,7 @@ public class FrmOpciones extends AppCompatActivity {
     private ArrayList rawBodegas, rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
     private String[] dataSpnBodegas, dataSpnGrupos, dataSpnSubgrupos, dataSpnSubgrupos3, dataSpnSubgrupos2, dataSpnClases;
     private ArrayAdapter<String> adapterBodegas, adapterGrupos, adapterSubgrupos, adapterSubgrupos3, adapterSubgrupos2, adapterClases;
+    private Object[] currUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,37 +58,30 @@ public class FrmOpciones extends AppCompatActivity {
                 if (changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())) == null) {
                     Toast.makeText(FrmOpciones.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
                 } else {
-                    SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-
-                    Usuario currUsu = new Usuario(null, null, changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())),
-                            changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())),
-                            changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())),
-                            changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())),
-                            changeValue(mapSubgrupo3.get(spnSubgrupo3.getSelectedItemPosition())),
-                            changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
-                    currUsu.updateCurrent(db);
                     try {
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[0]);
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[1]);
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[2]);
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[3]);
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[4]);
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[5]);
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[6]);
-                        System.out.println("AQUIIIIIIII/////"+currUsu.selectUsuario(db)[7]);
+                        dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
+                        dialogUtils.showDialog(getWindow());
+                        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+
+                        Usuario currUsu = new Usuario(null, null, changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())),
+                                changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())),
+                                changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())),
+                                changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())),
+                                changeValue(mapSubgrupo3.get(spnSubgrupo3.getSelectedItemPosition())),
+                                changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
+                        currUsu.updateCurrent(db);
 
 
+                        currUser = currUsu.selectUsuario(db);
+                        getWebserviceProducts(v, db);
+
+
+                        Intent i = new Intent(v.getContext(), FrmInventario.class);
+                        //i.putExtra("datos", resultsDatos);
+                        startActivityForResult(i, 1);
                     } catch (Exception e) {
-                        System.out.println("AQUIIIIIIII/////NOOOOOOOOOOOOOOO");
-                        e.printStackTrace();
+                        Toast.makeText(FrmOpciones.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                    BaseHelper.tryClose(db);
-
-
-
-                    Intent i = new Intent(v.getContext(), FrmInventario.class);
-                    //i.putExtra("datos", resultsDatos);
-                    startActivityForResult(i, 1);
                 }
             }
         });
@@ -300,5 +296,65 @@ public class FrmOpciones extends AppCompatActivity {
 
     }
 
+    private void getWebserviceProducts(final View v, final SQLiteDatabase db) {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) throws Exception {
+                ArrayList resultsDatos = (ArrayList) object;
+                if (resultsDatos.get(0) == null) {
+                    dialogUtils.dissmissDialog();
+                    BaseHelper.tryClose(db);
+                    throw new Exception("No se han podido cargar los datos, intente nuevamente");
 
+                } else {
+                    dialogUtils.dissmissDialog();
+                    fillDatabase(db, resultsDatos);
+
+                }
+            }
+        };
+        remote.setContext(v.getContext());
+
+        ArrayList queryDatos = new ArrayList();
+
+        String query = "SELECT r.codigo,r.descripcion,s.stock " +
+                "FROM v_referencias_sto s " +
+                "JOIN referencias r on r.codigo=s.codigo " +
+                "WHERE s.bodega='" + currUser[2] + "' " +
+                " AND s.ano=YEAR(getdate()) " +
+                " AND s.mes=MONTH(getdate()) ";
+
+        if (currUser[3] != null) {
+            query += "AND r.grupo='4' ";
+        }
+        if (currUser[4] != null) {
+            query += "AND r.subgrupo='1' ";
+        }
+        if (currUser[5] != null) {
+            query += "AND r.subgrupo2='1' ";
+        }
+        if (currUser[6] != null) {
+            query += "AND r.subgrupo3='1' ";
+        }
+        if (currUser[7] != null) {
+            query += "AND r.clase='1'";
+        }
+
+        queryDatos.add(query);
+        System.out.println("QUERYYYYYY" + query);
+        remote.setQuery(queryDatos);
+        remote.execute();
+    }
+
+    private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {
+        System.out.println("productos1" + resultsDatos.get(0));
+        ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, this);
+
+        for (int i = 0; i < rawProductos.size(); i++) {
+            JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
+            Producto producto = new Producto(rawProducto.getString("codigo"), rawProducto.getString("descripcion"), rawProducto.getString("stock"));
+            producto.insert(db);
+        }
+        BaseHelper.tryClose(db);
+    }
 }

@@ -1,5 +1,9 @@
 package com.example.imvcol;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,17 +13,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ArrayUtils {
-    public static ArrayList<Object> convertToArrayList(JSONArray jArr, JSONObject begObject) {
-        ArrayList<Object> list = new ArrayList<Object>();
-        list.add(begObject);
+    public static ArrayList<Object> convertToArrayList(JSONArray jArr, JSONObject begObject, Context ctx) {
         try {
+            ArrayList<Object> list = new ArrayList<Object>();
+            if (begObject != null) {
+                list.add(begObject);
+            }
             for (int i = 0, l = jArr.length(); i < l; i++) {
                 list.add(jArr.get(i));
             }
+            return list;
         } catch (JSONException e) {
+            Toast.makeText(ctx, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
-        return list;
+        return null;
     }
 
     public static ArrayList<String[]> mapObjects(Object[][] objects) {
