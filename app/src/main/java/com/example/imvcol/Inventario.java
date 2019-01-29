@@ -10,18 +10,18 @@ public class Inventario {
     private Date fecha;
     private String bodega;
     private String producto;
-    private int conteo1;
+    private Integer conteo1;
     private String usuario1;
-    private int conteo2;
+    private Integer conteo2;
     private String usuario2;
-    private int conteo3;
+    private Integer conteo3;
     private String usuario3;
 
     public Inventario() {
 
     }
 
-    public Inventario(Date fecha, String bodega, String producto, int conteo1, String usuario1, int conteo2, String usuario2, int conteo3, String usuario3) {
+    public Inventario(Date fecha, String bodega, String producto, Integer conteo1, String usuario1, Integer conteo2, String usuario2, Integer conteo3, String usuario3) {
         this.fecha = fecha;
         this.bodega = bodega;
         this.producto = producto;
@@ -31,6 +31,19 @@ public class Inventario {
         this.usuario2 = usuario2;
         this.conteo3 = conteo3;
         this.usuario3 = usuario3;
+    }
+
+    public Inventario(int numConteo, Integer conteo, String usuario) {
+        if (numConteo == 1) {
+            this.conteo1 = conteo;
+            this.usuario1 = usuario;
+        } else if (numConteo == 2) {
+            this.conteo2 = conteo;
+            this.usuario2 = usuario;
+        } else if (numConteo == 3) {
+            this.conteo3 = conteo;
+            this.usuario3 = usuario;
+        }
     }
 
     public ContentValues getValues() {
@@ -47,13 +60,25 @@ public class Inventario {
         return c;
     }
 
+    public ContentValues getCurrentValues(int conteo) {
+        ContentValues c = new ContentValues();
+        c.put("conteo" + conteo, (conteo == 1 ? conteo1 : (conteo == 2 ? conteo2 : conteo3)));
+        c.put("usuario" + conteo, (conteo == 1 ? usuario1 : (conteo == 2 ? usuario2 : usuario3)));
+        return c;
+    }
+
     public int insert(SQLiteDatabase db) {
         return (int) db.insert("inventario", null, getValues());
     }
 
-    public Object[] selectInventario(SQLiteDatabase db) throws Exception {
+    public Object[] selectInventario(SQLiteDatabase db, String producto) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT fecha,bodega,producto,conteo1,usuario1,conteo2,usuario2,conteo3,usuario3 " +
-                "FROM inventario");
+                "FROM inventario " +
+                "WHERE producto= " + producto);
         return sq.getRecord(db);
+    }
+
+    public void updateCurrent(SQLiteDatabase db, int conteo, String producto) {
+        db.update("inventario", getCurrentValues(conteo), "producto=" + producto, null);
     }
 }

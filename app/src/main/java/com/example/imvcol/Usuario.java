@@ -13,12 +13,13 @@ public class Usuario {
     private String currSubgr2;
     private String currSubgr3;
     private String currClase;
+    private int currConteo;
 
     public Usuario() {
 
     }
 
-    public Usuario(String usuario, String clave, String currBodega, String currGrupo, String currSubgr, String currSubgr2, String currSubgr3, String currClase) {
+    public Usuario(String usuario, String clave, String currBodega, String currGrupo, String currSubgr, String currSubgr2, String currSubgr3, String currClase, int currConteo) {
         this.usuario = usuario;
         this.clave = clave;
         this.currBodega = currBodega;
@@ -27,6 +28,7 @@ public class Usuario {
         this.currSubgr2 = currSubgr2;
         this.currSubgr3 = currSubgr3;
         this.currClase = currClase;
+        this.currConteo = currConteo;
     }
 
     public ContentValues getValues() {
@@ -39,8 +41,10 @@ public class Usuario {
         c.put("curr_subgr2", currSubgr2);
         c.put("curr_subgr3", currSubgr3);
         c.put("curr_clase", currClase);
+        c.put("curr_conteo", currConteo);
         return c;
     }
+
     public ContentValues getCurrentValues() {
         ContentValues c = new ContentValues();
         c.put("curr_bodega", currBodega);
@@ -49,12 +53,8 @@ public class Usuario {
         c.put("curr_subgr2", currSubgr2);
         c.put("curr_subgr3", currSubgr3);
         c.put("curr_clase", currClase);
+        c.put("curr_conteo", currConteo);
         return c;
-    }
-
-    public int countUsuarios(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM usuario");
-        return sq.getInteger(db);
     }
 
     public void delete(SQLiteDatabase db) {
@@ -70,7 +70,7 @@ public class Usuario {
     }
 
     public Object[] selectUsuario(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT usuario,clave,curr_bodega,curr_grupo,curr_subgr,curr_subgr2,curr_subgr3,curr_clase " +
+        SQLiteQuery sq = new SQLiteQuery("SELECT usuario,clave,curr_bodega,curr_grupo,curr_subgr,curr_subgr2,curr_subgr3,curr_clase,curr_conteo " +
                 "FROM usuario");
         return sq.getRecord(db);
     }

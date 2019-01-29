@@ -71,7 +71,7 @@ public class FrmOpciones extends AppCompatActivity {
                                 changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())),
                                 changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())),
                                 changeValue(mapSubgrupo3.get(spnSubgrupo3.getSelectedItemPosition())),
-                                changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
+                                changeValue(mapClase.get(spnClase.getSelectedItemPosition())), 1);
                         currUsu.updateCurrent(db);
 
 

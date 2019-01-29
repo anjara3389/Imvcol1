@@ -1,6 +1,7 @@
 package com.example.imvcol;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.os.BadParcelableException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,8 @@ import com.example.imvcol.Utils.DialogUtils;
 
 import org.json.JSONObject;
 
+import java.util.Date;
+
 public class FrmInventario extends AppCompatActivity {
 
     private EditText producto, numero, cantidad;
@@ -21,6 +24,7 @@ public class FrmInventario extends AppCompatActivity {
     private RadioGroup rgOpciones;
     private RadioButton rbCodigo;
     private RadioButton rbLectura;
+    private Object[] selectedProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +49,16 @@ public class FrmInventario extends AppCompatActivity {
                     int code = rbCodigo.isChecked() ? 0 : 1;
                     if (producto.getText() != null || numero.getText() != null) {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                        Object[] product = new Producto().selectProducto(db, producto.getText().toString(), numero.getText().toString(), code);
+                        selectedProduct = new Producto().selectProducto(db, producto.getText().toString(), numero.getText().toString(), code);
+                        BaseHelper.tryClose(db);
 
-                        System.out.println("Producto " + product[0].toString());
-                        System.out.println("Producto " + product[1].toString());
-                        System.out.println("Producto " + product[2].toString());
-                        System.out.println("Producto " + product[3].toString());
+                        System.out.println("Producto " + selectedProduct[0].toString());
+                        System.out.println("Producto " + selectedProduct[1].toString());
+                        System.out.println("Producto " + selectedProduct[2].toString());
+                        System.out.println("Producto " + selectedProduct[3].toString());
 
-                        producto.setText(product[1].toString());
-                        numero.setText(product[code == 0 ? 0 : 3].toString());
+                        producto.setText(selectedProduct[1].toString());
+                        numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
 
                         disableEnableCargar(false);
 
@@ -67,6 +72,57 @@ public class FrmInventario extends AppCompatActivity {
 
             }
         });
+
+        btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                    Object[] usu = new Usuario().selectUsuario(db);
+                    Object[] inv = new Inventario().selectInventario(db, selectedProduct[0].toString());
+                    int newCantidad = Integer.parseInt(cantidad.getText().toString());
+                    if (inv == null) {
+                        Inventario inventario = new Inventario(new Date(),
+                                usu[2].toString(),
+                                selectedProduct[0].toString(),
+                                newCantidad,
+                                usu[0].toString(),
+                                null,
+                                null,
+                                null,
+                                null);
+                        inventario.insert(db);
+                    } else {
+                        //CONTINUAR AQUÍ
+                        int cantidad = Integer.parseInt(selectedProduct[2].toString());
+                        int numConteo = Integer.parseInt(usu[8].toString());
+                        Inventario i = new Inventario(numConteo, cantidad, usu[0].toString());
+                        i.updateCurrent(db, numConteo, selectedProduct[0].toString());
+                    }
+                    limpiar();
+                    db.close();
+                } catch (Exception e) {
+                    Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
+        });
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                limpiar();
+            }
+        });
+    }
+
+    private void limpiar() {
+        selectedProduct = null;
+        producto.setText("");
+        numero.setText("");
+        cantidad.setText("");
+        rbCodigo.setChecked(true);
+        rbLectura.setChecked(false);
+        disableEnableCargar(true);
     }
 
 

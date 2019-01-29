@@ -73,7 +73,7 @@ public class FrmLogin extends AppCompatActivity {
                     SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
 
                     new Usuario().delete(db);
-                    Usuario u = new Usuario(usuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null);
+                    Usuario u = new Usuario(usuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null, 1);
                     u.insert(db);
 
                     if (new Bodega().countBodegas(db) == 0) {
