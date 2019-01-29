@@ -21,8 +21,8 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="70dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Producto" />
+        android:hint="Producto"
+        android:inputType="textPersonName" />
 
     <RadioGroup
         android:id="@+id/frm_inventario_rbgroup_opciones"
@@ -36,6 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:checked="true"
             android:text="Código" />
 
         <RadioButton
@@ -43,6 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:checked="false"
             android:text="Lectura" />
     </RadioGroup>
 
@@ -53,15 +55,23 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="180dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Número" />
+        android:hint="Número"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/frm_inventario_btn_cargar"
+        android:layout_width="193dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="240dp"
+        android:text=" Cargar " />
 
     <TextView
         android:id="@+id/frm_inventario_lbl_cantidad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="290dp"
         android:text="Cantidad" />
 
     <EditText
@@ -69,17 +79,17 @@
         android:layout_width="326dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="270dp"
+        android:layout_marginTop="310dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Cantidad" />
+        android:hint="Cantidad"
+        android:inputType="number" />
 
     <Button
         android:id="@+id/frm_inventario_btn_aceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="80dp"
-        android:layout_marginTop="330dp"
+        android:layout_marginTop="370dp"
         android:text=" Aceptar " />
 
     <Button
@@ -87,6 +97,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="180dp"
-        android:layout_marginTop="330dp"
+        android:layout_marginTop="370dp"
         android:text="Cancelar" />
 </android.widget.RelativeLayout>

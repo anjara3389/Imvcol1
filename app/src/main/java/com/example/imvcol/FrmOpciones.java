@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -309,7 +312,6 @@ public class FrmOpciones extends AppCompatActivity {
                 } else {
                     dialogUtils.dissmissDialog();
                     fillDatabase(db, resultsDatos);
-
                 }
             }
         };
@@ -317,9 +319,10 @@ public class FrmOpciones extends AppCompatActivity {
 
         ArrayList queryDatos = new ArrayList();
 
-        String query = "SELECT r.codigo,r.descripcion,s.stock " +
+        String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno " +
                 "FROM v_referencias_sto s " +
                 "JOIN referencias r on r.codigo=s.codigo " +
+                "JOIN referencias_alt a on r.codigo=a.codigo " +
                 "WHERE s.bodega='" + currUser[2] + "' " +
                 " AND s.ano=YEAR(getdate()) " +
                 " AND s.mes=MONTH(getdate()) ";
@@ -347,14 +350,19 @@ public class FrmOpciones extends AppCompatActivity {
     }
 
     private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {
-        System.out.println("productos1" + resultsDatos.get(0));
+        //System.out.println("productos1" + resultsDatos.get(0));
         ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, this);
+
+        System.out.println("FILL" + new JSONArray((String) resultsDatos.get(0)));
+        new Producto().delete(db);
 
         for (int i = 0; i < rawProductos.size(); i++) {
             JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
-            Producto producto = new Producto(rawProducto.getString("codigo"), rawProducto.getString("descripcion"), rawProducto.getString("stock"));
+            Producto producto = new Producto(rawProducto.getString("codigo"), rawProducto.getString("descripcion"), rawProducto.getString("stock"), rawProducto.getString("alterno"));
             producto.insert(db);
         }
+
+
         BaseHelper.tryClose(db);
     }
 }

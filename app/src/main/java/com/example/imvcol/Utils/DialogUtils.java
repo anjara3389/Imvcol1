@@ -1,4 +1,4 @@
-package com.example.imvcol;
+package com.example.imvcol.Utils;
 
 import android.app.ProgressDialog;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.example.imvcol;
+package com.example.imvcol.WebserviceConnection;
 
 import android.app.Activity;
 import android.app.Dialog;

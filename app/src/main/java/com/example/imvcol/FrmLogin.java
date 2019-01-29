@@ -1,17 +1,17 @@
 package com.example.imvcol;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.strictmode.SqliteObjectLeakedViolation;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +36,7 @@ public class FrmLogin extends AppCompatActivity {
         usuario = findViewById(R.id.frm_login_txt_usuario);
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
-        final DialogUtils dialogUtils = new DialogUtils(this, "Cargando");
+        dialogUtils = new DialogUtils(this, "Cargando");
 
 
         btnIngresar.setOnClickListener(new View.OnClickListener() {
@@ -44,7 +44,7 @@ public class FrmLogin extends AppCompatActivity {
             public void onClick(final View v) {
                 try {
                     dialogUtils.showDialog(getWindow());
-                    checkUserOnWebService(v, dialogUtils);
+                    checkUserOnWebService(v);
                 } catch (CancellationException e) {
                     e.printStackTrace();
                     Toast.makeText(v.getContext(), "Operación cancelada /" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -58,7 +58,7 @@ public class FrmLogin extends AppCompatActivity {
     }
 
 
-    private void checkUserOnWebService(final View v, final DialogUtils dialogU) {
+    private void checkUserOnWebService(final View v) {
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
@@ -67,9 +67,7 @@ public class FrmLogin extends AppCompatActivity {
                     throw new Exception("No se han podido cargar el usuario, intente nuevamente");
                 }
                 if (resultAsync.get(0).equals("[]")) {
-                    //if (dialogUtils != null) {
-                    dialogU.dissmissDialog();
-                    //}
+                    dialogUtils.dissmissDialog();
                     Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
                 } else {
                     SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -104,9 +102,7 @@ public class FrmLogin extends AppCompatActivity {
             @Override
             public void receiveData(Object object) throws Exception {
                 ArrayList resultsDatos = (ArrayList) object;
-                if (dialogUtils != null) {
-                    dialogUtils.dissmissDialog();
-                }
+                dialogUtils.dissmissDialog();
                 if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
                     throw new Exception("No se han podido cargar los datos, intente nuevamente");
                 } else {
@@ -191,9 +187,7 @@ public class FrmLogin extends AppCompatActivity {
         i.putExtra("datos", resultsDatos);
         startActivityForResult(i, 1);
         BaseHelper.tryClose(db);
-        if (dialogUtils != null) {
-            dialogUtils.dissmissDialog();
-        }
+        dialogUtils.dissmissDialog();
     }
 
     private void putZeros() throws JSONException {
