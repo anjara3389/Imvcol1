@@ -1,5 +1,6 @@
 package com.example.imvcol;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.BadParcelableException;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
+import com.example.imvcol.com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONObject;
 
@@ -62,6 +65,23 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        rbLectura.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Thread.sleep(2000);
+                    if (rbLectura.isChecked()) {
+                        IntentIntegrator scanIntegrator = new IntentIntegrator(FrmInventario.this);
+                        scanIntegrator.initiateScan();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Toast.makeText(FrmInventario.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
 
 
         btnCargar.setOnClickListener(new View.OnClickListener() {
@@ -263,5 +283,20 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         Toast.makeText(FrmInventario.this, "Registro actualizado", Toast.LENGTH_LONG).show();
         BaseHelper.tryClose(db);
         limpiar();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanningResult != null) {
+
+            String scanContent = scanningResult.getContents();
+            String scanFormat = scanningResult.getFormatName();
+
+            numero.setText(scanContent);
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "No scan data received!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }
