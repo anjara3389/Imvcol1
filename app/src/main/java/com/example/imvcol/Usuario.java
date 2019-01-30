@@ -10,6 +10,8 @@ public class Usuario {
     private String currBodega;
     private String currGrupo;
     private String currSubgr;
+
+
     private String currSubgr2;
     private String currSubgr3;
     private String currClase;
@@ -69,10 +71,92 @@ public class Usuario {
         db.update("usuario", getCurrentValues(), null, null);
     }
 
-    public Object[] selectUsuario(SQLiteDatabase db) throws Exception {
+    public Usuario selectUsuario(SQLiteDatabase db) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT usuario,clave,curr_bodega,curr_grupo,curr_subgr,curr_subgr2,curr_subgr3,curr_clase,curr_conteo " +
                 "FROM usuario");
-        return sq.getRecord(db);
+
+        Object[] rawUsuario = sq.getRecord(db);
+
+        return new Usuario(rawUsuario[0].toString(),
+                rawUsuario[1].toString(),
+                rawUsuario[2].toString(),
+                rawUsuario[3].toString(),
+                rawUsuario[4] != null ? rawUsuario[4].toString() : null,
+                rawUsuario[5] != null ? rawUsuario[5].toString() : null,
+                rawUsuario[6] != null ? rawUsuario[6].toString() : null,
+                rawUsuario[7] != null ? rawUsuario[7].toString() : null,
+                Integer.parseInt(rawUsuario[8].toString()));
     }
 
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getCurrBodega() {
+        return currBodega;
+    }
+
+    public void setCurrBodega(String currBodega) {
+        this.currBodega = currBodega;
+    }
+
+    public String getCurrGrupo() {
+        return currGrupo;
+    }
+
+    public void setCurrGrupo(String currGrupo) {
+        this.currGrupo = currGrupo;
+    }
+
+    public String getCurrSubgr() {
+        return currSubgr;
+    }
+
+    public void setCurrSubgr(String currSubgr) {
+        this.currSubgr = currSubgr;
+    }
+
+    public String getCurrSubgr2() {
+        return currSubgr2;
+    }
+
+    public void setCurrSubgr2(String currSubgr2) {
+        this.currSubgr2 = currSubgr2;
+    }
+
+    public String getCurrSubgr3() {
+        return currSubgr3;
+    }
+
+    public void setCurrSubgr3(String currSubgr3) {
+        this.currSubgr3 = currSubgr3;
+    }
+
+    public String getCurrClase() {
+        return currClase;
+    }
+
+    public void setCurrClase(String currClase) {
+        this.currClase = currClase;
+    }
+
+    public int getCurrConteo() {
+        return currConteo;
+    }
+
+    public void setCurrConteo(int currConteo) {
+        this.currConteo = currConteo;
+    }
 }

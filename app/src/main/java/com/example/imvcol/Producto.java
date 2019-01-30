@@ -41,9 +41,7 @@ public class Producto {
         return sq.getRecords(db);
     }
 
-    public Object[] selectProducto(SQLiteDatabase db, String descripcion, String numero, int option) throws Exception {
-        System.out.println("DESCRIPCIOOON " + descripcion);
-        System.out.print("OPCIONNNNN" + option);
+    public Object[] selectProductByNumber(SQLiteDatabase db, String numero, int option) throws Exception {
         String query = "SELECT * " +
                 "FROM producto " +
                 "WHERE ";
@@ -61,6 +59,18 @@ public class Producto {
 
         SQLiteQuery sq = new SQLiteQuery(query);
         return sq.getRecord(db);
+    }
+
+    public Object[][] selectProductsByDescripcion(SQLiteDatabase db, String descripcion) throws Exception {
+        String query = "SELECT * " +
+                "FROM producto " +
+                "WHERE ";
+        query += "descripcion LIKE '%" + descripcion + "%' ";
+
+        System.out.println("AQUIIII QUERY " + query);
+
+        SQLiteQuery sq = new SQLiteQuery(query);
+        return sq.getRecords(db);
     }
 
     public void delete(SQLiteDatabase db) {

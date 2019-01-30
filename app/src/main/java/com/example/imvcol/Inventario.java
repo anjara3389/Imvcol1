@@ -2,12 +2,15 @@ package com.example.imvcol;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Inventario {
 
-    private Date fecha;
+    private String fecha;
     private String bodega;
     private String producto;
     private Integer conteo1;
@@ -21,7 +24,8 @@ public class Inventario {
 
     }
 
-    public Inventario(Date fecha, String bodega, String producto, Integer conteo1, String usuario1, Integer conteo2, String usuario2, Integer conteo3, String usuario3) {
+
+    public Inventario(String fecha, String bodega, String producto, Integer conteo1, String usuario1, Integer conteo2, String usuario2, Integer conteo3, String usuario3) {
         this.fecha = fecha;
         this.bodega = bodega;
         this.producto = producto;
@@ -48,7 +52,7 @@ public class Inventario {
 
     public ContentValues getValues() {
         ContentValues c = new ContentValues();
-        c.put("fecha", SQLiteQuery.dateTimeFormat.format(fecha));
+        c.put("fecha", fecha);
         c.put("bodega", bodega);
         c.put("producto", producto);
         c.put("conteo1", conteo1);
@@ -71,14 +75,99 @@ public class Inventario {
         return (int) db.insert("inventario", null, getValues());
     }
 
-    public Object[] selectInventario(SQLiteDatabase db, String producto) throws Exception {
+    public Inventario selectInventario(SQLiteDatabase db, String producto) throws Exception, ParseException {
         SQLiteQuery sq = new SQLiteQuery("SELECT fecha,bodega,producto,conteo1,usuario1,conteo2,usuario2,conteo3,usuario3 " +
                 "FROM inventario " +
                 "WHERE producto= " + producto);
-        return sq.getRecord(db);
+        Object[] rawInventario = sq.getRecord(db);
+        if (rawInventario != null && rawInventario.length > 0) {
+            return new Inventario(rawInventario[0].toString(),
+                    rawInventario[1].toString(),
+                    rawInventario[2].toString(),
+                    Integer.parseInt(rawInventario[3].toString()),
+                    rawInventario[4].toString(),
+                    rawInventario[5] != null ? Integer.parseInt(rawInventario[5].toString()) : null,
+                    rawInventario[6] != null ? rawInventario[6].toString() : null,
+                    rawInventario[7] != null ? Integer.parseInt(rawInventario[7].toString()) : null,
+                    rawInventario[8] != null ? rawInventario[8].toString() : null);
+        }
+        return null;
     }
 
     public void updateCurrent(SQLiteDatabase db, int conteo, String producto) {
         db.update("inventario", getCurrentValues(conteo), "producto=" + producto, null);
     }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getBodega() {
+        return bodega;
+    }
+
+    public void setBodega(String bodega) {
+        this.bodega = bodega;
+    }
+
+    public String getProducto() {
+        return producto;
+    }
+
+    public void setProducto(String producto) {
+        this.producto = producto;
+    }
+
+    public Integer getConteo1() {
+        return conteo1;
+    }
+
+    public void setConteo1(Integer conteo1) {
+        this.conteo1 = conteo1;
+    }
+
+    public String getUsuario1() {
+        return usuario1;
+    }
+
+    public void setUsuario1(String usuario1) {
+        this.usuario1 = usuario1;
+    }
+
+    public Integer getConteo2() {
+        return conteo2;
+    }
+
+    public void setConteo2(Integer conteo2) {
+        this.conteo2 = conteo2;
+    }
+
+    public String getUsuario2() {
+        return usuario2;
+    }
+
+    public void setUsuario2(String usuario2) {
+        this.usuario2 = usuario2;
+    }
+
+    public Integer getConteo3() {
+        return conteo3;
+    }
+
+    public void setConteo3(Integer conteo3) {
+        this.conteo3 = conteo3;
+    }
+
+    public String getUsuario3() {
+        return usuario3;
+    }
+
+    public void setUsuario3(String usuario3) {
+        this.usuario3 = usuario3;
+    }
+
 }

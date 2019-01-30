@@ -33,7 +33,7 @@ public class FrmOpciones extends AppCompatActivity {
     private ArrayList rawBodegas, rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
     private String[] dataSpnBodegas, dataSpnGrupos, dataSpnSubgrupos, dataSpnSubgrupos3, dataSpnSubgrupos2, dataSpnClases;
     private ArrayAdapter<String> adapterBodegas, adapterGrupos, adapterSubgrupos, adapterSubgrupos3, adapterSubgrupos2, adapterClases;
-    private Object[] currUser;
+    private Usuario currUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +77,9 @@ public class FrmOpciones extends AppCompatActivity {
 
                         currUser = currUsu.selectUsuario(db);
                         getWebserviceProducts(v, db);
-
-
-                        Intent i = new Intent(v.getContext(), FrmInventario.class);
-                        //i.putExtra("datos", resultsDatos);
-                        startActivityForResult(i, 1);
                     } catch (Exception e) {
                         Toast.makeText(FrmOpciones.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
                     }
                 }
             }
@@ -169,7 +165,6 @@ public class FrmOpciones extends AppCompatActivity {
                     public void onNothingSelected(AdapterView<?> spn) {
                     }
                 });
-
     }
 
     private void prepareSubgrupos(final String grupoId) {
@@ -233,6 +228,7 @@ public class FrmOpciones extends AppCompatActivity {
                             prepareSubgrupos3(grupoId, subgrupoId, ((HashMap<Integer, String>) rawSubgrupos2.get(1)).get(spnSubgrupo2.getSelectedItemPosition()));
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -304,14 +300,18 @@ public class FrmOpciones extends AppCompatActivity {
             @Override
             public void receiveData(Object object) throws Exception {
                 ArrayList resultsDatos = (ArrayList) object;
-                if (resultsDatos.get(0) == null) {
+                System.out.println("productos1" + resultsDatos.get(0));
+                ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmOpciones.this);
+                if (resultsDatos.get(0).equals("[]")) {
                     dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
-                    throw new Exception("No se han podido cargar los datos, intente nuevamente");
-
+                    Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                 } else {
+                    fillDatabase(rawProductos);
                     dialogUtils.dissmissDialog();
-                    fillDatabase(db, resultsDatos);
+                    Intent i = new Intent(v.getContext(), FrmInventario.class);
+                    //i.putExtra("datos", resultsDatos);
+                    startActivityForResult(i, 1);
                 }
             }
         };
@@ -323,37 +323,35 @@ public class FrmOpciones extends AppCompatActivity {
                 "FROM v_referencias_sto s " +
                 "JOIN referencias r on r.codigo=s.codigo " +
                 "JOIN referencias_alt a on r.codigo=a.codigo " +
-                "WHERE s.bodega='" + currUser[2] + "' " +
+                "WHERE s.bodega='" + currUser.getCurrBodega() + "' " +
                 " AND s.ano=YEAR(getdate()) " +
                 " AND s.mes=MONTH(getdate()) ";
 
-        if (currUser[3] != null) {
-            query += "AND r.grupo='4' ";
+        if (currUser.getCurrGrupo() != null) {
+            query += "AND r.grupo='" + currUser.getCurrGrupo() + "' ";
         }
-        if (currUser[4] != null) {
-            query += "AND r.subgrupo='1' ";
+        if (currUser.getCurrSubgr() != null) {
+            query += "AND r.subgrupo='" + currUser.getCurrSubgr() + "' ";
         }
-        if (currUser[5] != null) {
-            query += "AND r.subgrupo2='1' ";
+        if (currUser.getCurrSubgr2() != null) {
+            query += "AND r.subgrupo2='" + currUser.getCurrSubgr2() + "' ";
         }
-        if (currUser[6] != null) {
-            query += "AND r.subgrupo3='1' ";
+        if (currUser.getCurrSubgr3() != null) {
+            query += "AND r.subgrupo3='" + currUser.getCurrSubgr3() + "' ";
         }
-        if (currUser[7] != null) {
-            query += "AND r.clase='1'";
+        if (currUser.getCurrClase() != null) {
+            query += "AND r.clase='" + currUser.getCurrClase() + "'";
         }
 
         queryDatos.add(query);
-        System.out.println("QUERYYYYYY" + query);
+        System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);
         remote.execute();
     }
 
-    private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {
-        //System.out.println("productos1" + resultsDatos.get(0));
-        ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, this);
-
-        System.out.println("FILL" + new JSONArray((String) resultsDatos.get(0)));
+    private void fillDatabase(ArrayList rawProductos) throws JSONException {
+        SQLiteDatabase db = BaseHelper.getWritable(this);
+        System.out.println("CARGANDOOOOO" + rawProductos.get(0));
         new Producto().delete(db);
 
         for (int i = 0; i < rawProductos.size(); i++) {
@@ -361,8 +359,6 @@ public class FrmOpciones extends AppCompatActivity {
             Producto producto = new Producto(rawProducto.getString("codigo"), rawProducto.getString("descripcion"), rawProducto.getString("stock"), rawProducto.getString("alterno"));
             producto.insert(db);
         }
-
-
         BaseHelper.tryClose(db);
     }
 }

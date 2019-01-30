@@ -5,8 +5,11 @@ import android.os.BadParcelableException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -15,9 +18,10 @@ import com.example.imvcol.Utils.DialogUtils;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 
-public class FrmInventario extends AppCompatActivity {
+public class FrmInventario extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
     private EditText producto, numero, cantidad;
     private Button btnCargar, btnAceptar, btnCancelar;
@@ -25,6 +29,11 @@ public class FrmInventario extends AppCompatActivity {
     private RadioButton rbCodigo;
     private RadioButton rbLectura;
     private Object[] selectedProduct;
+    private Object[][] productos;
+    private ListView listaProductos;
+    private static final int SUMAR_CANTIDAD = 1;
+    private Usuario usuario;
+    private Inventario currentInventario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,36 +49,87 @@ public class FrmInventario extends AppCompatActivity {
         rgOpciones = findViewById(R.id.frm_inventario_rbgroup_opciones);
         rbCodigo = findViewById(R.id.frm_inventario_rbtn_codigo);
         rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
+        listaProductos = findViewById(R.id.frm_inventario_lst);
+        listaProductos.setClickable(true);
+        listaProductos.setVisibility(View.GONE);
         disableEnableAfter(false);
+
+
+        try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            BaseHelper.tryClose(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         btnCargar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    int code = rbCodigo.isChecked() ? 0 : 1;
-                    if (producto.getText() != null || numero.getText() != null) {
+                    if (producto.getText().toString() != "" && producto.getText().length() != 0) {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                        selectedProduct = new Producto().selectProducto(db, producto.getText().toString(), numero.getText().toString(), code);
-                        BaseHelper.tryClose(db);
+                        productos = new Producto().selectProductsByDescripcion(db, producto.getText().toString());
+                        if (productos.length == 0) {
+                            throw new Exception("No se encuentran coincidencias");
+                        } else {
+                            final ArrayList<String> nombres = new ArrayList();
 
-                        System.out.println("Producto " + selectedProduct[0].toString());
-                        System.out.println("Producto " + selectedProduct[1].toString());
-                        System.out.println("Producto " + selectedProduct[2].toString());
-                        System.out.println("Producto " + selectedProduct[3].toString());
+                            for (int i = 0; i < productos.length; i++) {
+                                nombres.add(productos[i][0].toString() + " - " + productos[i][1].toString());
+                            }
+                            BaseHelper.tryClose(db);
+
+                            ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(FrmInventario.this, android.R.layout.simple_list_item_1, nombres);
+                            listaProductos.setAdapter(itemsAdapter);
+                            listaProductos.setVisibility(View.VISIBLE);
+                            btnAceptar.setVisibility(View.GONE);
+                            btnCancelar.setVisibility(View.GONE);
+                            btnCargar.setVisibility(View.GONE);
+                        }
+
+                    } else if (numero.toString() != "" && numero.getText().length() != 0) {
+                        int code = rbCodigo.isChecked() ? 0 : 1;
+                        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                        selectedProduct = new Producto().selectProductByNumber(db, numero.getText().toString(), code);
+                        BaseHelper.tryClose(db);
+                        //System.out.println("Producto " + selectedProduct[0].toString());
+                        //System.out.println("Producto " + selectedProduct[1].toString());
+                        //System.out.println("Producto " + selectedProduct[2].toString());
+                        //System.out.println("Producto " + selectedProduct[3].toString());
 
                         producto.setText(selectedProduct[1].toString());
                         numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
 
                         disableEnableCargar(false);
-
                     } else {
-                        Toast.makeText(FrmInventario.this, "Introduzca un valor", Toast.LENGTH_LONG).show();
+                        throw new Exception("Introduzca un valor");
                     }
                 } catch (Exception e) {
                     Toast.makeText(FrmInventario.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
+            }
+        });
 
+        listaProductos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                if (productos != null) {
+                    int code = rbCodigo.isChecked() ? 0 : 1;
+                    selectedProduct = productos[position];
+                    listaProductos.setVisibility(View.GONE);
+                    btnAceptar.setVisibility(View.VISIBLE);
+                    btnCancelar.setVisibility(View.VISIBLE);
+                    btnCargar.setVisibility(View.VISIBLE);
+
+                    producto.setText(selectedProduct[1].toString());
+                    numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
+
+                    disableEnableCargar(false);
+                }
             }
         });
 
@@ -77,30 +137,40 @@ public class FrmInventario extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                    Object[] usu = new Usuario().selectUsuario(db);
-                    Object[] inv = new Inventario().selectInventario(db, selectedProduct[0].toString());
-                    int newCantidad = Integer.parseInt(cantidad.getText().toString());
-                    if (inv == null) {
-                        Inventario inventario = new Inventario(new Date(),
-                                usu[2].toString(),
-                                selectedProduct[0].toString(),
-                                newCantidad,
-                                usu[0].toString(),
-                                null,
-                                null,
-                                null,
-                                null);
-                        inventario.insert(db);
+                    if (cantidad.getText().toString() == "") {
+                        throw new Exception("Introducir una cantidad");
                     } else {
-                        //CONTINUAR AQUÍ
-                        int cantidad = Integer.parseInt(selectedProduct[2].toString());
-                        int numConteo = Integer.parseInt(usu[8].toString());
-                        Inventario i = new Inventario(numConteo, cantidad, usu[0].toString());
-                        i.updateCurrent(db, numConteo, selectedProduct[0].toString());
+                        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                        currentInventario = new Inventario().selectInventario(db, selectedProduct[0].toString());
+                        int newCantidad = Integer.parseInt(cantidad.getText().toString());
+                        if (currentInventario == null) {
+                            Inventario inventario = new Inventario(new Date().toString(),
+                                    usuario.getCurrBodega(),
+                                    selectedProduct[0].toString(),
+                                    newCantidad,
+                                    usuario.getUsuario(),
+                                    null,
+                                    null,
+                                    null,
+                                    null);
+                            inventario.insert(db);
+                            Toast.makeText(FrmInventario.this, "Registro insertado", Toast.LENGTH_LONG).show();
+                            limpiar();
+                        } else {
+                            if ((usuario.getCurrConteo() == 1 && currentInventario.getConteo1() != null) ||
+                                    (usuario.getCurrConteo() == 2 && currentInventario.getConteo2() != null) ||
+                                    (usuario.getCurrConteo() == 3 && currentInventario.getConteo3() != null)) {
+                                YesNoDialogFragment dial = new YesNoDialogFragment();
+                                dial.setInfo(FrmInventario.this, FrmInventario.this, "Sumar cantidad", "Producto contabilizado anteriormente, ¿Desea sumar la cantidad introducida?", SUMAR_CANTIDAD);
+                                dial.show(getSupportFragmentManager(), "MyDialog");
+                            } else {
+                                updateCantidad(0);
+                                limpiar();
+                                Toast.makeText(FrmInventario.this, "Registro insertado", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        db.close();
                     }
-                    limpiar();
-                    db.close();
                 } catch (Exception e) {
                     Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
@@ -124,7 +194,6 @@ public class FrmInventario extends AppCompatActivity {
         rbLectura.setChecked(false);
         disableEnableCargar(true);
     }
-
 
     private void disableEnableCargar(boolean enable) {
         producto.setFocusable(enable);
@@ -168,5 +237,31 @@ public class FrmInventario extends AppCompatActivity {
         btnAceptar.setFocusable(enable);
         btnAceptar.setFocusableInTouchMode(enable);
         btnAceptar.setClickable(enable);
+    }
+
+    @Override
+    public void onFinishDialog(boolean ans, int code) {
+        if (ans == true) {
+            if (code == SUMAR_CANTIDAD) {
+                updateCantidad(Integer.parseInt(cantidad.getText().toString()));
+            }
+        }
+    }
+
+    public void updateCantidad(int cant) {
+        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+
+        if (usuario.getCurrConteo() == 1) {
+            currentInventario.setConteo1(currentInventario.getConteo1() + cant);
+        } else if (usuario.getCurrConteo() == 2) {
+            currentInventario.setConteo2(currentInventario.getConteo2() + cant);
+        } else {
+            currentInventario.setConteo3(currentInventario.getConteo3() + cant);
+        }
+
+        currentInventario.updateCurrent(db, usuario.getCurrConteo(), selectedProduct[0].toString());
+        Toast.makeText(FrmInventario.this, "Registro actualizado", Toast.LENGTH_LONG).show();
+        BaseHelper.tryClose(db);
+        limpiar();
     }
 }
