@@ -1,5 +1,6 @@
 package com.example.imvcol;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.BadParcelableException;
@@ -18,9 +19,12 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
 import com.example.imvcol.com.google.zxing.integration.android.IntentResult;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -37,8 +41,11 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     private Object[][] productos;
     private ListView listaProductos;
     private static final int SUMAR_CANTIDAD = 1;
+    private static final int FINALIZAR_CONTEO = 2;
+    private static final int FINALIZAR_INVENTARIO = 3;
     private Usuario usuario;
     private Inventario currentInventario;
+    DialogUtils dialogUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +223,28 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         return true;
     }
 
+    private void cambiarConteo() throws Exception {
+        YesNoDialogFragment dial = new YesNoDialogFragment();
+        dial.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario?", FINALIZAR_CONTEO);
+        dial.show(getSupportFragmentManager(), "MyDialog");
+        if (usuario.getCurrConteo() != 3) {
+            SQLiteDatabase db = BaseHelper.getWritable(this);
+            usuario.setCurrConteo(usuario.getCurrConteo() + 1);
+            usuario.updateCurrent(db);
+            db.close();
+            Toast.makeText(this, "Conteo acutalizado", Toast.LENGTH_LONG).show();
+        } else {
+            throw new Exception("Se pueden realizar solamente 3 conteos");
+        }
+    }
+
+    private void finalizarInventario() throws Exception {
+        YesNoDialogFragment dial = new YesNoDialogFragment();
+        dial.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario?", FINALIZAR_INVENTARIO);
+        dial.show(getSupportFragmentManager(), "MyDialog");
+    }
+
+
     private void limpiar() {
         selectedProduct = null;
         producto.setText("");
@@ -309,5 +338,51 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     "No scan data received!", Toast.LENGTH_SHORT);
             toast.show();
         }
+    }
+
+    private void insertResultsOnWebservice(final View v, final SQLiteDatabase db) throws Exception {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) throws Exception {
+                Toast.makeText(FrmInventario.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                /*ArrayList resultsDatos = (ArrayList) object;
+                System.out.println("productos1" + resultsDatos.get(0));
+                ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmOpciones.this);
+                if (resultsDatos.get(0).equals("[]")) {
+                    dialogUtils.dissmissDialog();
+                    BaseHelper.tryClose(db);
+                    Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
+                } else {
+                    fillDatabase(rawProductos);
+                    dialogUtils.dissmissDialog();
+                    Intent i = new Intent(v.getContext(), FrmInventario.class);
+                    //i.putExtra("datos", resultsDatos);
+                    startActivityForResult(i, 1);
+                }*/
+            }
+        };
+        remote.setContext(v.getContext());
+
+        ArrayList queryDatos = new ArrayList();
+        ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
+
+        for (int i = 0; i < inventarios.size(); i++) {
+            Inventario inventario = inventarios.get(i);
+            String query = "UPDATE referencias_fis SET " +
+                    "toma_1=" + inventario.getConteo1() + " " +
+                    "usu_toma_1=" + inventario.getUsuario1() + " " +
+                    "toma_2=" + inventario.getConteo2() + " " +
+                    "usu_toma_2=" + inventario.getUsuario1() + " " +
+                    "toma_3=" + inventario.getConteo3() + "" +
+                    "usu_toma_3=" + inventario.getUsuario3() + " " +
+                    "fecha_ultima=" + inventario.getFecha() + " " +
+                    "WHERE codigo=" + inventario.getProducto() + " " +
+                    "AND bodega=" + inventario.getBodega() + " ";
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+        }
+
+        remote.setQuery(queryDatos);
+        remote.execute();
     }
 }

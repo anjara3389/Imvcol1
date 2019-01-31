@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Inventario {
@@ -80,6 +81,7 @@ public class Inventario {
                 "FROM inventario " +
                 "WHERE producto= " + producto);
         Object[] rawInventario = sq.getRecord(db);
+
         if (rawInventario != null && rawInventario.length > 0) {
             return new Inventario(rawInventario[0].toString(),
                     rawInventario[1].toString(),
@@ -90,6 +92,48 @@ public class Inventario {
                     rawInventario[6] != null ? rawInventario[6].toString() : null,
                     rawInventario[7] != null ? Integer.parseInt(rawInventario[7].toString()) : null,
                     rawInventario[8] != null ? rawInventario[8].toString() : null);
+        }
+        return null;
+    }
+
+    public ArrayList<Inventario> selectInventarios(SQLiteDatabase db) throws Exception, ParseException {
+        SQLiteQuery sq = new SQLiteQuery("SELECT fecha,bodega,producto,conteo1,usuario1,conteo2,usuario2,conteo3,usuario3 " +
+                "FROM inventario ");
+        Object[][] rawInventario = sq.getRecords(db);
+
+        return getInventarios(rawInventario);
+    }
+
+    public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia) throws Exception, ParseException {
+        SQLiteQuery sq = new SQLiteQuery("SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
+                "FROM inventario i " +
+                "INNER JOIN producto p on p.producto=i.producto " +
+                (diferencia ? "WHERE p.cantidad!=i.conteo1 " +
+                        "AND p.cantidad!=i.conteo2 " +
+                        "AND p.cantidad!=i.conteo3" : ""));
+        Object[][] rawInventario = sq.getRecords(db);
+
+        return rawInventario;
+    }
+
+
+    private ArrayList<Inventario> getInventarios(Object[][] rawInventario) {
+        ArrayList<Inventario> inventarios = new ArrayList<>();
+        if (rawInventario != null && rawInventario.length > 0) {
+            for (int i = 0; i < rawInventario.length; i++) {
+                for (int j = 0; j < rawInventario[0].length; j++) {
+                    inventarios.add(new Inventario(rawInventario[i][j].toString(),
+                            rawInventario[i][j].toString(),
+                            rawInventario[i][j].toString(),
+                            Integer.parseInt(rawInventario[3][j].toString()),
+                            rawInventario[i][j].toString(),
+                            rawInventario[i][j] != null ? Integer.parseInt(rawInventario[5].toString()) : null,
+                            rawInventario[i][j] != null ? rawInventario[6].toString() : null,
+                            rawInventario[i][j] != null ? Integer.parseInt(rawInventario[7].toString()) : null,
+                            rawInventario[i][j] != null ? rawInventario[8].toString() : null));
+                }
+            }
+            return inventarios;
         }
         return null;
     }

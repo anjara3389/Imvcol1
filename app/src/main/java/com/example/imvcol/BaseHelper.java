@@ -10,7 +10,7 @@ public class BaseHelper extends SQLiteOpenHelper {
     private static BaseHelper sInstance;
 
     private static final String DATABASE_NAME = "imvcol";
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
     String bodega = "CREATE TABLE bodega(bodega TEXT,descripcion TEXT)";
     String grupo = "CREATE TABLE grupo(grupo TEXT,descripcion TEXT)";
     String clase = "CREATE TABLE clase(clase TEXT,descripcion TEXT)";
@@ -19,7 +19,7 @@ public class BaseHelper extends SQLiteOpenHelper {
     String subgrupo2 = "CREATE TABLE subgrupo2(subgrupo2 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT)";
     String subgrupo3 = "CREATE TABLE subgrupo3(subgrupo3 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT,subgrupo2 TEXT)";
     String producto = "CREATE TABLE producto(producto TEXT,descripcion TEXT, cantidad INTEGER,barras TEXT)";
-    String inventario = "CREATE TABLE inventario(fecha TEXT,bodega TEXT,producto INTEGER,conteo1 INT,usuario1 TEXT,conteo2 INT,usuario2,conteo3 INT,usuario3)";
+    String inventario = "CREATE TABLE inventario(fecha TEXT,bodega TEXT,producto TEXT,conteo1 INT,usuario1 TEXT,conteo2 INT,usuario2,conteo3 INT,usuario3)";
 
 
     private BaseHelper(Context context) {
