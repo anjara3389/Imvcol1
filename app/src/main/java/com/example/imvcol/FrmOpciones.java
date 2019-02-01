@@ -312,6 +312,7 @@ public class FrmOpciones extends AppCompatActivity {
                     Intent i = new Intent(v.getContext(), FrmInventario.class);
                     //i.putExtra("datos", resultsDatos);
                     startActivityForResult(i, 1);
+                    finish();
                 }
             }
         };

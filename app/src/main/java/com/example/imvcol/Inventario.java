@@ -96,6 +96,14 @@ public class Inventario {
         return null;
     }
 
+    public void insertProductsNotOnInventario(SQLiteDatabase db, String bodega, String fecha) throws Exception {
+        Object[][] productos = new Producto().selectProductsNotOnInventario(db);
+        for (int i = 0; i < productos.length; i++) {
+            Inventario inventario = new Inventario(fecha, bodega, productos[i][0].toString(), null, null, null, null, null, null);
+            inventario.insert(db);
+        }
+    }
+
     public ArrayList<Inventario> selectInventarios(SQLiteDatabase db) throws Exception, ParseException {
         SQLiteQuery sq = new SQLiteQuery("SELECT fecha,bodega,producto,conteo1,usuario1,conteo2,usuario2,conteo3,usuario3 " +
                 "FROM inventario ");
@@ -106,14 +114,18 @@ public class Inventario {
 
     public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia) throws Exception, ParseException {
         SQLiteQuery sq = new SQLiteQuery("SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
-                "FROM inventario i " +
-                "INNER JOIN producto p on p.producto=i.producto " +
-                (diferencia ? "WHERE p.cantidad!=i.conteo1 " +
+                "FROM producto p " +
+                "LEFT JOIN inventario i on p.producto=i.producto " +
+                (diferencia ? "WHERE (p.cantidad!=i.conteo1 " +
                         "AND p.cantidad!=i.conteo2 " +
-                        "AND p.cantidad!=i.conteo3" : ""));
+                        "AND p.cantidad!=i.conteo3)" : ""));
         Object[][] rawInventario = sq.getRecords(db);
 
         return rawInventario;
+    }
+
+    public void delete(SQLiteDatabase db) {
+        db.execSQL("DELETE FROM usuario");
     }
 
 

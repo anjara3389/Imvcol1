@@ -4,12 +4,16 @@ package com.example.imvcol;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+
+import java.io.File;
 
 public class BaseHelper extends SQLiteOpenHelper {
 
     private static BaseHelper sInstance;
 
     private static final String DATABASE_NAME = "imvcol";
+
     public static final int VERSION = 8;
     String bodega = "CREATE TABLE bodega(bodega TEXT,descripcion TEXT)";
     String grupo = "CREATE TABLE grupo(grupo TEXT,descripcion TEXT)";
@@ -22,13 +26,17 @@ public class BaseHelper extends SQLiteOpenHelper {
     String inventario = "CREATE TABLE inventario(fecha TEXT,bodega TEXT,producto TEXT,conteo1 INT,usuario1 TEXT,conteo2 INT,usuario2,conteo3 INT,usuario3)";
 
 
-    private BaseHelper(Context context) {
+    private BaseHelper(Context context, String path) {
         super(context, DATABASE_NAME, null, VERSION, null);
     }
 
     public static synchronized BaseHelper getInstance(Context context) {
         if (sInstance == null) {
-            sInstance = new BaseHelper(context.getApplicationContext());
+            //String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/invcol/";
+            //File dir = new File(path);
+            //dir.mkdirs();
+            //context.getFilesDir().getAbsolutePath()
+            sInstance = new BaseHelper(context.getApplicationContext(), "");
         }
         return sInstance;
     }
@@ -74,6 +82,5 @@ public class BaseHelper extends SQLiteOpenHelper {
             db.close();
         }
     }
-
 }
 

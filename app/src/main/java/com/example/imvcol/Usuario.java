@@ -77,15 +77,19 @@ public class Usuario {
 
         Object[] rawUsuario = sq.getRecord(db);
 
-        return new Usuario(rawUsuario[0].toString(),
-                rawUsuario[1].toString(),
-                rawUsuario[2].toString(),
-                rawUsuario[3].toString(),
-                rawUsuario[4] != null ? rawUsuario[4].toString() : null,
-                rawUsuario[5] != null ? rawUsuario[5].toString() : null,
-                rawUsuario[6] != null ? rawUsuario[6].toString() : null,
-                rawUsuario[7] != null ? rawUsuario[7].toString() : null,
-                Integer.parseInt(rawUsuario[8].toString()));
+        if (rawUsuario != null && rawUsuario.length > 0) {
+            return new Usuario(rawUsuario[0].toString(),
+                    rawUsuario[1].toString(),
+                    rawUsuario[2] != null ? rawUsuario[2].toString() : null,
+                    rawUsuario[2] != null ? rawUsuario[3].toString() : null,
+                    rawUsuario[4] != null ? rawUsuario[4].toString() : null,
+                    rawUsuario[5] != null ? rawUsuario[5].toString() : null,
+                    rawUsuario[6] != null ? rawUsuario[6].toString() : null,
+                    rawUsuario[7] != null ? rawUsuario[7].toString() : null,
+                    Integer.parseInt(rawUsuario[8].toString()));
+        } else {
+            return null;
+        }
     }
 
     public String getUsuario() {

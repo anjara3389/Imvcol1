@@ -38,5 +38,8 @@ public class Clase {
                 "FROM clase");
         return sq.getRecords(db);
     }
+    public void delete(SQLiteDatabase db) {
+        db.execSQL("DELETE FROM clase");
+    }
 
 }

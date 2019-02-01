@@ -30,6 +30,9 @@ public class Bodega {
         SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM bodega");
         return sq.getInteger(db);
     }
+    public void delete(SQLiteDatabase db) {
+        db.execSQL("DELETE FROM bodega");
+    }
 
     public int insert(SQLiteDatabase db) {
         return (int) db.insert("bodega", null, getValues());

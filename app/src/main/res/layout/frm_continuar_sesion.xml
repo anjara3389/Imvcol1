@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FrmContinuarSesion">
+
+    <Button
+        android:id="@+id/frm_continuar_sesion_btn_cerrar_sesion"
+        android:layout_width="282dp"
+        android:layout_height="36dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginTop="290dp"
+        android:text="Cerrar sesión" />
+
+    <Button
+        android:id="@+id/frm_continuar_sesion_btn_continuar"
+        android:layout_width="282dp"
+        android:layout_height="36dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginTop="250dp"
+        android:text="Continuar" />
+
+    <TextView
+        android:id="@+id/frm_continuar_sesion_texto2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="150dp"
+        android:text="Usted ya tiene una sesión iniciada. "
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="120dp"
+        tools:layout_editor_absoluteY="257dp" />
+
+</RelativeLayout>

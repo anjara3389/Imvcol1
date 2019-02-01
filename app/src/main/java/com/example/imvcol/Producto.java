@@ -73,6 +73,18 @@ public class Producto {
         return sq.getRecords(db);
     }
 
+    public Object[][] selectProductsNotOnInventario(SQLiteDatabase db) throws Exception {
+        String query = "SELECT p.producto " +
+                "FROM producto p " +
+                "WHERE p.producto NOT IN " +
+                "(SELECT i.producto " +
+                "FROM inventario i) ";
+        System.out.println("AQUIIII QUERY " + query);
+
+        SQLiteQuery sq = new SQLiteQuery(query);
+        return sq.getRecords(db);
+    }
+
     public void delete(SQLiteDatabase db) {
         db.execSQL("DELETE FROM producto");
     }

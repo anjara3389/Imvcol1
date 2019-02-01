@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public abstract class  ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
+public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
 
     private ArrayList query;
     private Context ctx;
@@ -51,8 +51,9 @@ public abstract class  ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayL
         try {
 
             for (int i = 0; i < query.size(); i++) {
-
                 URL url = new URL("http://190.66.24.90:4111/w1/webservices.php");
+                //"http://190.66.24.90:4111/w1/webservices.php"
+                //http://192.68.1.217/w1/webservices.php
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
 
@@ -62,6 +63,7 @@ public abstract class  ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayL
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
                 con.setDoOutput(true);
                 String urlParameters = (String) query.get(i);
+                System.out.println("CONECTÓ!!!");
 
                 // Envía post request
 
@@ -75,7 +77,7 @@ public abstract class  ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayL
                 if (responseCode != 200) {
                     throw new Exception("Error " + responseCode);
                 } else {
-                    System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices.php");
+                    System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices_copia.php");
                     System.out.println("Post parameters : " + urlParameters);
                     System.out.println("Response Code : " + responseCode);
 
@@ -107,13 +109,16 @@ public abstract class  ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayL
     }
 
     protected void onPostExecute(ArrayList result) {
-        if(result!=null)
-        {
-            try {
+        try {
+            if (result != null) {
                 receiveData(result);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                throw new Exception("Datos vacíos");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(ctx, "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
+
 }

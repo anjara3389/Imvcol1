@@ -47,4 +47,7 @@ public class Subgrupo3 {
                 "FROM subgrupo3");
         return sq.getRecords(db);
     }
+    public void delete(SQLiteDatabase db) {
+        db.execSQL("DELETE FROM subgrupo3");
+    }
 }

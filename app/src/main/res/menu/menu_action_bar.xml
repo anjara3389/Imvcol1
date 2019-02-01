@@ -3,12 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="60px">
     <item
+        android:id="@+id/action_diferencias"
+        android:title="Diferencias"></item>
+    <item
+        android:id="@+id/action_totales"
+        android:title="Totales"></item>
+    <item
         android:id="@+id/action_finalizar_conteo"
         android:title="Finalizar conteo"></item>
     <item
-        android:id="@+id/action_share"
-        android:title="Totales"></item>
+        android:id="@+id/action_finalizar_inventario"
+        android:title="Finalizar inventario"></item>
     <item
-        android:id="@+id/action_share"
-        android:title="Diferencias"></item>
+        android:id="@+id/action_cerrar_sesion"
+        android:title="Cerrar sesión"></item>
 </menu>

@@ -188,6 +188,7 @@ public class FrmLogin extends AppCompatActivity {
         startActivityForResult(i, 1);
         BaseHelper.tryClose(db);
         dialogUtils.dissmissDialog();
+        finish();
     }
 
     private void putZeros() throws JSONException {
