@@ -67,8 +67,17 @@ public class Inventario {
 
     public ContentValues getCurrentValues(int conteo) {
         ContentValues c = new ContentValues();
-        c.put("conteo" + conteo, (conteo == 1 ? conteo1 : (conteo == 2 ? conteo2 : conteo3)));
-        c.put("usuario" + conteo, (conteo == 1 ? usuario1 : (conteo == 2 ? usuario2 : usuario3)));
+
+        if (conteo == 1) {
+            c.put("conteo1", conteo1);
+            c.put("usuario1", usuario1);
+        } else if (conteo == 2) {
+            c.put("conteo2", conteo2);
+            c.put("usuario2", usuario2);
+        } else {
+            c.put("conteo3", conteo3);
+            c.put("usuario3", usuario3);
+        }
         return c;
     }
 

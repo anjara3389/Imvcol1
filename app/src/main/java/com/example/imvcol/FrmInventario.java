@@ -210,7 +210,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                                 dial.setInfo(FrmInventario.this, FrmInventario.this, "Sumar cantidad", "Producto contabilizado anteriormente, ¿Desea sumar la cantidad introducida?", SUMAR_CANTIDAD);
                                 dial.show(getSupportFragmentManager(), "MyDialog");
                             } else {
-                                updateCantidad(0);
+                                updateCantidad(total);
                                 limpiar();
                                 Toast.makeText(FrmInventario.this, "Registro insertado", Toast.LENGTH_LONG).show();
                             }
@@ -234,13 +234,15 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     private void prepareFaltantesSpinner() throws Exception {
         final SQLiteDatabase db = BaseHelper.getReadable(this);
         Object[][] falta = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo());
-        wholeFaltantes = new Object[falta != null ? falta.length : 0 + 1][2];
+        wholeFaltantes = new Object[falta != null ? falta.length + 1 : 0 + 1][2];
         wholeFaltantes[0][0] = "-1";
         wholeFaltantes[0][1] = "Seleccione un producto";
 
-        for (int i = 0; i < falta.length; i++) {
-            for (int j = 0; j < falta[0].length; j++) {
-                wholeFaltantes[i + 1][j] = falta[i][j];
+        if (falta != null) {
+            for (int i = 0; i < falta.length; i++) {
+                for (int j = 0; j < falta[0].length; j++) {
+                    wholeFaltantes[i + 1][j] = falta[i][j];
+                }
             }
         }
 
@@ -452,16 +454,24 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     public void updateCantidad(int cant) {
         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+        System.out.println("////CURRENT CONTEO" + usuario.getCurrConteo());
+
 
         if (usuario.getCurrConteo() == 1) {
             int cantidadConteo = currentInventario.getConteo1() == null ? 0 : currentInventario.getConteo1();
             currentInventario.setConteo1(cantidadConteo + cant);
+            currentInventario.setUsuario1(usuario.getUsuario());
+            System.out.println("////currentInventario.getConteo1()" + currentInventario.getConteo1());
         } else if (usuario.getCurrConteo() == 2) {
             int cantidadConteo = currentInventario.getConteo2() == null ? 0 : currentInventario.getConteo2();
             currentInventario.setConteo2(cantidadConteo + cant);
+            currentInventario.setUsuario2(usuario.getUsuario());
+            System.out.println("////currentInventario.getConteo2()" + currentInventario.getConteo2());
         } else {
             int cantidadConteo = currentInventario.getConteo3() == null ? 0 : currentInventario.getConteo3();
+            System.out.println("////currentInventario.getConteo3()" + currentInventario.getConteo3());
             currentInventario.setConteo3(cantidadConteo + cant);
+            currentInventario.setUsuario3(usuario.getUsuario());
         }
 
         currentInventario.updateCurrent(db, usuario.getCurrConteo(), selectedProduct[0].toString());
@@ -560,6 +570,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     if (validar == true) {
                         new Usuario().delete(db);
                         new Inventario().delete(db);
+                        new Bodega().delete(db);
                         new Producto().delete(db);
                         new Grupo().delete(db);
                         new Subgrupo().delete(db);
