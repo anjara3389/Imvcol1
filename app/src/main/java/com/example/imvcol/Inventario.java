@@ -96,11 +96,13 @@ public class Inventario {
         return null;
     }
 
-    public void insertProductsNotOnInventario(SQLiteDatabase db, String bodega, String fecha) throws Exception {
-        Object[][] productos = new Producto().selectProductsNotOnInventario(db);
-        for (int i = 0; i < productos.length; i++) {
-            Inventario inventario = new Inventario(fecha, bodega, productos[i][0].toString(), null, null, null, null, null, null);
-            inventario.insert(db);
+    public void insertProductsNotOnInventario(SQLiteDatabase db, String bodega, String fecha, String usuario) throws Exception {
+        Object[][] productos = new Producto().selectProductsNotOnInventario(db, null);
+        if (productos != null) {
+            for (int i = 0; i < productos.length; i++) {
+                Inventario inventario = new Inventario(fecha, bodega, productos[i][0].toString(), null, usuario, null, usuario, null, usuario);
+                inventario.insert(db);
+            }
         }
     }
 
@@ -133,17 +135,16 @@ public class Inventario {
         ArrayList<Inventario> inventarios = new ArrayList<>();
         if (rawInventario != null && rawInventario.length > 0) {
             for (int i = 0; i < rawInventario.length; i++) {
-                for (int j = 0; j < rawInventario[0].length; j++) {
-                    inventarios.add(new Inventario(rawInventario[i][j].toString(),
-                            rawInventario[i][j].toString(),
-                            rawInventario[i][j].toString(),
-                            Integer.parseInt(rawInventario[3][j].toString()),
-                            rawInventario[i][j].toString(),
-                            rawInventario[i][j] != null ? Integer.parseInt(rawInventario[5].toString()) : null,
-                            rawInventario[i][j] != null ? rawInventario[6].toString() : null,
-                            rawInventario[i][j] != null ? Integer.parseInt(rawInventario[7].toString()) : null,
-                            rawInventario[i][j] != null ? rawInventario[8].toString() : null));
-                }
+                inventarios.add(new Inventario(rawInventario[i][0].toString(),
+                        rawInventario[i][1].toString(),
+                        rawInventario[i][2].toString(),
+                        rawInventario[i][3] != null ? Integer.parseInt(rawInventario[i][3].toString()) : null,
+                        rawInventario[i][4] != null ? rawInventario[i][4].toString() : null,
+                        rawInventario[i][5] != null ? Integer.parseInt(rawInventario[i][5].toString()) : null,
+                        rawInventario[i][6] != null ? rawInventario[i][6].toString() : null,
+                        rawInventario[i][7] != null ? Integer.parseInt(rawInventario[i][7].toString()) : null,
+                        rawInventario[i][8] != null ? rawInventario[i][8].toString() : null));
+
             }
             return inventarios;
         }

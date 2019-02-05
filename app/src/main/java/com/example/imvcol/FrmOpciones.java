@@ -84,28 +84,28 @@ public class FrmOpciones extends AppCompatActivity {
                 }
             }
         });
-
         try {
-            Bundle bundle = getIntent().getExtras();
-            datos = bundle.getParcelableArrayList("datos");
-
-
-            wholeBodegas = (Object[][]) datos.get(0);
-            wholeGrupos = (Object[][]) datos.get(1);
-            wholeSubgrupos = (Object[][]) datos.get(2);
-            wholeSubgrupos2 = (Object[][]) datos.get(3);
-            wholeSubgrupos3 = (Object[][]) datos.get(4);
-            wholeClases = (Object[][]) datos.get(5);
-            System.out.println("BODEGAS/////////////////////" + wholeBodegas[0][0]);
-            System.out.println("BODEGAS/////////////////////" + wholeBodegas[0][1]);
-
-            prepareBodegas();
-            prepareClases();
-            prepareGrupos();
+            SQLiteDatabase db = BaseHelper.getReadable(this);
+            wholeBodegas = new Bodega().selectBodegas(db);
+            wholeGrupos = new Grupo().selectGrupos(db);
+            wholeSubgrupos = new Subgrupo().selectSubgrupos(db);
+            wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);
+            wholeSubgrupos3 = new Subgrupo3().selectSubgrupos3(db);
+            wholeClases = new Clase().selectClases(db);
+//            System.out.println("wholeClases/////////////////////" + wholeClases[0][0]);
+            //          System.out.println("wholeClases/////////////////////" + wholeClases[0][1]);
+            if (wholeBodegas != null && wholeGrupos != null && wholeSubgrupos != null) {
+                prepareBodegas();
+                prepareClases();
+                prepareGrupos();
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 

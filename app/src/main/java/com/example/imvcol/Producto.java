@@ -73,12 +73,18 @@ public class Producto {
         return sq.getRecords(db);
     }
 
-    public Object[][] selectProductsNotOnInventario(SQLiteDatabase db) throws Exception {
-        String query = "SELECT p.producto " +
+    public Object[][] selectProductsNotOnInventario(SQLiteDatabase db, Integer conteo) throws Exception {
+
+        String condition = conteo == null ? "" : (conteo == 1 ? "WHERE i.conteo1 IS NOT NULL " : (conteo == 2 ? "WHERE i.conteo2 IS NOT NULL " : (conteo == 3 ? "WHERE i.conteo3 IS NOT NULL " : "")));
+
+        String query = "SELECT p.producto,p.descripcion " +
                 "FROM producto p " +
                 "WHERE p.producto NOT IN " +
                 "(SELECT i.producto " +
-                "FROM inventario i) ";
+                "FROM inventario i " +
+                condition +
+                ") " +
+                "ORDER BY p.descripcion";
         System.out.println("AQUIIII QUERY " + query);
 
         SQLiteQuery sq = new SQLiteQuery(query);

@@ -42,6 +42,8 @@ public class FrmLogin extends AppCompatActivity {
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                String pathDatabase = getDatabasePath("imvcol.db").getAbsolutePath();
+                Toast.makeText(v.getContext(), pathDatabase, Toast.LENGTH_LONG).show();
                 try {
                     dialogUtils.showDialog(getWindow());
                     checkUserOnWebService(v);
@@ -79,7 +81,12 @@ public class FrmLogin extends AppCompatActivity {
                     if (new Bodega().countBodegas(db) == 0) {
                         getWebserviceData(v, db);
                     } else {
-                        getDataFromDB(db, v);
+                        Intent i = new Intent(v.getContext(), FrmOpciones.class);
+                        // i.putExtra("datos", resultsDatos);
+                        startActivityForResult(i, 1);
+                        BaseHelper.tryClose(db);
+                        dialogUtils.dissmissDialog();
+                        finish();
                     }
                 }
             }
@@ -107,7 +114,6 @@ public class FrmLogin extends AppCompatActivity {
                     throw new Exception("No se han podido cargar los datos, intente nuevamente");
                 } else {
                     fillDatabase(db, resultsDatos);
-                    getDataFromDB(db, v);
                 }
             }
         };
@@ -172,24 +178,16 @@ public class FrmLogin extends AppCompatActivity {
             Clase clase = new Clase(rawClase.getString("clase"), rawClase.getString("descripcion"));
             clase.insert(db);
         }
-    }
 
-    private void getDataFromDB(SQLiteDatabase db, View v) throws Exception {
-        ArrayList resultsDatos = new ArrayList<>();
-        resultsDatos.add(new Bodega().selectBodegas(db));
-        resultsDatos.add(new Grupo().selectGrupos(db));
-        resultsDatos.add(new Subgrupo().selectSubgrupos(db));
-        resultsDatos.add(new Subgrupo2().selectSubgrupos2(db));
-        resultsDatos.add(new Subgrupo3().selectSubgrupos3(db));
-        resultsDatos.add(new Clase().selectClases(db));
-
-        Intent i = new Intent(v.getContext(), FrmOpciones.class);
-        i.putExtra("datos", resultsDatos);
+        Intent i = new Intent(this, FrmOpciones.class);
+        // i.putExtra("datos", resultsDatos);
         startActivityForResult(i, 1);
         BaseHelper.tryClose(db);
         dialogUtils.dissmissDialog();
         finish();
     }
+
+
 
     private void putZeros() throws JSONException {
         zeroBodega = new JSONObject();

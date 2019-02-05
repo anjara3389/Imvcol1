@@ -51,7 +51,7 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
         try {
 
             for (int i = 0; i < query.size(); i++) {
-                URL url = new URL("http://190.66.24.90:4111/w1/webservices.php");
+                URL url = new URL("http://190.66.24.90:4111/w1/webservices_copia.php");
                 //"http://190.66.24.90:4111/w1/webservices.php"
                 //http://192.68.1.217/w1/webservices.php
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();

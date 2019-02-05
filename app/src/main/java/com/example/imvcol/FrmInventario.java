@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
@@ -29,8 +30,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class FrmInventario extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
@@ -48,7 +53,14 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     private static final int CERRAR_SESION = 4;
     private Usuario usuario;
     private Inventario currentInventario;
-    DialogUtils dialogUtils;
+    private DialogUtils dialogUtils;
+    private Spinner spnFaltantes;
+    private HashMap<Integer, String> mapFaltantes;
+
+    private Object[][] wholeFaltantes;
+    private ArrayList rawFaltantes;
+    private String[] dataSpnFaltantes;
+    private ArrayAdapter<String> adapterFaltantes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +76,19 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         rgOpciones = findViewById(R.id.frm_inventario_rbgroup_opciones);
         rbCodigo = findViewById(R.id.frm_inventario_rbtn_codigo);
         rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
+        spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
         listaProductos = findViewById(R.id.frm_inventario_lst);
         listaProductos.setClickable(true);
         listaProductos.setVisibility(View.GONE);
         disableEnableAfter(false);
-
-
         try {
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
+            prepareFaltantesSpinner();
             BaseHelper.tryClose(db);
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(FrmInventario.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         rbLectura.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +97,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 if (rbLectura.isChecked()) {
                     IntentIntegrator scanIntegrator = new IntentIntegrator(FrmInventario.this);
                     scanIntegrator.initiateScan();
-
                 }
             }
         });
@@ -168,12 +180,20 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     } else {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                         currentInventario = new Inventario().selectInventario(db, selectedProduct[0].toString());
-                        int newCantidad = Integer.parseInt(cantidad.getText().toString());
+
+                        String rawCantidad = cantidad.getText().toString().replaceAll("\\+", "+");
+                        String[] parts = rawCantidad.replace(" ", "").split("\\+");
+                        int total = 0;
+
+                        for (int i = 0; i < parts.length; i++) {
+                            total += Integer.parseInt(parts[i]);
+                        }
+
                         if (currentInventario == null) {
                             Inventario inventario = new Inventario(new Date().toString(),
                                     usuario.getCurrBodega(),
                                     selectedProduct[0].toString(),
-                                    newCantidad,
+                                    total,
                                     usuario.getUsuario(),
                                     null,
                                     null,
@@ -210,6 +230,62 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             }
         });
     }
+
+    private void prepareFaltantesSpinner() throws Exception {
+        final SQLiteDatabase db = BaseHelper.getReadable(this);
+        Object[][] falta = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo());
+        wholeFaltantes = new Object[falta != null ? falta.length : 0 + 1][2];
+        wholeFaltantes[0][0] = "-1";
+        wholeFaltantes[0][1] = "Seleccione un producto";
+
+        for (int i = 0; i < falta.length; i++) {
+            for (int j = 0; j < falta[0].length; j++) {
+                wholeFaltantes[i + 1][j] = falta[i][j];
+            }
+        }
+
+        rawFaltantes = ArrayUtils.mapObjects(wholeFaltantes);
+
+        mapFaltantes = (HashMap<Integer, String>) rawFaltantes.get(1);
+        dataSpnFaltantes = (String[]) rawFaltantes.get(0);
+
+        adapterFaltantes = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnFaltantes);
+        adapterFaltantes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnFaltantes.setAdapter(adapterFaltantes);
+        BaseHelper.tryClose(db);
+
+        spnFaltantes.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(AdapterView<?> spn, android.view.View v, int posicion, long id) {
+                        try {
+                            if (mapFaltantes.get(spnFaltantes.getSelectedItemPosition()) != "-1") {
+                                SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                                selectedProduct = new Producto().selectProductByNumber(db, mapFaltantes.get(spnFaltantes.getSelectedItemPosition()), 0);
+                                producto.setText(selectedProduct[1].toString());
+                                numero.setText(selectedProduct[0].toString());
+                                BaseHelper.tryClose(db);
+                                disableEnableCargar(false);
+                            } else {
+                                //disableEnableCargar(true);
+                                selectedProduct = null;
+                                producto.setText("");
+                                numero.setText("");
+                                cantidad.setText("");
+                                rbCodigo.setChecked(true);
+                                rbLectura.setChecked(false);
+                                disableEnableCargar(true);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    public void onNothingSelected(AdapterView<?> spn) {
+                    }
+                });
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -255,13 +331,19 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     }
 
     private void limpiar() {
-        selectedProduct = null;
-        producto.setText("");
-        numero.setText("");
-        cantidad.setText("");
-        rbCodigo.setChecked(true);
-        rbLectura.setChecked(false);
-        disableEnableCargar(true);
+        try {
+            selectedProduct = null;
+            producto.setText("");
+            numero.setText("");
+            cantidad.setText("");
+            rbCodigo.setChecked(true);
+            rbLectura.setChecked(false);
+            disableEnableCargar(true);
+            prepareFaltantesSpinner();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void disableEnableCargar(boolean enable) {
@@ -321,6 +403,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         usuario.setCurrConteo(usuario.getCurrConteo() + 1);
                         usuario.updateCurrent(db);
                         db.close();
+                        limpiar();
                         Toast.makeText(this, "Conteo acutalizado", Toast.LENGTH_LONG).show();
                     } else {
                         throw new Exception("Se pueden realizar solamente 3 conteos");
@@ -334,10 +417,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             if (code == FINALIZAR_INVENTARIO) {
                 try {
                     SQLiteDatabase db = BaseHelper.getWritable(this);
-                    new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(), new Date().toString());
+                    new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(), new Date().toString(), usuario.getUsuario());
                     insertResultsOnWebservice();
-                    new Inventario().delete(db);
-                    new Usuario().delete(db);
                     BaseHelper.tryClose(db);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -420,16 +501,19 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
         for (int i = 0; i < inventarios.size(); i++) {
             Inventario inventario = inventarios.get(i);
+
+            //System.out.println(DateFormat.getDateInstance().format(date));
+
             String query = "UPDATE referencias_fis SET " +
-                    "toma_1=" + inventario.getConteo1() + " " +
-                    "usu_toma_1=" + inventario.getUsuario1() + " " +
-                    "toma_2=" + inventario.getConteo2() + " " +
-                    "usu_toma_2=" + inventario.getUsuario1() + " " +
-                    "toma_3=" + inventario.getConteo3() + "" +
-                    "usu_toma_3=" + inventario.getUsuario3() + " " +
-                    "fecha_ultima=" + inventario.getFecha() + " " +
-                    "WHERE codigo=" + inventario.getProducto() + " " +
-                    "AND bodega=" + inventario.getBodega() + " ";
+                    "toma_1=" + inventario.getConteo1() + ", " +
+                    "usu_toma_1=UPPER('" + inventario.getUsuario1() + "'), " +
+                    "toma_2=" + inventario.getConteo2() + ", " +
+                    "usu_toma_2=UPPER('" + inventario.getUsuario2() + "'), " +
+                    "toma_3=" + inventario.getConteo3() + ", " +
+                    "usu_toma_3=UPPER('" + inventario.getUsuario3() + "'), " +
+                    "fecha_ultima=GETDATE() " +
+                    "WHERE codigo='" + inventario.getProducto() + "' " +
+                    "AND bodega='" + inventario.getBodega() + "' ";
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
         }
@@ -482,13 +566,13 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         new Subgrupo2().delete(db);
                         new Subgrupo3().delete(db);
                         new Clase().delete(db);
-                        dialogUtils.dissmissDialog();
+                        //dialogUtils.dissmissDialog();
 
                         Intent i = new Intent(FrmInventario.this, FrmLogin.class);
                         startActivityForResult(i, 1);
-                        finish();
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmInventario.this, "El inventario ha finalizado correctamente", Toast.LENGTH_LONG).show();
+                        finish();
                     } else {
                         Toast.makeText(FrmInventario.this, "No se ha podido finalizar el inventario, intente nuevamente", Toast.LENGTH_LONG).show();
                     }
@@ -499,10 +583,10 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
         ArrayList queryDatos = new ArrayList();
 
-        String query = "SELECT rf.codigo,rf.toma_1,rf.usu_toma_1,rf.toma_2,rf.usu_toma_2,rf.toma_3,rf.usu_toma_3,rf.fecha_ultima" +
-                "FROM referencias_fis rf SET " +
-                "JOIN referencias r on r.codigo=s.codigo " +
-                "AND bodega=" + usuario.getCurrBodega() + " ";
+        String query = "SELECT rf.codigo,rf.toma_1,rf.usu_toma_1,rf.toma_2,rf.usu_toma_2,rf.toma_3,rf.usu_toma_3,rf.fecha_ultima " +
+                "FROM referencias_fis rf " +
+                "JOIN referencias r on r.codigo=rf.codigo " +
+                "AND bodega='" + usuario.getCurrBodega() + "' ";
         if (usuario.getCurrGrupo() != null) {
             query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
         }

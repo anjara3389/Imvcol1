@@ -34,7 +34,7 @@ public class ArrayUtils {
         String[] spinnerArray = new String[objects.length];
         final HashMap<Integer, String> spinnerMap = new HashMap<Integer, String>();
 
-        for (int i = 0; i < objects.length; i++) {
+        for (int i =0; i < objects.length; i++) {
             spinnerMap.put(i, (String) objects[i][0]);
             spinnerArray[i] = objects[i][0] + " - " + objects[i][1];
         }
@@ -44,6 +44,7 @@ public class ArrayUtils {
         result.add(spinnerMap);
         return result;
     }
+
 
     public static ArrayList<String[]> mapObjects(ArrayList objects) {
         String[] spinnerArray = new String[objects.size()];

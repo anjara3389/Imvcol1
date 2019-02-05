@@ -18,8 +18,6 @@ public class Inicio extends AppCompatActivity {
             Usuario usuario = new Usuario().selectUsuario(db);
             if (usuario != null) {
                 Intent i = new Intent(this, FrmContinuarSesion.class);
-                String info = usuario.getUsuario() + " Bodega: " + usuario.getCurrBodega() + " " + usuario.getCurrGrupo();
-                i.putExtra("diferencia", true);
                 startActivityForResult(i, 1);
                 finish();
             } else {
