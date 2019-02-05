@@ -127,9 +127,12 @@ public class Inventario {
         SQLiteQuery sq = new SQLiteQuery("SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
                 "FROM producto p " +
                 "LEFT JOIN inventario i on p.producto=i.producto " +
-                (diferencia ? "WHERE (p.cantidad!=i.conteo1 " +
-                        "AND p.cantidad!=i.conteo2 " +
-                        "AND p.cantidad!=i.conteo3)" : ""));
+                (diferencia ? "WHERE " +
+                        "CASE WHEN (i.conteo1>=0 AND i.conteo2 IS NULL AND i.conteo3 IS NULL) " +
+                        "THEN p.cantidad<>i.conteo1 " +
+                        "WHEN(i.conteo2>=0 AND i.conteo3 IS NULL) " +
+                        "THEN p.cantidad<>i.conteo2 " +
+                        "ELSE p.cantidad<>i.conteo3 END" : ""));
         Object[][] rawInventario = sq.getRecords(db);
 
         return rawInventario;
