@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".FrmSelectBodega"></activity>
         <activity android:name=".Inicio">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,9 +24,7 @@
         <activity android:name=".FrmInventarios" />
         <activity android:name=".FrmInventario" />
         <activity android:name=".FrmOpciones" />
-        <activity android:name=".FrmLogin">
-
-        </activity>
+        <activity android:name=".FrmLogin"></activity>
     </application>
 
 </manifest>

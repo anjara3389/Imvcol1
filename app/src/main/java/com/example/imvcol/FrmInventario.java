@@ -41,16 +41,16 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private EditText producto, numero, cantidad;
     private Button btnCargar, btnAceptar, btnCancelar;
-    private RadioGroup rgOpciones;
     private RadioButton rbCodigo;
     private RadioButton rbLectura;
     private Object[] selectedProduct;
     private Object[][] productos;
     private ListView listaProductos;
     private static final int SUMAR_CANTIDAD = 1;
-    private static final int FINALIZAR_CONTEO = 2;
+    private static final int CAMBIAR_CONTEO = 2;
     private static final int FINALIZAR_INVENTARIO = 3;
-    private static final int CERRAR_SESION = 4;
+    private static final int LIBERAR_SELECCION = 4;
+    private static final int ENVIAR_DATOS = 5;
     private Usuario usuario;
     private Inventario currentInventario;
     private DialogUtils dialogUtils;
@@ -73,7 +73,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         btnCargar = findViewById(R.id.frm_inventario_btn_cargar);
         btnAceptar = findViewById(R.id.frm_inventario_btn_aceptar);
         btnCancelar = findViewById(R.id.frm_inventario_btn_cancelar);
-        rgOpciones = findViewById(R.id.frm_inventario_rbgroup_opciones);
         rbCodigo = findViewById(R.id.frm_inventario_rbtn_codigo);
         rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
         spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
@@ -108,7 +107,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 try {
                     if (producto.getText().toString() != "" && producto.getText().length() != 0) {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                        productos = new Producto().selectProductsByDescripcion(db, producto.getText().toString());
+                        productos = new Producto().selectProductsByDescripcion(db, producto.getText().toString(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                         if (productos.length == 0) {
                             throw new Exception("No se encuentran coincidencias");
                         } else {
@@ -130,7 +129,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     } else if (numero.toString() != "" && numero.getText().length() != 0) {
                         int code = rbCodigo.isChecked() ? 0 : 1;
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                        selectedProduct = new Producto().selectProductByNumber(db, numero.getText().toString(), code);
+                        selectedProduct = new Producto().selectProductByNumber(db, numero.getText().toString(), code, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                         BaseHelper.tryClose(db);
                         //System.out.println("Producto " + selectedProduct[0].toString());
                         //System.out.println("Producto " + selectedProduct[1].toString());
@@ -233,7 +232,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void prepareFaltantesSpinner() throws Exception {
         final SQLiteDatabase db = BaseHelper.getReadable(this);
-        Object[][] falta = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo());
+        Object[][] falta = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
         wholeFaltantes = new Object[falta != null ? falta.length + 1 : 0 + 1][2];
         wholeFaltantes[0][0] = "-1";
         wholeFaltantes[0][1] = "Seleccione un producto";
@@ -262,7 +261,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         try {
                             if (mapFaltantes.get(spnFaltantes.getSelectedItemPosition()) != "-1") {
                                 SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                                selectedProduct = new Producto().selectProductByNumber(db, mapFaltantes.get(spnFaltantes.getSelectedItemPosition()), 0);
+                                selectedProduct = new Producto().selectProductByNumber(db, mapFaltantes.get(spnFaltantes.getSelectedItemPosition()), 0, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                                 producto.setText(selectedProduct[1].toString());
                                 numero.setText(selectedProduct[0].toString());
                                 BaseHelper.tryClose(db);
@@ -294,7 +293,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_action_bar, menu);
         //menu.findItem(R.id.)
-        setTitle("INVCOL");
+        setTitle("INVFISCOL");
         return true;
     }
 
@@ -313,17 +312,22 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 break;
             case R.id.action_finalizar_conteo:
                 YesNoDialogFragment dial = new YesNoDialogFragment();
-                dial.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar conteo", "¿Está seguro de finalizar el conteo?", FINALIZAR_CONTEO);
+                dial.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar conteo", "¿Está seguro de cambiar el conteo?", CAMBIAR_CONTEO);
                 dial.show(getSupportFragmentManager(), "MyDialog");
+                break;
+            case R.id.action_enviar_datos:
+                YesNoDialogFragment dial3 = new YesNoDialogFragment();
+                dial3.setInfo(FrmInventario.this, FrmInventario.this, "Enviar datos", "¿Está seguro de enviar los datos?,", ENVIAR_DATOS);
+                dial3.show(getSupportFragmentManager(), "MyDialog");
                 break;
             case R.id.action_finalizar_inventario:
                 YesNoDialogFragment dial2 = new YesNoDialogFragment();
-                dial2.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario?", FINALIZAR_INVENTARIO);
+                dial2.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
                 dial2.show(getSupportFragmentManager(), "MyDialog");
                 break;
-            case R.id.action_cerrar_sesion:
+            case R.id.action_liberar_seleccion:
                 YesNoDialogFragment dia = new YesNoDialogFragment();
-                dia.setInfo(FrmInventario.this, FrmInventario.this, "Cerrar sesión", "¿Está seguro de cerrar sesión? Se perderán todos los datos.", CERRAR_SESION);
+                dia.setInfo(FrmInventario.this, FrmInventario.this, "Liberar selección", "¿Está seguro de liberar selección?", LIBERAR_SELECCION);
                 dia.show(getSupportFragmentManager(), "MyDialog");
                 break;
             default:
@@ -398,7 +402,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             if (code == SUMAR_CANTIDAD) {
                 updateCantidad(Integer.parseInt(cantidad.getText().toString()));
             }
-            if (code == FINALIZAR_CONTEO) {
+            if (code == CAMBIAR_CONTEO) {
                 try {
                     if (usuario.getCurrConteo() < 3) {
                         SQLiteDatabase db = BaseHelper.getWritable(this);
@@ -414,12 +418,11 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     e.printStackTrace();
                     Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
                 }
-
             }
-            if (code == FINALIZAR_INVENTARIO) {
+            if (code == ENVIAR_DATOS) {
                 try {
                     SQLiteDatabase db = BaseHelper.getWritable(this);
-                    new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(), new Date().toString(), usuario.getUsuario());
+                    new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(), new Date().toString(), usuario.getUsuario(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                     insertResultsOnWebservice();
                     BaseHelper.tryClose(db);
                 } catch (Exception e) {
@@ -427,23 +430,39 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
                 }
             }
-            if (code == CERRAR_SESION) {
+            if (code == FINALIZAR_INVENTARIO) {
                 try {
                     SQLiteDatabase db = BaseHelper.getWritable(this);
-                    usuario.setCurrBodega(null);
-                    usuario.setCurrClase(null);
-                    usuario.setCurrConteo(1);
-                    usuario.setCurrGrupo(null);
-                    usuario.setCurrSubgr(null);
-                    usuario.setCurrSubgr2(null);
-                    usuario.setCurrSubgr3(null);
+                    new Usuario().delete(db);
                     new Inventario().delete(db);
+                    new Bodega().delete(db);
                     new Producto().delete(db);
-                    Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
-                    startActivityForResult(i, 1);
-                    finish();
-
+                    new Grupo().delete(db);
+                    new Subgrupo().delete(db);
+                    new Subgrupo2().delete(db);
+                    new Subgrupo3().delete(db);
+                    new Clase().delete(db);
                     BaseHelper.tryClose(db);
+                    //dialogUtils.dissmissDialog();
+
+                    Intent i = new Intent(FrmInventario.this, FrmLogin.class);
+                    startActivityForResult(i, 1);
+                    BaseHelper.tryClose(db);
+                    Toast.makeText(FrmInventario.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+                }
+            }
+            if (code == LIBERAR_SELECCION) {
+                try {
+                    SQLiteDatabase db = BaseHelper.getReadable(this);
+                    if (new Inventario().countInventarios(db) == 0) {
+                        freeWebserviceFisicos();
+                    } else {
+                        throw new Exception("No se puede liberar la selección debido a que ya tiene productos inventariados.");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
@@ -496,11 +515,11 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     }
 
     private void insertResultsOnWebservice() throws Exception {
-        SQLiteDatabase db = BaseHelper.getWritable(this);
+        final SQLiteDatabase db = BaseHelper.getWritable(this);
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
-                Toast.makeText(FrmInventario.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                getWebserviceProducts(db);
             }
         };
         remote.setContext(this);
@@ -511,10 +530,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
         for (int i = 0; i < inventarios.size(); i++) {
             Inventario inventario = inventarios.get(i);
-
-            //System.out.println(DateFormat.getDateInstance().format(date));
-
-            String query = "UPDATE referencias_fis SET " +
+            String query = "UPDATE f referencias_fis SET " +
                     "toma_1=" + inventario.getConteo1() + ", " +
                     "usu_toma_1=UPPER('" + inventario.getUsuario1() + "'), " +
                     "toma_2=" + inventario.getConteo2() + ", " +
@@ -522,19 +538,22 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     "toma_3=" + inventario.getConteo3() + ", " +
                     "usu_toma_3=UPPER('" + inventario.getUsuario3() + "'), " +
                     "fecha_ultima=GETDATE() " +
-                    "WHERE codigo='" + inventario.getProducto() + "' " +
-                    "AND bodega='" + inventario.getBodega() + "' ";
+                    "FROM referencias_fis f" +
+                    "JOIN referencias r on r.codigo=f.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND f.codigo='" + inventario.getProducto() + "' ";
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
         }
 
         remote.setQuery(queryDatos);
         remote.execute();
-        getWebserviceProducts(db);
-
     }
 
-    private void getWebserviceProducts(final SQLiteDatabase db) throws Exception {
+    private void getWebserviceProducts(final SQLiteDatabase db) {
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
@@ -544,7 +563,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 if (resultsDatos.get(0).equals("[]")) {
                     dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
-                    Toast.makeText(FrmInventario.this, "No se ha podido finalizar el inventario, intente nuevamente", Toast.LENGTH_LONG).show();
+                    Toast.makeText(FrmInventario.this, "No se han podido enviar los datos, intente nuevament", Toast.LENGTH_LONG).show();
                 } else {
                     SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
                     ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
@@ -568,24 +587,25 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         }
                     }
                     if (validar == true) {
-                        new Usuario().delete(db);
+
                         new Inventario().delete(db);
-                        new Bodega().delete(db);
-                        new Producto().delete(db);
-                        new Grupo().delete(db);
-                        new Subgrupo().delete(db);
-                        new Subgrupo2().delete(db);
-                        new Subgrupo3().delete(db);
-                        new Clase().delete(db);
+                        usuario.setCurrGrupo(null);
+                        usuario.setCurrSubgr(null);
+                        usuario.setCurrSubgr2(null);
+                        usuario.setCurrSubgr3(null);
+                        usuario.setCurrClase(null);
+                        usuario.setCurrConteo(1);
+                        usuario.updateCurrent(db);
+
                         //dialogUtils.dissmissDialog();
 
-                        Intent i = new Intent(FrmInventario.this, FrmLogin.class);
+                        Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
                         startActivityForResult(i, 1);
                         BaseHelper.tryClose(db);
-                        Toast.makeText(FrmInventario.this, "El inventario ha finalizado correctamente", Toast.LENGTH_LONG).show();
+                        Toast.makeText(FrmInventario.this, "Se enviaron los datos exitosamente", Toast.LENGTH_LONG).show();
                         finish();
                     } else {
-                        Toast.makeText(FrmInventario.this, "No se ha podido finalizar el inventario, intente nuevamente", Toast.LENGTH_LONG).show();
+                        Toast.makeText(FrmInventario.this, "No se han podido enviar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -597,7 +617,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         String query = "SELECT rf.codigo,rf.toma_1,rf.usu_toma_1,rf.toma_2,rf.usu_toma_2,rf.toma_3,rf.usu_toma_3,rf.fecha_ultima " +
                 "FROM referencias_fis rf " +
                 "JOIN referencias r on r.codigo=rf.codigo " +
-                "AND bodega='" + usuario.getCurrBodega() + "' ";
+                "WHERE bodega='" + usuario.getCurrBodega() + "' ";
         if (usuario.getCurrGrupo() != null) {
             query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
         }
@@ -614,6 +634,58 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             query += "AND r.clase='" + usuario.getCurrClase() + "'";
         }
 
+        queryDatos.add(query);
+        System.out.println("QUERYYYYYY///" + query);
+        remote.setQuery(queryDatos);
+        remote.execute();
+    }
+
+    private void freeWebserviceFisicos() {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) {
+                SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
+
+                usuario.setCurrGrupo(null);
+                usuario.setCurrSubgr(null);
+                usuario.setCurrSubgr2(null);
+                usuario.setCurrSubgr3(null);
+                usuario.setCurrClase(null);
+                usuario.setCurrConteo(1);
+                usuario.updateCurrent(db);
+                new Inventario().delete(db);
+                Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
+                startActivityForResult(i, 1);
+                Toast.makeText(FrmInventario.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        };
+        ArrayList queryDatos = new ArrayList();
+        remote.setContext(this);
+        String query = "UPDATE F SET fisico=0 " +
+                "FROM referencias_fis F " +
+                "JOIN referencias r on r.codigo=F.codigo " +
+                "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                "AND s.ano=YEAR(getdate()) " +
+                "AND s.mes=MONTH(getdate()) " +
+                "AND f.fisico=1  ";
+
+        if (usuario.getCurrGrupo() != null) {
+            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+        }
+        if (usuario.getCurrSubgr() != null) {
+            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+        }
+        if (usuario.getCurrSubgr2() != null) {
+            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+        }
+        if (usuario.getCurrSubgr3() != null) {
+            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+        }
+        if (usuario.getCurrClase() != null) {
+            query += "AND r.clase='" + usuario.getCurrClase() + "'";
+        }
         queryDatos.add(query);
         System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);

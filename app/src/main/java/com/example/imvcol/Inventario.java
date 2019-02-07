@@ -85,7 +85,12 @@ public class Inventario {
         return (int) db.insert("inventario", null, getValues());
     }
 
-    public Inventario selectInventario(SQLiteDatabase db, String producto) throws Exception, ParseException {
+    public int countInventarios(SQLiteDatabase db) throws Exception {
+        SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM inventario");
+        return sq.getInteger(db);
+    }
+
+    public Inventario selectInventario(SQLiteDatabase db, String producto) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT fecha,bodega,producto,conteo1,usuario1,conteo2,usuario2,conteo3,usuario3 " +
                 "FROM inventario " +
                 "WHERE producto= " + producto);
@@ -105,8 +110,8 @@ public class Inventario {
         return null;
     }
 
-    public void insertProductsNotOnInventario(SQLiteDatabase db, String bodega, String fecha, String usuario) throws Exception {
-        Object[][] productos = new Producto().selectProductsNotOnInventario(db, null);
+    public void insertProductsNotOnInventario(SQLiteDatabase db, String bodega, String fecha, String usuario, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
+        Object[][] productos = new Producto().selectProductsNotOnInventario(db, null, grupo, subgrupo, subgr2, subgr3, clase);
         if (productos != null) {
             for (int i = 0; i < productos.length; i++) {
                 Inventario inventario = new Inventario(fecha, bodega, productos[i][0].toString(), null, usuario, null, usuario, null, usuario);
@@ -115,7 +120,7 @@ public class Inventario {
         }
     }
 
-    public ArrayList<Inventario> selectInventarios(SQLiteDatabase db) throws Exception, ParseException {
+    public ArrayList<Inventario> selectInventarios(SQLiteDatabase db) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT fecha,bodega,producto,conteo1,usuario1,conteo2,usuario2,conteo3,usuario3 " +
                 "FROM inventario ");
         Object[][] rawInventario = sq.getRecords(db);
@@ -123,7 +128,7 @@ public class Inventario {
         return getInventarios(rawInventario);
     }
 
-    public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia) throws Exception, ParseException {
+    public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
                 "FROM producto p " +
                 "LEFT JOIN inventario i on p.producto=i.producto " +
@@ -156,7 +161,6 @@ public class Inventario {
                         rawInventario[i][6] != null ? rawInventario[i][6].toString() : null,
                         rawInventario[i][7] != null ? Integer.parseInt(rawInventario[i][7].toString()) : null,
                         rawInventario[i][8] != null ? rawInventario[i][8].toString() : null));
-
             }
             return inventarios;
         }

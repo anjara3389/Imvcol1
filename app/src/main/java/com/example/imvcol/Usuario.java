@@ -10,8 +10,6 @@ public class Usuario {
     private String currBodega;
     private String currGrupo;
     private String currSubgr;
-
-
     private String currSubgr2;
     private String currSubgr3;
     private String currClase;
@@ -81,7 +79,7 @@ public class Usuario {
             return new Usuario(rawUsuario[0].toString(),
                     rawUsuario[1].toString(),
                     rawUsuario[2] != null ? rawUsuario[2].toString() : null,
-                    rawUsuario[2] != null ? rawUsuario[3].toString() : null,
+                    rawUsuario[3] != null ? rawUsuario[3].toString() : null,
                     rawUsuario[4] != null ? rawUsuario[4].toString() : null,
                     rawUsuario[5] != null ? rawUsuario[5].toString() : null,
                     rawUsuario[6] != null ? rawUsuario[6].toString() : null,

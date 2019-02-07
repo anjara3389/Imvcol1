@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FrmSelectBodega">
+
+    <TextView
+        android:id="@+id/frm_select_bodega_lbl_bodega"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="10dp"
+
+        android:text="Bodega*"
+        tools:layout_editor_absoluteX="29dp"
+        tools:layout_editor_absoluteY="47dp"
+        tools:text="Bodega*" />
+
+    <Spinner
+        android:id="@+id/frm_select_bodega_spn_bodega"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="260dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/darker_gray"
+        android:padding="0dp"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp" />
+
+    <Button
+        android:id="@+id/frm_select_bodega_btn_siguiente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="290dp"
+        android:text="Siguiente" />
+</RelativeLayout>

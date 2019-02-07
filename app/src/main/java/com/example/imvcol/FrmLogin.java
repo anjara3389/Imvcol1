@@ -81,7 +81,7 @@ public class FrmLogin extends AppCompatActivity {
                     if (new Bodega().countBodegas(db) == 0) {
                         getWebserviceData(v, db);
                     } else {
-                        Intent i = new Intent(v.getContext(), FrmOpciones.class);
+                        Intent i = new Intent(v.getContext(), FrmSelectBodega.class);
                         // i.putExtra("datos", resultsDatos);
                         startActivityForResult(i, 1);
                         BaseHelper.tryClose(db);
@@ -179,7 +179,7 @@ public class FrmLogin extends AppCompatActivity {
             clase.insert(db);
         }
 
-        Intent i = new Intent(this, FrmOpciones.class);
+        Intent i = new Intent(this, FrmSelectBodega.class);
         // i.putExtra("datos", resultsDatos);
         startActivityForResult(i, 1);
         BaseHelper.tryClose(db);

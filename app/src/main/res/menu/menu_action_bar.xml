@@ -9,12 +9,15 @@
         android:id="@+id/action_totales"
         android:title="Totales"></item>
     <item
-        android:id="@+id/action_finalizar_conteo"
-        android:title="Finalizar conteo"></item>
+    android:id="@+id/action_finalizar_conteo"
+    android:title="Cambiar conteo"></item>
+    <item
+        android:id="@+id/action_enviar_datos"
+        android:title="Enviar datos "></item>
     <item
         android:id="@+id/action_finalizar_inventario"
         android:title="Finalizar inventario"></item>
     <item
-        android:id="@+id/action_cerrar_sesion"
-        android:title="Cerrar sesión"></item>
+        android:id="@+id/action_liberar_seleccion"
+        android:title="Liberar selección"></item>
 </menu>
