@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -281,7 +282,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
-
                     public void onNothingSelected(AdapterView<?> spn) {
                     }
                 });
@@ -421,6 +421,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             }
             if (code == ENVIAR_DATOS) {
                 try {
+                    dialogUtils = new DialogUtils(this, "Cargando");
+                    dialogUtils.showDialog(this.getWindow());
                     SQLiteDatabase db = BaseHelper.getWritable(this);
                     new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(), new Date().toString(), usuario.getUsuario(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                     insertResultsOnWebservice();
@@ -432,6 +434,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             }
             if (code == FINALIZAR_INVENTARIO) {
                 try {
+                    dialogUtils = new DialogUtils(this, "Cargando");
+                    dialogUtils.showDialog(this.getWindow());
                     SQLiteDatabase db = BaseHelper.getWritable(this);
                     new Usuario().delete(db);
                     new Inventario().delete(db);
@@ -443,7 +447,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     new Subgrupo3().delete(db);
                     new Clase().delete(db);
                     BaseHelper.tryClose(db);
-                    //dialogUtils.dissmissDialog();
+                    dialogUtils.dissmissDialog();
 
                     Intent i = new Intent(FrmInventario.this, FrmLogin.class);
                     startActivityForResult(i, 1);
@@ -452,7 +456,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                 }
             }
             if (code == LIBERAR_SELECCION) {
@@ -465,7 +469,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -590,7 +594,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         usuario.setCurrConteo(1);
                         usuario.updateCurrent(db);
 
-                        //dialogUtils.dissmissDialog();
+                        dialogUtils.dissmissDialog();
 
                         Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
                         startActivityForResult(i, 1);

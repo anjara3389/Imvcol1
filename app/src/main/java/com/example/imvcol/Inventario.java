@@ -25,7 +25,6 @@ public class Inventario {
 
     }
 
-
     public Inventario(String fecha, String bodega, String producto, Integer conteo1, String usuario1, Integer conteo2, String usuario2, Integer conteo3, String usuario3) {
         this.fecha = fecha;
         this.bodega = bodega;
@@ -128,16 +127,33 @@ public class Inventario {
         return getInventarios(rawInventario);
     }
 
-    public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
+    public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
+        String query = "SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
                 "FROM producto p " +
                 "LEFT JOIN inventario i on p.producto=i.producto " +
-                (diferencia ? "WHERE " +
-                        "CASE WHEN (i.conteo1>=0 AND i.conteo2 IS NULL AND i.conteo3 IS NULL) " +
-                        "THEN p.cantidad<>i.conteo1 " +
-                        "WHEN(i.conteo2>=0 AND i.conteo3 IS NULL) " +
-                        "THEN p.cantidad<>i.conteo2 " +
-                        "ELSE p.cantidad<>i.conteo3 END" : ""));
+                "WHERE grupo='" + grupo + "' ";
+        if (subgrupo != null) {
+            query += "AND subgrupo='" + subgrupo + "' ";
+        }
+        if (subgr2 != null) {
+            query += "AND subgr2='" + subgr2 + "' ";
+        }
+        if (subgr3 != null) {
+            query += "AND subgr3='" + subgr3 + "' ";
+        }
+        if (clase != null) {
+            query += "AND clase='" + clase + "' ";
+        }
+        if (diferencia) {
+            query += "AND " +
+                    "(CASE WHEN (i.conteo1>=0 AND i.conteo2 IS NULL AND i.conteo3 IS NULL) " +
+                    "THEN p.cantidad<>i.conteo1 " +
+                    "WHEN(i.conteo2>=0 AND i.conteo3 IS NULL) " +
+                    "THEN p.cantidad<>i.conteo2 " +
+                    "ELSE p.cantidad<>i.conteo3 END)";
+        }
+
+        SQLiteQuery sq = new SQLiteQuery(query);
         Object[][] rawInventario = sq.getRecords(db);
 
         return rawInventario;

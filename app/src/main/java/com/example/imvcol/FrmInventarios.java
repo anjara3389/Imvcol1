@@ -27,7 +27,8 @@ public class FrmInventarios extends AppCompatActivity {
         boolean diferencia = bundle.getBoolean("diferencia");
         try {
             SQLiteDatabase db = BaseHelper.getReadable(this);
-            Object[][] inventarios = new Inventario().selectInventariosTotales(db, diferencia);
+            Usuario usuario = new Usuario().selectUsuario(db);
+            Object[][] inventarios = new Inventario().selectInventariosTotales(db, diferencia, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
             BaseHelper.tryClose(db);
 
             if (inventarios == null) {
