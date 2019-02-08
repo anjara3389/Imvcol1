@@ -2,6 +2,7 @@ package com.example.imvcol;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 public class Usuario {
 
@@ -57,6 +58,11 @@ public class Usuario {
         return c;
     }
 
+    public int countUsuario(SQLiteDatabase db) throws Exception {
+        SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM usuario");
+        return sq.getInteger(db);
+    }
+
     public void delete(SQLiteDatabase db) {
         db.execSQL("DELETE FROM usuario");
     }
@@ -70,11 +76,11 @@ public class Usuario {
     }
 
     public Usuario selectUsuario(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT usuario,clave,curr_bodega,curr_grupo,curr_subgr,curr_subgr2,curr_subgr3,curr_clase,curr_conteo " +
+        SQLiteQuery sq = new SQLiteQuery("SELECT* " +
                 "FROM usuario");
 
         Object[] rawUsuario = sq.getRecord(db);
-
+        System.out.print("///////USUARIO1" + rawUsuario);
         if (rawUsuario != null && rawUsuario.length > 0) {
             return new Usuario(rawUsuario[0].toString(),
                     rawUsuario[1].toString(),

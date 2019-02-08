@@ -416,7 +416,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
                 }
             }
             if (code == ENVIAR_DATOS) {
@@ -473,22 +473,16 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     public void updateCantidad(int cant) {
         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-        System.out.println("////CURRENT CONTEO" + usuario.getCurrConteo());
-
-
         if (usuario.getCurrConteo() == 1) {
             int cantidadConteo = currentInventario.getConteo1() == null ? 0 : currentInventario.getConteo1();
             currentInventario.setConteo1(cantidadConteo + cant);
             currentInventario.setUsuario1(usuario.getUsuario());
-            System.out.println("////currentInventario.getConteo1()" + currentInventario.getConteo1());
         } else if (usuario.getCurrConteo() == 2) {
             int cantidadConteo = currentInventario.getConteo2() == null ? 0 : currentInventario.getConteo2();
             currentInventario.setConteo2(cantidadConteo + cant);
             currentInventario.setUsuario2(usuario.getUsuario());
-            System.out.println("////currentInventario.getConteo2()" + currentInventario.getConteo2());
         } else {
             int cantidadConteo = currentInventario.getConteo3() == null ? 0 : currentInventario.getConteo3();
-            System.out.println("////currentInventario.getConteo3()" + currentInventario.getConteo3());
             currentInventario.setConteo3(cantidadConteo + cant);
             currentInventario.setUsuario3(usuario.getUsuario());
         }
@@ -530,15 +524,15 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
         for (int i = 0; i < inventarios.size(); i++) {
             Inventario inventario = inventarios.get(i);
-            String query = "UPDATE f referencias_fis SET " +
-                    "toma_1=" + inventario.getConteo1() + ", " +
+            String query = "UPDATE f " +
+                    "SET toma_1=" + inventario.getConteo1() + ", " +
                     "usu_toma_1=UPPER('" + inventario.getUsuario1() + "'), " +
                     "toma_2=" + inventario.getConteo2() + ", " +
                     "usu_toma_2=UPPER('" + inventario.getUsuario2() + "'), " +
                     "toma_3=" + inventario.getConteo3() + ", " +
                     "usu_toma_3=UPPER('" + inventario.getUsuario3() + "'), " +
                     "fecha_ultima=GETDATE() " +
-                    "FROM referencias_fis f" +
+                    "FROM referencias_fis f " +
                     "JOIN referencias r on r.codigo=f.codigo " +
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
                     "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
@@ -548,7 +542,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
         }
-
         remote.setQuery(queryDatos);
         remote.execute();
     }
@@ -558,7 +551,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             @Override
             public void receiveData(Object object) throws Exception {
                 ArrayList resultsDatos = (ArrayList) object;
-                System.out.println("productos1" + resultsDatos.get(0));
+
                 ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
                 if (resultsDatos.get(0).equals("[]")) {
                     dialogUtils.dissmissDialog();
@@ -653,6 +646,11 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 usuario.setCurrClase(null);
                 usuario.setCurrConteo(1);
                 usuario.updateCurrent(db);
+                try {
+                    System.out.print("///////USUARIOCOUNT" + usuario.countUsuario(db));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 new Inventario().delete(db);
                 Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
                 startActivityForResult(i, 1);

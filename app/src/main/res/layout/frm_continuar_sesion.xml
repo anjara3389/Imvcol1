@@ -7,12 +7,12 @@
     tools:context=".FrmContinuarSesion">
 
     <Button
-        android:id="@+id/frm_continuar_sesion_btn_cerrar_sesion"
+        android:id="@+id/frm_continuar_sesion_btn_finalizar_inventario"
         android:layout_width="282dp"
         android:layout_height="36dp"
         android:layout_marginLeft="36dp"
         android:layout_marginTop="290dp"
-        android:text="Cerrar sesión" />
+        android:text="Finalizar inventario" />
 
     <Button
         android:id="@+id/frm_continuar_sesion_btn_continuar"

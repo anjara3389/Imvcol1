@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,7 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FrmOpciones extends AppCompatActivity {
+public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
     DialogUtils dialogUtils;
 
@@ -34,6 +37,7 @@ public class FrmOpciones extends AppCompatActivity {
     private Object[][] wholeGrupos, wholeSubgrupos, wholeSubgrupos3, wholeSubgrupos2, wholeClases;
     private ArrayList rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
     private Usuario usuario;
+    private static final int FINALIZAR_INVENTARIO = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +98,6 @@ public class FrmOpciones extends AppCompatActivity {
                 prepareClases();
                 prepareGrupos();
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -110,6 +113,34 @@ public class FrmOpciones extends AppCompatActivity {
         } else {
             return object.toString();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_action_bar, menu);
+
+        menu.findItem(R.id.action_diferencias).setVisible(false);
+        menu.findItem(R.id.action_enviar_datos).setVisible(false);
+        menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
+        menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
+        menu.findItem(R.id.action_totales).setVisible(false);
+        setTitle("INVFISCOL");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_finalizar_inventario:
+                YesNoDialogFragment dial2 = new YesNoDialogFragment();
+                dial2.setInfo(FrmOpciones.this, FrmOpciones.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
+                dial2.show(getSupportFragmentManager(), "MyDialog");
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     private void prepareGrupos() {
@@ -178,12 +209,7 @@ public class FrmOpciones extends AppCompatActivity {
         spnSubgrupo2.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> spn, android.view.View v, int posicion, long id) {
-                        try {
-                            prepareSubgrupos3(grupoId, subgrupoId, ((HashMap<Integer, String>) rawSubgrupos2.get(1)).get(spnSubgrupo2.getSelectedItemPosition()));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
+                        prepareSubgrupos3(grupoId, subgrupoId, ((HashMap<Integer, String>) rawSubgrupos2.get(1)).get(spnSubgrupo2.getSelectedItemPosition()));
                     }
 
                     public void onNothingSelected(AdapterView<?> spn) {
@@ -191,7 +217,7 @@ public class FrmOpciones extends AppCompatActivity {
                 });
     }
 
-    private void prepareSubgrupos3(String grupoId, String subgrupoId, String subgrupo2Id) throws JSONException {
+    private void prepareSubgrupos3(String grupoId, String subgrupoId, String subgrupo2Id) {
         ArrayList selected = new ArrayList();
 
         for (int i = 0; i < wholeSubgrupos3.length; i++) {
@@ -232,6 +258,7 @@ public class FrmOpciones extends AppCompatActivity {
                 } else if (cantidadFisicos > 0) {
                     System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
                     Toast.makeText(v.getContext(), "No se pueden cargar los productos correspondientes a los valores seleccionados ya que hay productos que ya han sido tomados para inventario por otra persona", Toast.LENGTH_LONG).show();
+                    dialogUtils.dissmissDialog();
                 } else {
                     updateWebserviceFisicos();
                 }
@@ -314,5 +341,34 @@ public class FrmOpciones extends AppCompatActivity {
         System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);
         remote.execute();
+    }
+
+    @Override
+    public void onFinishDialog(boolean ans, int code) {
+        if (code == FINALIZAR_INVENTARIO) {
+            try {
+                SQLiteDatabase db = BaseHelper.getWritable(this);
+                new Usuario().delete(db);
+                new Inventario().delete(db);
+                new Bodega().delete(db);
+                new Producto().delete(db);
+                new Grupo().delete(db);
+                new Subgrupo().delete(db);
+                new Subgrupo2().delete(db);
+                new Subgrupo3().delete(db);
+                new Clase().delete(db);
+                BaseHelper.tryClose(db);
+                //dialogUtils.dissmissDialog();
+
+                Intent i = new Intent(FrmOpciones.this, FrmLogin.class);
+                startActivityForResult(i, 1);
+                BaseHelper.tryClose(db);
+                Toast.makeText(FrmOpciones.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                finish();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+            }
+        }
     }
 }

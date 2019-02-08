@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,12 +24,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FrmSelectBodega extends AppCompatActivity {
+public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
     DialogUtils dialogUtils;
     private Spinner spnBodega;
     private Object[][] wholeBodegas;
     private ArrayList rawBodegas;
     private Usuario currUser;
+    private static final int FINALIZAR_INVENTARIO = 3;
 
 
     @Override
@@ -155,5 +159,62 @@ public class FrmSelectBodega extends AppCompatActivity {
             producto.insert(db);
         }
         BaseHelper.tryClose(db);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_action_bar, menu);
+
+        menu.findItem(R.id.action_diferencias).setVisible(false);
+        menu.findItem(R.id.action_enviar_datos).setVisible(false);
+        menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
+        menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
+        menu.findItem(R.id.action_totales).setVisible(false);
+        setTitle("INVFISCOL");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_finalizar_inventario:
+                YesNoDialogFragment dial2 = new YesNoDialogFragment();
+                dial2.setInfo(FrmSelectBodega.this, FrmSelectBodega.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
+                dial2.show(getSupportFragmentManager(), "MyDialog");
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onFinishDialog(boolean ans, int code) {
+        if (code == FINALIZAR_INVENTARIO) {
+            try {
+                SQLiteDatabase db = BaseHelper.getWritable(this);
+                new Usuario().delete(db);
+                new Inventario().delete(db);
+                new Bodega().delete(db);
+                new Producto().delete(db);
+                new Grupo().delete(db);
+                new Subgrupo().delete(db);
+                new Subgrupo2().delete(db);
+                new Subgrupo3().delete(db);
+                new Clase().delete(db);
+                BaseHelper.tryClose(db);
+                //dialogUtils.dissmissDialog();
+
+                Intent i = new Intent(FrmSelectBodega.this, FrmLogin.class);
+                startActivityForResult(i, 1);
+                BaseHelper.tryClose(db);
+                Toast.makeText(FrmSelectBodega.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                finish();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+            }
+        }
     }
 }

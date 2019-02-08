@@ -144,7 +144,7 @@ public class Inventario {
     }
 
     public void delete(SQLiteDatabase db) {
-        db.execSQL("DELETE FROM usuario");
+        db.execSQL("DELETE FROM inventario");
     }
 
 

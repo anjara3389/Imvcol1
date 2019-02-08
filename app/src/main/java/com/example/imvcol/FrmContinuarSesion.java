@@ -12,7 +12,7 @@ import android.widget.Toast;
 public class FrmContinuarSesion extends AppCompatActivity {
 
     private Button btnContinuar;
-    private Button btnCerrarSesion;
+    private Button btnFinalizarInventario;
     private TextView info;
 
 
@@ -22,7 +22,7 @@ public class FrmContinuarSesion extends AppCompatActivity {
         setContentView(R.layout.frm_continuar_sesion);
 
         btnContinuar = findViewById(R.id.frm_continuar_sesion_btn_continuar);
-        btnCerrarSesion = findViewById(R.id.frm_continuar_sesion_btn_cerrar_sesion);
+        btnFinalizarInventario = findViewById(R.id.frm_continuar_sesion_btn_finalizar_inventario);
         btnContinuar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,15 +47,32 @@ public class FrmContinuarSesion extends AppCompatActivity {
 
             }
         });
-        btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
+        btnFinalizarInventario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
-                //i.putExtra("diferencia", true);
-                startActivityForResult(i, 1);
+                try {
+                    SQLiteDatabase db = BaseHelper.getWritable(FrmContinuarSesion.this);
+                    new Usuario().delete(db);
+                    new Inventario().delete(db);
+                    new Bodega().delete(db);
+                    new Producto().delete(db);
+                    new Grupo().delete(db);
+                    new Subgrupo().delete(db);
+                    new Subgrupo2().delete(db);
+                    new Subgrupo3().delete(db);
+                    new Clase().delete(db);
+                    BaseHelper.tryClose(db);
+                    //dialogUtils.dissmissDialog();
 
-                String pathDatabase = getDatabasePath("imvcol.db").getAbsolutePath();
-                System.out.println("DATABSE ////////////////////////" + pathDatabase);
+                    Intent i = new Intent(FrmContinuarSesion.this, FrmLogin.class);
+                    startActivityForResult(i, 1);
+                    BaseHelper.tryClose(db);
+                    Toast.makeText(FrmContinuarSesion.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e, Toast.LENGTH_LONG);
+                }
 
             }
         });
