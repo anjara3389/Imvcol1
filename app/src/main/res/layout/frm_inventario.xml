@@ -7,7 +7,7 @@
     tools:context=".FrmInventario">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/frm_inventario_lbl_faltantes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"

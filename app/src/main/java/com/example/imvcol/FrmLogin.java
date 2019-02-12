@@ -78,7 +78,7 @@ public class FrmLogin extends AppCompatActivity {
                     SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
 
                     new Usuario().delete(db);
-                    Usuario u = new Usuario(usuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null, 1);
+                    Usuario u = new Usuario(usuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null, 1, null, false);
                     u.insert(db);
 
                     if (new Bodega().countBodegas(db) == 0) {
@@ -189,7 +189,6 @@ public class FrmLogin extends AppCompatActivity {
         dialogUtils.dissmissDialog();
         finish();
     }
-
 
 
     private void putZeros() throws JSONException {

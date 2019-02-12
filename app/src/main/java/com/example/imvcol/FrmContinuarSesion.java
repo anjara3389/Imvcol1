@@ -9,11 +9,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FrmContinuarSesion extends AppCompatActivity {
+public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
     private Button btnContinuar;
     private Button btnFinalizarInventario;
     private TextView info;
+    private Usuario usuario;
+    private static final int FINALIZAR_INVENTARIO = 3;
 
 
     @Override
@@ -28,8 +30,8 @@ public class FrmContinuarSesion extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
-                    Usuario usuario = new Usuario().selectUsuario(db);
-                    if (usuario.getCurrBodega() != null) {
+                    usuario = new Usuario().selectUsuario(db);
+                    if (usuario.getCurrGrupo() != null) {
                         Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
                         //i.putExtra("diferencia", true);
                         startActivityForResult(i, 1);
@@ -51,24 +53,16 @@ public class FrmContinuarSesion extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    SQLiteDatabase db = BaseHelper.getWritable(FrmContinuarSesion.this);
-                    new Usuario().delete(db);
-                    new Inventario().delete(db);
-                    new Bodega().delete(db);
-                    new Producto().delete(db);
-                    new Grupo().delete(db);
-                    new Subgrupo().delete(db);
-                    new Subgrupo2().delete(db);
-                    new Subgrupo3().delete(db);
-                    new Clase().delete(db);
-                    BaseHelper.tryClose(db);
-                    //dialogUtils.dissmissDialog();
+                    SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
+                    if (usuario.getDatosEnviados() || new Inventario().countInventarios(db) == 0) {
+                        YesNoDialogFragment dial2 = new YesNoDialogFragment();
+                        dial2.setInfo(FrmContinuarSesion.this, FrmContinuarSesion.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
+                        dial2.show(getSupportFragmentManager(), "MyDialog");
+                    } else {
+                        throw new Exception("No se puede finalizar el inventario sin enviar los datos existentes.");
+                    }
+                    db.close();
 
-                    Intent i = new Intent(FrmContinuarSesion.this, FrmLogin.class);
-                    startActivityForResult(i, 1);
-                    BaseHelper.tryClose(db);
-                    Toast.makeText(FrmContinuarSesion.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
-                    finish();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(FrmContinuarSesion.this, "Error: " + e, Toast.LENGTH_LONG);
@@ -76,5 +70,34 @@ public class FrmContinuarSesion extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onFinishDialog(boolean ans, int code) {
+        if (code == FINALIZAR_INVENTARIO) {
+            try {
+                SQLiteDatabase db = BaseHelper.getWritable(FrmContinuarSesion.this);
+                new Usuario().delete(db);
+                new Inventario().delete(db);
+                new Bodega().delete(db);
+                new Producto().delete(db);
+                new Grupo().delete(db);
+                new Subgrupo().delete(db);
+                new Subgrupo2().delete(db);
+                new Subgrupo3().delete(db);
+                new Clase().delete(db);
+                BaseHelper.tryClose(db);
+                //dialogUtils.dissmissDialog();
+
+                Intent i = new Intent(FrmContinuarSesion.this, FrmLogin.class);
+                startActivityForResult(i, 1);
+                BaseHelper.tryClose(db);
+                Toast.makeText(FrmContinuarSesion.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                finish();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+            }
+        }
     }
 }

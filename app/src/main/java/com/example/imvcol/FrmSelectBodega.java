@@ -27,6 +27,7 @@ import java.util.HashMap;
 public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
     DialogUtils dialogUtils;
     private Spinner spnBodega;
+    private Spinner spnModo;
     private Object[][] wholeBodegas;
     private ArrayList rawBodegas;
     private Usuario currUser;
@@ -40,6 +41,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
         Button btnSiguiente = findViewById(R.id.frm_select_bodega_btn_siguiente);
         spnBodega = findViewById(R.id.frm_select_bodega_spn_bodega);
+        spnModo = findViewById(R.id.frm_select_bodega_spn_modo);
 
         btnSiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,15 +54,15 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
                         dialogUtils.showDialog(getWindow());
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                        currUser = new Usuario().selectUsuario(db);
+                        currUser.setCurrBodega(mapBodega.get(spnBodega.getSelectedItemPosition()));
+                        currUser.setCurrConteo(1);
 
-                        Usuario currUsu = new Usuario(null, null, changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())),
-                                null,
-                                null,
-                                null,
-                                null,
-                                null, 1);
-                        currUsu.updateCurrent(db);
-                        currUser = currUsu.selectUsuario(db);
+                        System.out.println("POSICIÓN!!!!!!!!" + spnModo.getSelectedItemPosition());
+                        currUser.setModo(spnModo.getSelectedItemPosition());
+                        currUser.setDatosEnviados(false);
+                        currUser.updateCurrent(db);
+
                         getWebserviceProducts(v, db);
                     } catch (Exception e) {
                         Toast.makeText(FrmSelectBodega.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -73,9 +75,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             SQLiteDatabase db = BaseHelper.getReadable(this);
             wholeBodegas = new Bodega().selectBodegas(db);
             if (wholeBodegas != null) {
-                prepareBodegasSpn();
+                prepareSpinners();
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -94,13 +95,21 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     }
 
-    private void prepareBodegasSpn() {
+    private void prepareSpinners() {
         rawBodegas = ArrayUtils.mapObjects(wholeBodegas);
         String[] dataSpnBodegas = (String[]) rawBodegas.get(0);
 
         ArrayAdapter<String> adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
         adapterBodegas.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnBodega.setAdapter(adapterBodegas);
+
+        String[] dataSpnModo = new String[2];
+        dataSpnModo[0] = "Lista";
+        dataSpnModo[1] = "Barras";
+
+        ArrayAdapter<String> adapterModo = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnModo);
+        adapterModo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnModo.setAdapter(adapterModo);
     }
 
     private void getWebserviceProducts(final View v, final SQLiteDatabase db) {
@@ -140,6 +149,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         remote.setQuery(queryDatos);
         remote.execute();
     }
+
     private void fillDatabase(ArrayList rawProductos) throws JSONException {
         SQLiteDatabase db = BaseHelper.getWritable(this);
         System.out.println("CARGANDOOOOO" + rawProductos.get(0));

@@ -15,12 +15,17 @@ public class Usuario {
     private String currSubgr3;
     private String currClase;
     private int currConteo;
+    private Integer modo;
+    private Boolean datosEnviados;
+
+    public final static int MODO_LISTA = 0;
+    public final static int MODO_BARRAS = 1;
 
     public Usuario() {
 
     }
 
-    public Usuario(String usuario, String clave, String currBodega, String currGrupo, String currSubgr, String currSubgr2, String currSubgr3, String currClase, int currConteo) {
+    public Usuario(String usuario, String clave, String currBodega, String currGrupo, String currSubgr, String currSubgr2, String currSubgr3, String currClase, int currConteo, Integer modo, Boolean datosEnviados) {
         this.usuario = usuario;
         this.clave = clave;
         this.currBodega = currBodega;
@@ -30,6 +35,8 @@ public class Usuario {
         this.currSubgr3 = currSubgr3;
         this.currClase = currClase;
         this.currConteo = currConteo;
+        this.modo = modo;
+        this.datosEnviados = datosEnviados;
     }
 
     public ContentValues getValues() {
@@ -43,6 +50,8 @@ public class Usuario {
         c.put("curr_subgr3", currSubgr3);
         c.put("curr_clase", currClase);
         c.put("curr_conteo", currConteo);
+        c.put("modo", modo);
+        c.put("datos_enviados", datosEnviados);
         return c;
     }
 
@@ -55,6 +64,8 @@ public class Usuario {
         c.put("curr_subgr3", currSubgr3);
         c.put("curr_clase", currClase);
         c.put("curr_conteo", currConteo);
+        c.put("modo", modo);
+        c.put("datos_enviados", datosEnviados);
         return c;
     }
 
@@ -76,7 +87,7 @@ public class Usuario {
     }
 
     public Usuario selectUsuario(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT* " +
+        SQLiteQuery sq = new SQLiteQuery("SELECT * " +
                 "FROM usuario");
 
         Object[] rawUsuario = sq.getRecord(db);
@@ -90,7 +101,9 @@ public class Usuario {
                     rawUsuario[5] != null ? rawUsuario[5].toString() : null,
                     rawUsuario[6] != null ? rawUsuario[6].toString() : null,
                     rawUsuario[7] != null ? rawUsuario[7].toString() : null,
-                    Integer.parseInt(rawUsuario[8].toString()));
+                    rawUsuario[8] != null ? Integer.parseInt(rawUsuario[8].toString()) : null,
+                    rawUsuario[9] != null ? Integer.parseInt(rawUsuario[9].toString()) : null,
+                    rawUsuario[10] != null ? (Integer.parseInt(rawUsuario[10].toString()) == 0 ? false : true) : null);
         } else {
             return null;
         }
@@ -166,5 +179,21 @@ public class Usuario {
 
     public void setCurrConteo(int currConteo) {
         this.currConteo = currConteo;
+    }
+
+    public int getModo() {
+        return modo;
+    }
+
+    public void setModo(int modo) {
+        this.modo = modo;
+    }
+
+    public boolean getDatosEnviados() {
+        return datosEnviados;
+    }
+
+    public void setDatosEnviados(boolean datosEnviados) {
+        this.datosEnviados = datosEnviados;
     }
 }

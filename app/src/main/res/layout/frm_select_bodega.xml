@@ -30,7 +30,34 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@android:color/darker_gray"
-        android:padding="15dp"
+        android:padding="0dp"
+        android:paddingStart="10dp" />
+
+    <TextView
+        android:id="@+id/frm_select_bodega_lbl_modo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="290dp"
+        android:layout_marginEnd="10dp"
+
+        android:text="Modo*"
+        tools:layout_editor_absoluteX="29dp"
+        tools:layout_editor_absoluteY="47dp"
+        tools:text="Modo*" />
+
+    <Spinner
+        android:id="@+id/frm_select_bodega_spn_modo"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="310dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/darker_gray"
+        android:padding="0dp"
         android:paddingStart="10dp" />
 
     <Button
@@ -38,6 +65,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="130dp"
-        android:layout_marginTop="350dp"
+        android:layout_marginTop="370dp"
         android:text="Siguiente" />
 </RelativeLayout>

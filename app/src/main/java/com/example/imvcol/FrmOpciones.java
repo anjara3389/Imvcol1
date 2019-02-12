@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
@@ -34,51 +35,75 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     private Spinner spnSubgrupo3;
     private Spinner spnSubgrupo2;
     private Spinner spnClase;
+    private TextView lblSubgrupo;
+    private TextView lblSubgrupo2;
+    private TextView lblSubgrupo3;
+    private TextView lblClase;
     private Object[][] wholeGrupos, wholeSubgrupos, wholeSubgrupos3, wholeSubgrupos2, wholeClases;
     private ArrayList rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
     private Usuario usuario;
     private static final int FINALIZAR_INVENTARIO = 3;
+    HashMap<Integer, String> mapGrupo;
+    HashMap<Integer, String> mapSubgrupo;
+    HashMap<Integer, String> mapSubgrupo2;
+    HashMap<Integer, String> mapSubgrupo3;
+    HashMap<Integer, String> mapClase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_opciones);
         try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            BaseHelper.tryClose(db);
+
             Button btnAceptar = findViewById(R.id.frm_opciones_btn_aceptar);
             spnGrupo = findViewById(R.id.frm_opciones_spn_grupo);
             spnSubgrupo = findViewById(R.id.frm_opciones_spn_subgrupo);
             spnSubgrupo2 = findViewById(R.id.frm_opciones_spn_subgrupo_2);
             spnSubgrupo3 = findViewById(R.id.frm_opciones_spn_subgrupo_3);
             spnClase = findViewById(R.id.frm_opciones_spn_clase);
+            lblClase = findViewById(R.id.frm_opciones_lbl_clase_);
+            lblSubgrupo = findViewById(R.id.frm_opciones_lbl_subgrupo);
+            lblSubgrupo2 = findViewById(R.id.frm_opciones_lbl_subgrupo_2);
+            lblSubgrupo3 = findViewById(R.id.frm_opciones_lbl_subgrupo_3);
+
+            if (usuario.getModo() == usuario.MODO_BARRAS) {
+                spnSubgrupo2.setVisibility(View.GONE);
+                spnSubgrupo3.setVisibility(View.GONE);
+                spnClase.setVisibility(View.GONE);
+                lblClase.setVisibility(View.GONE);
+                lblSubgrupo2.setVisibility(View.GONE);
+                lblSubgrupo3.setVisibility(View.GONE);
+            }
 
             btnAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    HashMap<Integer, String> mapGrupo = (HashMap<Integer, String>) rawGrupos.get(1);
-                    HashMap<Integer, String> mapSubgrupo = (HashMap<Integer, String>) rawSubgrupos.get(1);
-                    HashMap<Integer, String> mapSubgrupo2 = (HashMap<Integer, String>) rawSubgrupos2.get(1);
-                    HashMap<Integer, String> mapSubgrupo3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
-                    HashMap<Integer, String> mapClase = (HashMap<Integer, String>) rawClases.get(1);
+                    mapGrupo = (HashMap<Integer, String>) rawGrupos.get(1);
+                    mapSubgrupo = (HashMap<Integer, String>) rawSubgrupos.get(1);
+                    if (usuario.getModo() == usuario.MODO_LISTA) {
+                        mapSubgrupo2 = (HashMap<Integer, String>) rawSubgrupos2.get(1);
+                        mapSubgrupo3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
+                        mapClase = (HashMap<Integer, String>) rawClases.get(1);
+                    }
                     if (changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())) == null) {
                         Toast.makeText(FrmOpciones.this, "Debe seleccionar un grupo", Toast.LENGTH_LONG).show();
+                    } else if (changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                        Toast.makeText(FrmOpciones.this, "Debe seleccionar un subgrupo", Toast.LENGTH_LONG).show();
                     } else {
                         try {
                             dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
                             dialogUtils.showDialog(getWindow());
-                            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-
-                            usuario = new Usuario().selectUsuario(db);
-                            if (usuario == null) {
-                                Toast.makeText(FrmOpciones.this, "USUARIO ES NULLLL!!!!!!!", Toast.LENGTH_LONG).show();
-                            }
-
                             usuario.setCurrGrupo(changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())));
                             usuario.setCurrSubgr(changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())));
-                            usuario.setCurrSubgr2(changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())));
-                            usuario.setCurrSubgr3(changeValue(mapSubgrupo3.get(spnSubgrupo2.getSelectedItemPosition())));
-                            usuario.setCurrClase(changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
-
-                            countWebserviceFisicos(v, db);
+                            if (usuario.getModo() == usuario.MODO_LISTA) {
+                                usuario.setCurrSubgr2(changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())));
+                                usuario.setCurrSubgr3(changeValue(mapSubgrupo3.get(spnSubgrupo2.getSelectedItemPosition())));
+                                usuario.setCurrClase(changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
+                            }
+                            countWebserviceFisicos(v);
                         } catch (Exception e) {
                             Toast.makeText(FrmOpciones.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
                             e.printStackTrace();
@@ -87,15 +112,19 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
             });
 
-            SQLiteDatabase db = BaseHelper.getReadable(this);
+            db = BaseHelper.getReadable(this);
             wholeGrupos = new Grupo().selectGrupos(db);
             wholeSubgrupos = new Subgrupo().selectSubgrupos(db);
-            wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);
-            wholeSubgrupos3 = new Subgrupo3().selectSubgrupos3(db);
-            wholeClases = new Clase().selectClases(db);
+            if (usuario.getModo() == usuario.MODO_LISTA) {
+                wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);
+                wholeSubgrupos3 = new Subgrupo3().selectSubgrupos3(db);
+                wholeClases = new Clase().selectClases(db);
+            }
 
-            if (wholeGrupos != null && wholeSubgrupos != null) {
-                prepareClases();
+            if (wholeGrupos != null && (wholeSubgrupos != null || usuario.getModo() == usuario.MODO_BARRAS)) {
+                if (usuario.getModo() == usuario.MODO_LISTA) {
+                    prepareClases();
+                }
                 prepareGrupos();
             }
         } catch (JSONException e) {
@@ -133,9 +162,20 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_finalizar_inventario:
-                YesNoDialogFragment dial2 = new YesNoDialogFragment();
-                dial2.setInfo(FrmOpciones.this, FrmOpciones.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
-                dial2.show(getSupportFragmentManager(), "MyDialog");
+                try {
+                    SQLiteDatabase db = BaseHelper.getReadable(this);
+                    if (usuario.getDatosEnviados() || new Inventario().countInventarios(db) == 0) {
+                        YesNoDialogFragment dial2 = new YesNoDialogFragment();
+                        dial2.setInfo(FrmOpciones.this, FrmOpciones.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
+                        dial2.show(getSupportFragmentManager(), "MyDialog");
+                    } else {
+                        throw new Exception("No se puede finalizar el inventario sin enviar los datos existentes.");
+                    }
+                    db.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(FrmOpciones.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 break;
             default:
                 break;
@@ -182,7 +222,9 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         spnSubgrupo.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     public void onItemSelected(AdapterView<?> spn, android.view.View v, int posicion, long id) {
-                        prepareSubgrupos2(grupoId, ((HashMap<Integer, String>) rawSubgrupos.get(1)).get(spnSubgrupo.getSelectedItemPosition()));
+                        if (usuario.getModo() == usuario.MODO_LISTA) {
+                            prepareSubgrupos2(grupoId, ((HashMap<Integer, String>) rawSubgrupos.get(1)).get(spnSubgrupo.getSelectedItemPosition()));
+                        }
                     }
 
                     public void onNothingSelected(AdapterView<?> spn) {
@@ -243,7 +285,8 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         spnClase.setAdapter(adapterClases);
     }
 
-    private void countWebserviceFisicos(final View v, final SQLiteDatabase db) {
+    private void countWebserviceFisicos(final View v) {
+        final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
@@ -304,6 +347,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             @Override
             public void receiveData(Object object) {
                 SQLiteDatabase db = BaseHelper.getWritable(FrmOpciones.this);
+                usuario.setDatosEnviados(false);
                 usuario.updateCurrent(db);
                 dialogUtils.dissmissDialog();
                 Intent i = new Intent(FrmOpciones.this, FrmInventario.class);

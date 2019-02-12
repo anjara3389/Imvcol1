@@ -14,11 +14,11 @@ public class BaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "invfiscol";
 
-    public static final int VERSION = 10;
+    public static final int VERSION = 11;
     String bodega = "CREATE TABLE bodega(bodega TEXT,descripcion TEXT)";
     String grupo = "CREATE TABLE grupo(grupo TEXT,descripcion TEXT)";
     String clase = "CREATE TABLE clase(clase TEXT,descripcion TEXT)";
-    String usuario = "CREATE TABLE usuario(usuario TEXT,clave TEXT,curr_bodega TEXT,curr_grupo TEXT,curr_subgr TEXT,curr_subgr2 TEXT,curr_subgr3 TEXT,curr_clase TEXT,curr_conteo TEXT)";
+    String usuario = "CREATE TABLE usuario(usuario TEXT,clave TEXT,curr_bodega TEXT,curr_grupo TEXT,curr_subgr TEXT,curr_subgr2 TEXT,curr_subgr3 TEXT,curr_clase TEXT,curr_conteo TEXT,modo INT,datos_enviados INT)";
     String subgrupo = "CREATE TABLE subgrupo(subgrupo TEXT, descripcion TEXT,grupo TEXT)";
     String subgrupo2 = "CREATE TABLE subgrupo2(subgrupo2 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT)";
     String subgrupo3 = "CREATE TABLE subgrupo3(subgrupo3 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT,subgrupo2 TEXT)";

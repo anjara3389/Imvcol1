@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
@@ -77,14 +78,21 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         rbCodigo = findViewById(R.id.frm_inventario_rbtn_codigo);
         rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
         spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
+        TextView lblFaltantes = findViewById(R.id.frm_inventario_lbl_faltantes);
         listaProductos = findViewById(R.id.frm_inventario_lst);
         listaProductos.setClickable(true);
         listaProductos.setVisibility(View.GONE);
         disableEnableAfter(false);
+
         try {
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
-            prepareFaltantesSpinner();
+            if (usuario.getModo() == usuario.MODO_BARRAS) {
+                spnFaltantes.setVisibility(View.GONE);
+                lblFaltantes.setVisibility(View.GONE);
+            } else {
+                prepareFaltantesSpinner();
+            }
             BaseHelper.tryClose(db);
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,20 +140,19 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                         selectedProduct = new Producto().selectProductByNumber(db, numero.getText().toString(), code, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                         BaseHelper.tryClose(db);
-                        //System.out.println("Producto " + selectedProduct[0].toString());
-                        //System.out.println("Producto " + selectedProduct[1].toString());
-                        //System.out.println("Producto " + selectedProduct[2].toString());
-                        //System.out.println("Producto " + selectedProduct[3].toString());
+                        if (selectedProduct == null) {
+                            throw new Exception("El producto no exíste dentro del grupo seleccionado");
+                        } else {
+                            producto.setText(selectedProduct[1].toString());
+                            numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
 
-                        producto.setText(selectedProduct[1].toString());
-                        numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
-
-                        disableEnableCargar(false);
+                            disableEnableCargar(false);
+                        }
                     } else {
                         throw new Exception("Introduzca un valor");
                     }
                 } catch (Exception e) {
-                    Toast.makeText(FrmInventario.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(FrmInventario.this, "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
             }
@@ -282,6 +289,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
+
                     public void onNothingSelected(AdapterView<?> spn) {
                     }
                 });
@@ -321,9 +329,22 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 dial3.show(getSupportFragmentManager(), "MyDialog");
                 break;
             case R.id.action_finalizar_inventario:
-                YesNoDialogFragment dial2 = new YesNoDialogFragment();
-                dial2.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
-                dial2.show(getSupportFragmentManager(), "MyDialog");
+
+                try {
+                    SQLiteDatabase db = BaseHelper.getReadable(this);
+                    if (usuario.getDatosEnviados() || new Inventario().countInventarios(db) == 0) {
+                        YesNoDialogFragment dial2 = new YesNoDialogFragment();
+                        dial2.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
+                        dial2.show(getSupportFragmentManager(), "MyDialog");
+                    } else {
+                        throw new Exception("No se puede finalizar el inventario sin enviar los datos existentes.");
+                    }
+                    db.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case R.id.action_liberar_seleccion:
                 YesNoDialogFragment dia = new YesNoDialogFragment();
@@ -592,6 +613,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         usuario.setCurrSubgr3(null);
                         usuario.setCurrClase(null);
                         usuario.setCurrConteo(1);
+                        usuario.setDatosEnviados(true);
                         usuario.updateCurrent(db);
 
                         dialogUtils.dissmissDialog();
