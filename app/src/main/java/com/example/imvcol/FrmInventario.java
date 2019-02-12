@@ -2,6 +2,7 @@ package com.example.imvcol;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.BadParcelableException;
 import android.os.strictmode.SqliteObjectLeakedViolation;
@@ -82,7 +83,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         listaProductos = findViewById(R.id.frm_inventario_lst);
         listaProductos.setClickable(true);
         listaProductos.setVisibility(View.GONE);
-        disableEnableAfter(false);
+        disableEnableCantidad(false);
+        cantidad.setRawInputType(Configuration.KEYBOARD_12KEY);
 
         try {
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -395,22 +397,17 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         btnCargar.setFocusableInTouchMode(enable);
         btnCargar.setClickable(enable);
 
-        disableEnableAfter(!enable);
-
-        //producto.setEnabled(false);
-        //numero.setEnabled(false);
-        //rbCodigo.setEnabled(false);
-        //rbLectura.setEnabled(false);
-
+        disableEnableCantidad(!enable);
     }
 
-    private void disableEnableAfter(boolean enable) {
+    private void disableEnableCantidad(boolean enable) {
         cantidad.setEnabled(enable);
         btnAceptar.setEnabled(enable);
 
         cantidad.setFocusable(enable);
         cantidad.setFocusableInTouchMode(enable);
         cantidad.setClickable(enable);
+        cantidad.requestFocus();
 
         btnAceptar.setFocusable(enable);
         btnAceptar.setFocusableInTouchMode(enable);
