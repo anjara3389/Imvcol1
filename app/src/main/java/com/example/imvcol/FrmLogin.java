@@ -136,13 +136,6 @@ public class FrmLogin extends AppCompatActivity {
 
     private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {
         putZeros();
-
-        System.out.println("bodegas1" + (String) resultsDatos.get(0));
-        System.out.println("grupos" + (String) resultsDatos.get(1));
-        System.out.println("rawSubgrupos" + (String) resultsDatos.get(2));
-        System.out.println("rawSubgrupos2" + (String) resultsDatos.get(3));
-        System.out.println("rawSubgrupos3" + (String) resultsDatos.get(4));
-        System.out.println("rawClases" + (String) resultsDatos.get(5));
         ArrayList rawBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), zeroBodega, this);
         ArrayList rawGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), zeroGrupo, this);
         ArrayList rawSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(2)), zeroSubgrupo, this);

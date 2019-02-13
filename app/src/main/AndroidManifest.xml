@@ -12,19 +12,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FrmSelectBodega"></activity>
-        <activity android:name=".Inicio">
+        <activity
+            android:name=".FrmSelectBodega"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Inicio"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FrmContinuarSesion" />
-        <activity android:name=".FrmInventarios" />
-        <activity android:name=".FrmInventario" />
-        <activity android:name=".FrmOpciones" />
-        <activity android:name=".FrmLogin"></activity>
+        <activity
+            android:name=".FrmContinuarSesion"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FrmInventarios"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FrmInventario"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FrmOpciones"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FrmLogin"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

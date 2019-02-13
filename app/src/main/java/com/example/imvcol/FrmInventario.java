@@ -69,32 +69,33 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_inventario);
-
-        producto = findViewById(R.id.frm_inventario_txt_producto);
-        numero = findViewById(R.id.frm_inventario_txt_numero);
-        cantidad = findViewById(R.id.frm_inventario_txt_cantidad);
-        btnCargar = findViewById(R.id.frm_inventario_btn_cargar);
-        btnAceptar = findViewById(R.id.frm_inventario_btn_aceptar);
-        btnCancelar = findViewById(R.id.frm_inventario_btn_cancelar);
-        rbCodigo = findViewById(R.id.frm_inventario_rbtn_codigo);
-        rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
-        spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
-        TextView lblFaltantes = findViewById(R.id.frm_inventario_lbl_faltantes);
-        listaProductos = findViewById(R.id.frm_inventario_lst);
-        listaProductos.setClickable(true);
-        listaProductos.setVisibility(View.GONE);
-        disableEnableCantidad(false);
-        cantidad.setRawInputType(Configuration.KEYBOARD_12KEY);
-
         try {
+            producto = findViewById(R.id.frm_inventario_txt_producto);
+            numero = findViewById(R.id.frm_inventario_txt_numero);
+            btnCargar = findViewById(R.id.frm_inventario_btn_cargar);
+            btnAceptar = findViewById(R.id.frm_inventario_btn_aceptar);
+            btnCancelar = findViewById(R.id.frm_inventario_btn_cancelar);
+            rbCodigo = findViewById(R.id.frm_inventario_rbtn_codigo);
+            rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
+            spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
+
+            listaProductos = findViewById(R.id.frm_inventario_lst);
+            listaProductos.setClickable(true);
+            listaProductos.setVisibility(View.GONE);
+
+            cantidad = findViewById(R.id.frm_inventario_txt_cantidad);
+            cantidad.setRawInputType(Configuration.KEYBOARD_12KEY);
+            disableEnableCantidad(false);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
+
             if (usuario.getModo() == usuario.MODO_BARRAS) {
                 spnFaltantes.setVisibility(View.GONE);
-                lblFaltantes.setVisibility(View.GONE);
+                findViewById(R.id.frm_inventario_lbl_faltantes).setVisibility(View.GONE);
             } else {
                 prepareFaltantesSpinner();
             }
+
             BaseHelper.tryClose(db);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,7 +111,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 }
             }
         });
-
 
         btnCargar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,16 +139,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
                     } else if (numero.toString() != "" && numero.getText().length() != 0) {
                         int code = rbCodigo.isChecked() ? 0 : 1;
-                        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                        selectedProduct = new Producto().selectProductByNumber(db, numero.getText().toString(), code, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
-                        BaseHelper.tryClose(db);
-                        if (selectedProduct == null) {
-                            throw new Exception("El producto no exíste dentro del grupo seleccionado");
-                        } else {
-                            producto.setText(selectedProduct[1].toString());
-                            numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
-
-                            disableEnableCargar(false);
+                        selectProductoWithNumber(code);
+                        if (spnFaltantes != null && mapFaltantes != null) {
+                            spnFaltantes.setEnabled(mapFaltantes.get(spnFaltantes.getSelectedItemPosition()) != "-1");
                         }
                     } else {
                         throw new Exception("Introduzca un valor");
@@ -176,6 +169,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
 
                     disableEnableCargar(false);
+                    if (spnFaltantes != null && mapFaltantes != null) {
+                        spnFaltantes.setEnabled(mapFaltantes.get(spnFaltantes.getSelectedItemPosition()) != "-1");
+                    }
                 }
             }
         });
@@ -238,6 +234,20 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 limpiar();
             }
         });
+    }
+
+    private void selectProductoWithNumber(int code) throws Exception {
+        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+        selectedProduct = new Producto().selectProductByNumber(db, numero.getText().toString(), code, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        BaseHelper.tryClose(db);
+        if (selectedProduct == null) {
+            throw new Exception("El producto no exíste dentro del grupo seleccionado");
+        } else {
+            producto.setText(selectedProduct[1].toString());
+            numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
+
+            disableEnableCargar(false);
+        }
     }
 
     private void prepareFaltantesSpinner() throws Exception {
@@ -380,16 +390,19 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         producto.setFocusableInTouchMode(enable);
         producto.setClickable(enable);
 
+        spnFaltantes.setEnabled(enable);
+
+
         numero.setFocusable(enable);
         numero.setFocusableInTouchMode(enable);
         numero.setClickable(enable);
 
-        rbCodigo.setFocusable(enable);
-        rbCodigo.setFocusableInTouchMode(enable);
+        //rbCodigo.setFocusable(enable);
+        //rbCodigo.setFocusableInTouchMode(enable);
         rbCodigo.setClickable(enable);
 
-        rbLectura.setFocusable(enable);
-        rbLectura.setFocusableInTouchMode(enable);
+        //rbLectura.setFocusable(enable);
+        //rbLectura.setFocusableInTouchMode(enable);
         rbLectura.setClickable(enable);
 
         btnCargar.setEnabled(enable);
@@ -516,17 +529,24 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanningResult != null) {
-
-            String scanContent = scanningResult.getContents();
-            String scanFormat = scanningResult.getFormatName();
-
-            numero.setText(scanContent);
-        } else {
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    "No scan data received!", Toast.LENGTH_SHORT);
-            toast.show();
+        try {
+            System.out.println("CODIGO REQ" + requestCode);
+            System.out.println("CODIGO REQ" + resultCode);
+            if (requestCode == 49374) {
+                IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+                if (scanningResult != null && scanningResult.getContents() != "") {
+                    numero.setText(scanningResult.getContents());
+                    selectProductoWithNumber(1);
+                    if (spnFaltantes != null && mapFaltantes != null) {
+                        spnFaltantes.setEnabled(mapFaltantes.get(spnFaltantes.getSelectedItemPosition()) != "-1");
+                    }
+                } else {
+                    throw new Exception("No se recibieron datos del lector de código de barras");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -669,11 +689,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 usuario.setCurrClase(null);
                 usuario.setCurrConteo(1);
                 usuario.updateCurrent(db);
-                try {
-                    System.out.print("///////USUARIOCOUNT" + usuario.countUsuario(db));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
                 new Inventario().delete(db);
                 Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
                 startActivityForResult(i, 1);

@@ -13,7 +13,6 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
 
     private Button btnContinuar;
     private Button btnFinalizarInventario;
-    private TextView info;
     private Usuario usuario;
     private static final int FINALIZAR_INVENTARIO = 3;
 
@@ -25,29 +24,29 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
 
         btnContinuar = findViewById(R.id.frm_continuar_sesion_btn_continuar);
         btnFinalizarInventario = findViewById(R.id.frm_continuar_sesion_btn_finalizar_inventario);
+        SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
+        try {
+            usuario = new Usuario().selectUsuario(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
         btnContinuar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
-                    usuario = new Usuario().selectUsuario(db);
-                    if (usuario.getCurrGrupo() != null) {
-                        Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
-                        //i.putExtra("diferencia", true);
-                        startActivityForResult(i, 1);
-                        finish();
-                    } else {
-                        Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
-                        //i.putExtra("diferencia", true);
-                        startActivityForResult(i, 1);
-                        finish();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                if (usuario.getCurrGrupo() != null) {
+                    Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
+                    //i.putExtra("diferencia", true);
+                    startActivityForResult(i, 1);
+                    finish();
+                } else {
+                    Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
+                    //i.putExtra("diferencia", true);
+                    startActivityForResult(i, 1);
+                    finish();
                 }
-
             }
+
         });
         btnFinalizarInventario.setOnClickListener(new View.OnClickListener() {
             @Override
