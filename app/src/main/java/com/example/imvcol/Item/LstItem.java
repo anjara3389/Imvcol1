@@ -1,4 +1,4 @@
-package com.example.imvcol;
+package com.example.imvcol.Item;
 
 public class LstItem {
     private String nombre;

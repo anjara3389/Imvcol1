@@ -9,6 +9,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.imvcol.Item.LstItem;
+import com.example.imvcol.Item.ProductosAdapter;
+
 import java.util.ArrayList;
 
 public class FrmInventarios extends AppCompatActivity {
@@ -33,20 +36,27 @@ public class FrmInventarios extends AppCompatActivity {
 
             if (inventarios == null) {
                 mensaje.setVisibility(View.VISIBLE);
-
             } else {
+                ArrayList<LstItem> data = new ArrayList();
 
-                final ArrayList<String> nombres = new ArrayList();
+                //final ArrayList<String> nombres = new ArrayList();
+                System.out.println("CONTEO" + usuario.getCurrConteo());
 
                 for (int i = 0; i < inventarios.length; i++) {
-                    nombres.add(inventarios[i][0] + "-" + inventarios[i][1] + " (Cant:" + inventarios[i][2]
+                    LstItem item = new LstItem(inventarios[i][0] + "-" + inventarios[i][1],
+                            Integer.parseInt(inventarios[i][2].toString()),
+                            inventarios[i][2 + usuario.getCurrConteo()] == null ? "Falta" : inventarios[i][2 + usuario.getCurrConteo()].toString());
+
+                    data.add(item);
+                   /* nombres.add(inventarios[i][0] + "-" + inventarios[i][1] + " (Cant:" + inventarios[i][2]
                             + ") C1=" + inventarios[i][3] + " "
                             + "C2=" + inventarios[i][4] + " "
-                            + "C3=" + inventarios[i][5] + " ");
+                            + "C3=" + inventarios[i][5] + " ");*/
                 }
+                ProductosAdapter adapter = new ProductosAdapter(data, FrmInventarios.this);
 
-                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(FrmInventarios.this, android.R.layout.simple_list_item_1, nombres);
-                listaTotales.setAdapter(itemsAdapter);
+                //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(FrmInventarios.this, android.R.layout.simple_list_item_1, nombres);
+                listaTotales.setAdapter(adapter);
             }
         } catch (Exception e) {
             e.printStackTrace();

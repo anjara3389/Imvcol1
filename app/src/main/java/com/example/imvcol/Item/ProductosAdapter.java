@@ -1,26 +1,27 @@
-package com.example.imvcol;
+package com.example.imvcol.Item;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.imvcol.R;
+
 import java.util.ArrayList;
 
 public class ProductosAdapter extends ArrayAdapter<LstItem> implements View.OnClickListener {
+    private ArrayList<LstItem> datos;
     private Context context;
-    private ArrayList datos;
 
 
     private static class ViewHolder {
         private TextView txtNombre, txtCantidad, txtConteo;
     }
 
-    public ProductosAdapter(Context context, int resource) {
-        super(context, resource);
+    public ProductosAdapter(ArrayList<LstItem> datos, Context context) {
+        super(context, R.layout.item);
         this.context = context;
         this.datos = datos;
     }
