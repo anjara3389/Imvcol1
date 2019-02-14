@@ -557,7 +557,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
-                getWebserviceProducts(db);
+                checkWebserviceResults(db);
             }
         };
         remote.setContext(this);
@@ -590,7 +590,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         remote.execute();
     }
 
-    private void getWebserviceProducts(final SQLiteDatabase db) {
+    private void checkWebserviceResults(final SQLiteDatabase db) {
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
@@ -682,22 +682,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) {
-                SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
-
-                usuario.setCurrGrupo(null);
-                usuario.setCurrSubgr(null);
-                usuario.setCurrSubgr2(null);
-                usuario.setCurrSubgr3(null);
-                usuario.setCurrClase(null);
-                usuario.setCurrConteo(1);
-                usuario.updateCurrent(db);
-
-                new Inventario().delete(db);
-                Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
-                startActivityForResult(i, 1);
-                Toast.makeText(FrmInventario.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
-                dialogUtils.dissmissDialog();
-                finish();
+                checkWebserviceFisicos();
             }
         };
         ArrayList queryDatos = new ArrayList();
@@ -726,6 +711,87 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         if (usuario.getCurrClase() != null) {
             query += "AND r.clase='" + usuario.getCurrClase() + "'";
         }
+        queryDatos.add(query);
+        System.out.println("QUERYYYYYY///" + query);
+        remote.setQuery(queryDatos);
+        remote.execute();
+    }
+
+    private void checkWebserviceFisicos() {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) throws Exception {
+                SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
+                ArrayList resultsDatos = (ArrayList) object;
+
+                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
+                if (resultsDatos.get(0).equals("[]")) {
+                    dialogUtils.dissmissDialog();
+                    BaseHelper.tryClose(db);
+                    Toast.makeText(FrmInventario.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                } else {
+                    boolean validar = true;
+
+                    for (int i = 0; i < rawResults.size(); i++) {
+                        JSONObject fisico = ((JSONObject) rawResults.get(i));
+                        if (fisico.getInt("fisico") == 1) {
+                            validar = false;
+                        }
+                    }
+
+                    if (validar == true) {
+                        db = BaseHelper.getWritable(FrmInventario.this);
+
+                        usuario.setCurrGrupo(null);
+                        usuario.setCurrSubgr(null);
+                        usuario.setCurrSubgr2(null);
+                        usuario.setCurrSubgr3(null);
+                        usuario.setCurrClase(null);
+                        usuario.setCurrConteo(1);
+                        usuario.updateCurrent(db);
+
+                        new Inventario().delete(db);
+                        Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
+                        startActivityForResult(i, 1);
+                        Toast.makeText(FrmInventario.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
+                        dialogUtils.dissmissDialog();
+                        finish();
+                        db.close();
+
+                    } else {
+                        Toast.makeText(FrmInventario.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        };
+        remote.setContext(FrmInventario.this);
+
+        ArrayList queryDatos = new ArrayList();
+
+        String query = "SELECT fisico " +
+                "FROM referencias_fis F " +
+                "JOIN referencias r on r.codigo=F.codigo " +
+                "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                "AND s.ano=YEAR(getdate()) " +
+                "AND s.mes=MONTH(getdate()) ";
+
+        if (usuario.getCurrGrupo() != null) {
+            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+        }
+        if (usuario.getCurrSubgr() != null) {
+            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+        }
+        if (usuario.getCurrSubgr2() != null) {
+            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+        }
+        if (usuario.getCurrSubgr3() != null) {
+            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+        }
+        if (usuario.getCurrClase() != null) {
+            query += "AND r.clase='" + usuario.getCurrClase() + "'";
+        }
+
         queryDatos.add(query);
         System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);

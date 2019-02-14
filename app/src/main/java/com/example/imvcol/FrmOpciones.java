@@ -346,13 +346,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
             @Override
             public void receiveData(Object object) {
-                SQLiteDatabase db = BaseHelper.getWritable(FrmOpciones.this);
-                usuario.setDatosEnviados(false);
-                usuario.updateCurrent(db);
-                dialogUtils.dissmissDialog();
-                Intent i = new Intent(FrmOpciones.this, FrmInventario.class);
-                startActivityForResult(i, 1);
-                finish();
+                checkWebserviceFisicos();
             }
         };
         ArrayList queryDatos = new ArrayList();
@@ -381,6 +375,77 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         if (usuario.getCurrClase() != null) {
             query += "AND r.clase='" + usuario.getCurrClase() + "'";
         }
+        queryDatos.add(query);
+        System.out.println("QUERYYYYYY///" + query);
+        remote.setQuery(queryDatos);
+        remote.execute();
+    }
+
+    private void checkWebserviceFisicos() {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) throws Exception {
+                SQLiteDatabase db = BaseHelper.getWritable(FrmOpciones.this);
+                ArrayList resultsDatos = (ArrayList) object;
+
+                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmOpciones.this);
+                if (resultsDatos.get(0).equals("[]")) {
+                    dialogUtils.dissmissDialog();
+                    BaseHelper.tryClose(db);
+                    Toast.makeText(FrmOpciones.this, "No se han podido seleccionar fisicos, intente nuevamente", Toast.LENGTH_LONG).show();
+                } else {
+                    boolean validar = true;
+
+                    for (int i = 0; i < rawResults.size(); i++) {
+                        JSONObject fisico = ((JSONObject) rawResults.get(i));
+                        if (fisico.getInt("fisico") == 0) {
+                            validar = false;
+                        }
+                    }
+
+                    if (validar == true) {
+                        db = BaseHelper.getWritable(FrmOpciones.this);
+                        usuario.setDatosEnviados(false);
+                        usuario.updateCurrent(db);
+                        dialogUtils.dissmissDialog();
+                        Intent i = new Intent(FrmOpciones.this, FrmInventario.class);
+                        startActivityForResult(i, 1);
+                        finish();
+
+                    } else {
+                        Toast.makeText(FrmOpciones.this, "No se han podido seleccionar fisicos, intente nuevamente", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        };
+        remote.setContext(FrmOpciones.this);
+
+        ArrayList queryDatos = new ArrayList();
+
+        String query = "SELECT fisico " +
+                "FROM referencias_fis F " +
+                "JOIN referencias r on r.codigo=F.codigo " +
+                "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                "AND s.ano=YEAR(getdate()) " +
+                "AND s.mes=MONTH(getdate()) ";
+
+        if (usuario.getCurrGrupo() != null) {
+            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+        }
+        if (usuario.getCurrSubgr() != null) {
+            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+        }
+        if (usuario.getCurrSubgr2() != null) {
+            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+        }
+        if (usuario.getCurrSubgr3() != null) {
+            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+        }
+        if (usuario.getCurrClase() != null) {
+            query += "AND r.clase='" + usuario.getCurrClase() + "'";
+        }
+
         queryDatos.add(query);
         System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);
