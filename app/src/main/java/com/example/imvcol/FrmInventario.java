@@ -313,7 +313,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_action_bar, menu);
         //menu.findItem(R.id.)
-        setTitle("INVFISCOL");
+        setTitle("INVFISCOL 1.0");
         return true;
     }
 
@@ -492,6 +492,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             }
             if (code == LIBERAR_SELECCION) {
                 try {
+                    dialogUtils = new DialogUtils(this, "Cargando");
+                    dialogUtils.showDialog(this.getWindow());
                     SQLiteDatabase db = BaseHelper.getReadable(this);
                     if (new Inventario().countInventarios(db) == 0) {
                         freeWebserviceFisicos();
@@ -694,6 +696,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
                 startActivityForResult(i, 1);
                 Toast.makeText(FrmInventario.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
+                dialogUtils.dissmissDialog();
                 finish();
             }
         };

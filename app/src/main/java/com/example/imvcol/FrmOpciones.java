@@ -154,7 +154,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
-        setTitle("INVFISCOL");
+        setTitle("INVFISCOL 1.0");
         return true;
     }
 

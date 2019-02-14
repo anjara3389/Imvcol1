@@ -43,7 +43,7 @@ public class FrmInventarios extends AppCompatActivity {
                 System.out.println("CONTEO" + usuario.getCurrConteo());
 
                 for (int i = 0; i < inventarios.length; i++) {
-                    LstItem item = new LstItem(inventarios[i][0] + "-" + inventarios[i][1],
+                    LstItem item = new LstItem(inventarios[i][0] + "-" + (inventarios[i][1] == null ? "Sin nombre" : inventarios[i][1]),
                             Integer.parseInt(inventarios[i][2].toString()),
                             inventarios[i][2 + usuario.getCurrConteo()] == null ? "Falta" : inventarios[i][2 + usuario.getCurrConteo()].toString());
 

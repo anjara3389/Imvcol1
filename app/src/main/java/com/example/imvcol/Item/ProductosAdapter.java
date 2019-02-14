@@ -12,7 +12,7 @@ import com.example.imvcol.R;
 import java.util.ArrayList;
 
 public class ProductosAdapter extends ArrayAdapter<LstItem> implements View.OnClickListener {
-    private ArrayList<LstItem> datos;
+    private ArrayList<LstItem> dataSet;
     private Context context;
 
 
@@ -21,9 +21,9 @@ public class ProductosAdapter extends ArrayAdapter<LstItem> implements View.OnCl
     }
 
     public ProductosAdapter(ArrayList<LstItem> datos, Context context) {
-        super(context, R.layout.item);
+        super(context, R.layout.item, datos);
         this.context = context;
-        this.datos = datos;
+        this.dataSet = datos;
     }
 
     @Override
@@ -33,23 +33,24 @@ public class ProductosAdapter extends ArrayAdapter<LstItem> implements View.OnCl
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        String dataNombre = getItem(position).getNombre();
-        int dataCantidad = getItem(position).getCantidad();
-        String dataConteo = getItem(position).getConteo();
         ViewHolder viewHolder;
+        if (convertView == null) {
+            viewHolder = new ViewHolder();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.item, parent, false);
 
-        viewHolder = new ViewHolder();
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        convertView = inflater.inflate(R.layout.item, parent, false);
+            viewHolder.txtNombre = convertView.findViewById(R.id.item_txt_nombre_producto);
+            viewHolder.txtCantidad = convertView.findViewById(R.id.item_txt_cantidad);
+            viewHolder.txtConteo = convertView.findViewById(R.id.item_txt_conteo);
 
-        viewHolder.txtNombre = convertView.findViewById(R.id.item_txt_nombre_producto);
-        viewHolder.txtCantidad = convertView.findViewById(R.id.item_txt_cantidad);
-        viewHolder.txtConteo = convertView.findViewById(R.id.item_txt_conteo);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+        viewHolder.txtNombre.setText(getItem(position).getNombre());
+        viewHolder.txtCantidad.setText("Stock: " + String.valueOf(getItem(position).getCantidad()));
+        viewHolder.txtConteo.setText("Conteo: " + String.valueOf(getItem(position).getConteo()));
 
-        viewHolder.txtNombre.setText(dataNombre);
-        viewHolder.txtCantidad.setText(dataCantidad);
-        viewHolder.txtNombre.setText(dataConteo);
 
         return convertView;
     }

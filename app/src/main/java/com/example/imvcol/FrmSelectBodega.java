@@ -181,7 +181,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
-        setTitle("INVFISCOL");
+        setTitle("INVFISCOL 1.0");
         return true;
     }
 
