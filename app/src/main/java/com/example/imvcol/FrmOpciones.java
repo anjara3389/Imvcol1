@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
 import org.json.JSONArray;
@@ -285,100 +286,110 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         spnClase.setAdapter(adapterClases);
     }
 
-    private void countWebserviceFisicos(final View v) {
-        final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) throws Exception {
-                ArrayList resultsDatos = (ArrayList) object;
-                JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmOpciones.this).get(0);
-                int cantidadFisicos = Integer.parseInt(rawResult.getString("computed"));
+    private void countWebserviceFisicos(final View v) throws Exception {
+        if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultsDatos = (ArrayList) object;
+                    JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmOpciones.this).get(0);
+                    int cantidadFisicos = Integer.parseInt(rawResult.getString("computed"));
 
-                if (resultsDatos.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
-                    BaseHelper.tryClose(db);
-                    Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
-                } else if (cantidadFisicos > 0) {
-                    System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
-                    Toast.makeText(v.getContext(), "No se pueden cargar los productos correspondientes a los valores seleccionados ya que hay productos que ya han sido tomados para inventario por otra persona", Toast.LENGTH_LONG).show();
-                    dialogUtils.dissmissDialog();
-                } else {
-                    updateWebserviceFisicos();
+                    if (resultsDatos.get(0).equals("[]")) {
+                        dialogUtils.dissmissDialog();
+                        BaseHelper.tryClose(db);
+                        Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
+                    } else if (cantidadFisicos > 0) {
+                        System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
+                        Toast.makeText(v.getContext(), "No se pueden cargar los productos correspondientes a los valores seleccionados ya que hay productos que ya han sido tomados para inventario por otra persona", Toast.LENGTH_LONG).show();
+                        dialogUtils.dissmissDialog();
+                    } else {
+                        updateWebserviceFisicos();
+                    }
                 }
+            };
+            remote.setContext(v.getContext());
+
+            ArrayList queryDatos = new ArrayList();
+
+            String query = "SELECT COUNT(*) " +
+                    "FROM referencias_fis f " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "JOIN referencias r on r.codigo=s.codigo " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND f.fisico<>0  ";
+
+            if (usuario.getCurrGrupo() != null) {
+                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
             }
-        };
-        remote.setContext(v.getContext());
+            if (usuario.getCurrSubgr() != null) {
+                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+            }
+            if (usuario.getCurrSubgr2() != null) {
+                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+            }
+            if (usuario.getCurrSubgr3() != null) {
+                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+            }
+            if (usuario.getCurrClase() != null) {
+                query += "AND r.clase='" + usuario.getCurrClase() + "'";
+            }
 
-        ArrayList queryDatos = new ArrayList();
-
-        String query = "SELECT COUNT(*) " +
-                "FROM referencias_fis f " +
-                "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                "JOIN referencias r on r.codigo=s.codigo " +
-                "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
-                "AND s.ano=YEAR(getdate()) " +
-                "AND s.mes=MONTH(getdate()) " +
-                "AND f.fisico<>0  ";
-
-        if (usuario.getCurrGrupo() != null) {
-            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
         }
-        if (usuario.getCurrSubgr() != null) {
-            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-        }
-        if (usuario.getCurrSubgr2() != null) {
-            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-        }
-        if (usuario.getCurrSubgr3() != null) {
-            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-        }
-        if (usuario.getCurrClase() != null) {
-            query += "AND r.clase='" + usuario.getCurrClase() + "'";
-        }
-
-        queryDatos.add(query);
-        System.out.println("QUERYYYYYY///" + query);
-        remote.setQuery(queryDatos);
-        remote.execute();
     }
 
-    private void updateWebserviceFisicos() {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) {
-                checkWebserviceFisicos();
-            }
-        };
-        ArrayList queryDatos = new ArrayList();
-        remote.setContext(this);
-        String query = "UPDATE F SET fisico=1 " +
-                "FROM referencias_fis F " +
-                "JOIN referencias r on r.codigo=F.codigo " +
-                "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
-                "AND s.ano=YEAR(getdate()) " +
-                "AND s.mes=MONTH(getdate()) " +
-                "AND f.fisico=0  ";
+    private void updateWebserviceFisicos() throws Exception {
+        if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) {
+                    checkWebserviceFisicos();
+                }
+            };
+            ArrayList queryDatos = new ArrayList();
+            remote.setContext(this);
+            String query = "UPDATE F SET fisico=1 " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND f.fisico=0  ";
 
-        if (usuario.getCurrGrupo() != null) {
-            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+            if (usuario.getCurrGrupo() != null) {
+                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+            }
+            if (usuario.getCurrSubgr() != null) {
+                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+            }
+            if (usuario.getCurrSubgr2() != null) {
+                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+            }
+            if (usuario.getCurrSubgr3() != null) {
+                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+            }
+            if (usuario.getCurrClase() != null) {
+                query += "AND r.clase='" + usuario.getCurrClase() + "'";
+            }
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
         }
-        if (usuario.getCurrSubgr() != null) {
-            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-        }
-        if (usuario.getCurrSubgr2() != null) {
-            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-        }
-        if (usuario.getCurrSubgr3() != null) {
-            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-        }
-        if (usuario.getCurrClase() != null) {
-            query += "AND r.clase='" + usuario.getCurrClase() + "'";
-        }
-        queryDatos.add(query);
-        System.out.println("QUERYYYYYY///" + query);
-        remote.setQuery(queryDatos);
-        remote.execute();
     }
 
     private void checkWebserviceFisicos() {

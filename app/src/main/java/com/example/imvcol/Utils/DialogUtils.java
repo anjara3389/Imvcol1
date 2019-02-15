@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 public class DialogUtils {
 

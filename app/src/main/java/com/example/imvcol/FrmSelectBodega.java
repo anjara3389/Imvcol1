@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
 import org.json.JSONArray;
@@ -112,42 +113,47 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         spnModo.setAdapter(adapterModo);
     }
 
-    private void getWebserviceProducts(final View v, final SQLiteDatabase db) {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) throws Exception {
-                ArrayList resultsDatos = (ArrayList) object;
-                System.out.println("productos1" + resultsDatos.get(0));
-                ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmSelectBodega.this);
-                if (resultsDatos.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
-                    BaseHelper.tryClose(db);
-                    Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
-                } else {
-                    fillDatabase(rawProductos);
-                    dialogUtils.dissmissDialog();
-                    Intent i = new Intent(v.getContext(), FrmOpciones.class);
-                    //i.putExtra("datos", resultsDatos);
-                    startActivityForResult(i, 1);
-                    finish();
+    private void getWebserviceProducts(final View v, final SQLiteDatabase db) throws Exception {
+        if (!NetUtils.isOnlineNet(FrmSelectBodega.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultsDatos = (ArrayList) object;
+                    System.out.println("productos1" + resultsDatos.get(0));
+                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmSelectBodega.this);
+                    if (resultsDatos.get(0).equals("[]")) {
+                        dialogUtils.dissmissDialog();
+                        BaseHelper.tryClose(db);
+                        Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
+                    } else {
+                        fillDatabase(rawProductos);
+                        dialogUtils.dissmissDialog();
+                        Intent i = new Intent(v.getContext(), FrmOpciones.class);
+                        //i.putExtra("datos", resultsDatos);
+                        startActivityForResult(i, 1);
+                        finish();
+                    }
                 }
-            }
-        };
-        remote.setContext(v.getContext());
+            };
+            remote.setContext(v.getContext());
 
-        ArrayList queryDatos = new ArrayList();
+            ArrayList queryDatos = new ArrayList();
 
-        String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
-                "FROM v_referencias_sto s " +
-                "JOIN referencias r on r.codigo=s.codigo " +
-                "JOIN referencias_alt a on r.codigo=a.codigo " +
-                "WHERE s.bodega='" + currUser.getCurrBodega() + "' " +
-                " AND s.ano=YEAR(getdate()) " +
-                " AND s.mes=MONTH(getdate()) ";
-        queryDatos.add(query);
-        System.out.println("QUERYYYYYY///" + query);
-        remote.setQuery(queryDatos);
-        remote.execute();
+            String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
+                    "FROM v_referencias_sto s " +
+                    "JOIN referencias r on r.codigo=s.codigo " +
+                    "JOIN referencias_alt a on r.codigo=a.codigo " +
+                    "WHERE s.bodega='" + currUser.getCurrBodega() + "' " +
+                    " AND s.ano=YEAR(getdate()) " +
+                    " AND s.mes=MONTH(getdate()) ";
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
     }
 
     private void fillDatabase(ArrayList rawProductos) throws JSONException {

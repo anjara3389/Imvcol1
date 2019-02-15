@@ -12,12 +12,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 
@@ -63,75 +65,85 @@ public class FrmLogin extends AppCompatActivity {
     }
 
 
-    private void checkUserOnWebService(final View v) {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) throws Exception {
-                ArrayList resultAsync = (ArrayList) object;
-                if (resultAsync.get(0) == null) {
-                    throw new Exception("No se han podido cargar el usuario, intente nuevamente");
-                }
-                if (resultAsync.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
-                    Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
-                } else {
-                    SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-
-                    new Usuario().delete(db);
-                    Usuario u = new Usuario(usuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null, 1, null, false);
-                    u.insert(db);
-
-                    if (new Bodega().countBodegas(db) == 0) {
-                        getWebserviceData(v, db);
-                    } else {
-                        Intent i = new Intent(v.getContext(), FrmSelectBodega.class);
-                        // i.putExtra("datos", resultsDatos);
-                        startActivityForResult(i, 1);
-                        BaseHelper.tryClose(db);
+    private void checkUserOnWebService(final View v) throws Exception {
+        if (!NetUtils.isOnlineNet(FrmLogin.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultAsync = (ArrayList) object;
+                    if (resultAsync.get(0) == null) {
+                        throw new Exception("No se han podido cargar el usuario, intente nuevamente");
+                    }
+                    if (resultAsync.get(0).equals("[]")) {
                         dialogUtils.dissmissDialog();
-                        finish();
+                        Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
+                    } else {
+                        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+
+                        new Usuario().delete(db);
+                        Usuario u = new Usuario(usuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null, 1, null, false);
+                        u.insert(db);
+
+                        if (new Bodega().countBodegas(db) == 0) {
+                            getWebserviceData(v, db);
+                        } else {
+                            Intent i = new Intent(v.getContext(), FrmSelectBodega.class);
+                            // i.putExtra("datos", resultsDatos);
+                            startActivityForResult(i, 1);
+                            BaseHelper.tryClose(db);
+                            dialogUtils.dissmissDialog();
+                            finish();
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        remoteQuery.setContext(v.getContext());
-        ArrayList queryUsers = new ArrayList();
+            remoteQuery.setContext(v.getContext());
+            ArrayList queryUsers = new ArrayList();
 
-        queryUsers.add("SELECT * " +
-                "FROM USUARIOS " +
-                "WHERE USUARIO=UPPER('" + usuario.getText() + "') " +
-                "AND CLAVE=UPPER('" + contrasenia.getText() + "')");
+            queryUsers.add("SELECT * " +
+                    "FROM USUARIOS " +
+                    "WHERE USUARIO=UPPER('" + usuario.getText() + "') " +
+                    "AND CLAVE=UPPER('" + contrasenia.getText() + "')");
 
-        remoteQuery.setQuery(queryUsers);
-        remoteQuery.execute();
+            remoteQuery.setQuery(queryUsers);
+            remoteQuery.execute();
+        }
     }
 
-    private void getWebserviceData(final View v, final SQLiteDatabase db) {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) throws Exception {
-                ArrayList resultsDatos = (ArrayList) object;
-                dialogUtils.dissmissDialog();
-                if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
-                    throw new Exception("No se han podido cargar los datos, intente nuevamente");
-                } else {
-                    fillDatabase(db, resultsDatos);
+    private void getWebserviceData(final View v, final SQLiteDatabase db) throws Exception {
+        if (!NetUtils.isOnlineNet(FrmLogin.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultsDatos = (ArrayList) object;
+                    dialogUtils.dissmissDialog();
+                    if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
+                        throw new Exception("No se han podido cargar los datos, intente nuevamente");
+                    } else {
+                        fillDatabase(db, resultsDatos);
+                    }
                 }
-            }
-        };
-        remote.setContext(v.getContext());
+            };
+            remote.setContext(v.getContext());
 
-        ArrayList queryDatos = new ArrayList();
-        queryDatos.add("SELECT BODEGA, DESCRIPCION FROM BODEGAS");
-        queryDatos.add("SELECT * FROM REFERENCIAS_GRU");
-        queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
-        queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
-        queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
-        queryDatos.add("SELECT * FROM referencias_cla");
+            ArrayList queryDatos = new ArrayList();
+            queryDatos.add("SELECT BODEGA, DESCRIPCION FROM BODEGAS");
+            queryDatos.add("SELECT * FROM REFERENCIAS_GRU");
+            queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
+            queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
+            queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
+            queryDatos.add("SELECT * FROM referencias_cla");
 
-        remote.setQuery(queryDatos);
-        remote.execute();
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
     }
 
     private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {

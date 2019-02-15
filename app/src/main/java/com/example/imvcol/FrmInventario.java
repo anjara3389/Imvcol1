@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
+import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
 import com.example.imvcol.com.google.zxing.integration.android.IntentResult;
@@ -553,249 +554,269 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     }
 
     private void insertResultsOnWebservice() throws Exception {
-        final SQLiteDatabase db = BaseHelper.getWritable(this);
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) throws Exception {
-                checkWebserviceResults(db);
+        if (!NetUtils.isOnlineNet(FrmInventario.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            final SQLiteDatabase db = BaseHelper.getWritable(this);
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    checkWebserviceResults(db);
+                }
+            };
+            remote.setContext(this);
+
+            ArrayList queryDatos = new ArrayList();
+            ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
+            db.close();
+
+            for (int i = 0; i < inventarios.size(); i++) {
+                Inventario inventario = inventarios.get(i);
+                String query = "UPDATE f " +
+                        "SET toma_1=" + inventario.getConteo1() + ", " +
+                        "usu_toma_1=UPPER('" + inventario.getUsuario1() + "'), " +
+                        "toma_2=" + inventario.getConteo2() + ", " +
+                        "usu_toma_2=UPPER('" + inventario.getUsuario2() + "'), " +
+                        "toma_3=" + inventario.getConteo3() + ", " +
+                        "usu_toma_3=UPPER('" + inventario.getUsuario3() + "'), " +
+                        "fecha_ultima=GETDATE() " +
+                        "FROM referencias_fis f " +
+                        "JOIN referencias r on r.codigo=f.codigo " +
+                        "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                        "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
+                        "AND s.ano=YEAR(getdate()) " +
+                        "AND s.mes=MONTH(getdate()) " +
+                        "AND f.codigo='" + inventario.getProducto() + "' ";
+                queryDatos.add(query);
+                System.out.println("QUERYYYYYY///" + query);
             }
-        };
-        remote.setContext(this);
-
-        ArrayList queryDatos = new ArrayList();
-        ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
-        db.close();
-
-        for (int i = 0; i < inventarios.size(); i++) {
-            Inventario inventario = inventarios.get(i);
-            String query = "UPDATE f " +
-                    "SET toma_1=" + inventario.getConteo1() + ", " +
-                    "usu_toma_1=UPPER('" + inventario.getUsuario1() + "'), " +
-                    "toma_2=" + inventario.getConteo2() + ", " +
-                    "usu_toma_2=UPPER('" + inventario.getUsuario2() + "'), " +
-                    "toma_3=" + inventario.getConteo3() + ", " +
-                    "usu_toma_3=UPPER('" + inventario.getUsuario3() + "'), " +
-                    "fecha_ultima=GETDATE() " +
-                    "FROM referencias_fis f " +
-                    "JOIN referencias r on r.codigo=f.codigo " +
-                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
-                    "AND s.ano=YEAR(getdate()) " +
-                    "AND s.mes=MONTH(getdate()) " +
-                    "AND f.codigo='" + inventario.getProducto() + "' ";
-            queryDatos.add(query);
-            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
         }
-        remote.setQuery(queryDatos);
-        remote.execute();
     }
 
-    private void checkWebserviceResults(final SQLiteDatabase db) {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) throws Exception {
-                ArrayList resultsDatos = (ArrayList) object;
+    private void checkWebserviceResults(final SQLiteDatabase db) throws Exception {
+        if (!NetUtils.isOnlineNet(FrmInventario.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultsDatos = (ArrayList) object;
 
-                ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
-                if (resultsDatos.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
-                    BaseHelper.tryClose(db);
-                    Toast.makeText(FrmInventario.this, "No se han podido enviar los datos, intente nuevament", Toast.LENGTH_LONG).show();
-                } else {
-                    SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
-                    ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
+                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
+                    if (resultsDatos.get(0).equals("[]")) {
+                        dialogUtils.dissmissDialog();
+                        BaseHelper.tryClose(db);
+                        Toast.makeText(FrmInventario.this, "No se han podido enviar los datos, intente nuevament", Toast.LENGTH_LONG).show();
+                    } else {
+                        SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
+                        ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
 
-                    boolean validar = true;
+                        boolean validar = true;
 
-                    for (int j = 0; j < inventarios.size(); j++) {
-                        for (int i = 0; i < rawProductos.size(); i++) {
-                            Inventario inventario = inventarios.get(j);
-                            JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
-                            if (rawProducto.getString("codigo") == inventario.getProducto()) {
-                                if (rawProducto.getString("toma_1") != inventario.getConteo1().toString() ||
-                                        rawProducto.getString("usu_toma_1") != inventario.getConteo1().toString() ||
-                                        rawProducto.getString("toma_2") != inventario.getConteo1().toString() ||
-                                        rawProducto.getString("usu_toma_2") != inventario.getConteo1().toString() ||
-                                        rawProducto.getString("toma_3") != inventario.getConteo1().toString() ||
-                                        rawProducto.getString("fecha_ultima") != inventario.getConteo1().toString()) {
-                                    validar = false;
+                        for (int j = 0; j < inventarios.size(); j++) {
+                            for (int i = 0; i < rawProductos.size(); i++) {
+                                Inventario inventario = inventarios.get(j);
+                                JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
+                                if (rawProducto.getString("codigo") == inventario.getProducto()) {
+                                    if (rawProducto.getString("toma_1") != inventario.getConteo1().toString() ||
+                                            rawProducto.getString("usu_toma_1") != inventario.getConteo1().toString() ||
+                                            rawProducto.getString("toma_2") != inventario.getConteo1().toString() ||
+                                            rawProducto.getString("usu_toma_2") != inventario.getConteo1().toString() ||
+                                            rawProducto.getString("toma_3") != inventario.getConteo1().toString() ||
+                                            rawProducto.getString("fecha_ultima") != inventario.getConteo1().toString()) {
+                                        validar = false;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (validar == true) {
+                        if (validar == true) {
 
-                        new Inventario().delete(db);
-                        usuario.setCurrGrupo(null);
-                        usuario.setCurrSubgr(null);
-                        usuario.setCurrSubgr2(null);
-                        usuario.setCurrSubgr3(null);
-                        usuario.setCurrClase(null);
-                        usuario.setCurrConteo(1);
-                        usuario.setDatosEnviados(true);
-                        usuario.updateCurrent(db);
+                            new Inventario().delete(db);
+                            usuario.setCurrGrupo(null);
+                            usuario.setCurrSubgr(null);
+                            usuario.setCurrSubgr2(null);
+                            usuario.setCurrSubgr3(null);
+                            usuario.setCurrClase(null);
+                            usuario.setCurrConteo(1);
+                            usuario.setDatosEnviados(true);
+                            usuario.updateCurrent(db);
 
-                        dialogUtils.dissmissDialog();
+                            dialogUtils.dissmissDialog();
 
-                        Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
-                        startActivityForResult(i, 1);
-                        BaseHelper.tryClose(db);
-                        Toast.makeText(FrmInventario.this, "Se enviaron los datos exitosamente", Toast.LENGTH_LONG).show();
-                        finish();
-                    } else {
-                        Toast.makeText(FrmInventario.this, "No se han podido enviar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        };
-        remote.setContext(FrmInventario.this);
-
-        ArrayList queryDatos = new ArrayList();
-
-        String query = "SELECT rf.codigo,rf.toma_1,rf.usu_toma_1,rf.toma_2,rf.usu_toma_2,rf.toma_3,rf.usu_toma_3,rf.fecha_ultima " +
-                "FROM referencias_fis rf " +
-                "JOIN referencias r on r.codigo=rf.codigo " +
-                "WHERE bodega='" + usuario.getCurrBodega() + "' ";
-        if (usuario.getCurrGrupo() != null) {
-            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-        }
-        if (usuario.getCurrSubgr() != null) {
-            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-        }
-        if (usuario.getCurrSubgr2() != null) {
-            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-        }
-        if (usuario.getCurrSubgr3() != null) {
-            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-        }
-        if (usuario.getCurrClase() != null) {
-            query += "AND r.clase='" + usuario.getCurrClase() + "'";
-        }
-
-        queryDatos.add(query);
-        System.out.println("QUERYYYYYY///" + query);
-        remote.setQuery(queryDatos);
-        remote.execute();
-    }
-
-    private void freeWebserviceFisicos() {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) {
-                checkWebserviceFisicos();
-            }
-        };
-        ArrayList queryDatos = new ArrayList();
-        remote.setContext(this);
-        String query = "UPDATE F SET fisico=0 " +
-                "FROM referencias_fis F " +
-                "JOIN referencias r on r.codigo=F.codigo " +
-                "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
-                "AND s.ano=YEAR(getdate()) " +
-                "AND s.mes=MONTH(getdate()) " +
-                "AND f.fisico=1  ";
-
-        if (usuario.getCurrGrupo() != null) {
-            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-        }
-        if (usuario.getCurrSubgr() != null) {
-            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-        }
-        if (usuario.getCurrSubgr2() != null) {
-            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-        }
-        if (usuario.getCurrSubgr3() != null) {
-            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-        }
-        if (usuario.getCurrClase() != null) {
-            query += "AND r.clase='" + usuario.getCurrClase() + "'";
-        }
-        queryDatos.add(query);
-        System.out.println("QUERYYYYYY///" + query);
-        remote.setQuery(queryDatos);
-        remote.execute();
-    }
-
-    private void checkWebserviceFisicos() {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-            @Override
-            public void receiveData(Object object) throws Exception {
-                SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
-                ArrayList resultsDatos = (ArrayList) object;
-
-                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
-                if (resultsDatos.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
-                    BaseHelper.tryClose(db);
-                    Toast.makeText(FrmInventario.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
-                } else {
-                    boolean validar = true;
-
-                    for (int i = 0; i < rawResults.size(); i++) {
-                        JSONObject fisico = ((JSONObject) rawResults.get(i));
-                        if (fisico.getInt("fisico") == 1) {
-                            validar = false;
+                            Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
+                            startActivityForResult(i, 1);
+                            BaseHelper.tryClose(db);
+                            Toast.makeText(FrmInventario.this, "Se enviaron los datos exitosamente", Toast.LENGTH_LONG).show();
+                            finish();
+                        } else {
+                            Toast.makeText(FrmInventario.this, "No se han podido enviar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                         }
                     }
+                }
+            };
+            remote.setContext(FrmInventario.this);
 
-                    if (validar == true) {
-                        db = BaseHelper.getWritable(FrmInventario.this);
+            ArrayList queryDatos = new ArrayList();
 
-                        usuario.setCurrGrupo(null);
-                        usuario.setCurrSubgr(null);
-                        usuario.setCurrSubgr2(null);
-                        usuario.setCurrSubgr3(null);
-                        usuario.setCurrClase(null);
-                        usuario.setCurrConteo(1);
-                        usuario.updateCurrent(db);
+            String query = "SELECT rf.codigo,rf.toma_1,rf.usu_toma_1,rf.toma_2,rf.usu_toma_2,rf.toma_3,rf.usu_toma_3,rf.fecha_ultima " +
+                    "FROM referencias_fis rf " +
+                    "JOIN referencias r on r.codigo=rf.codigo " +
+                    "WHERE bodega='" + usuario.getCurrBodega() + "' ";
+            if (usuario.getCurrGrupo() != null) {
+                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+            }
+            if (usuario.getCurrSubgr() != null) {
+                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+            }
+            if (usuario.getCurrSubgr2() != null) {
+                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+            }
+            if (usuario.getCurrSubgr3() != null) {
+                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+            }
+            if (usuario.getCurrClase() != null) {
+                query += "AND r.clase='" + usuario.getCurrClase() + "'";
+            }
 
-                        new Inventario().delete(db);
-                        Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
-                        startActivityForResult(i, 1);
-                        Toast.makeText(FrmInventario.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
+    }
+
+    private void freeWebserviceFisicos() throws Exception {
+        if (!NetUtils.isOnlineNet(FrmInventario.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    checkWebserviceFisicos();
+                }
+            };
+            ArrayList queryDatos = new ArrayList();
+            remote.setContext(this);
+            String query = "UPDATE F SET fisico=0 " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND f.fisico=1  ";
+
+            if (usuario.getCurrGrupo() != null) {
+                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+            }
+            if (usuario.getCurrSubgr() != null) {
+                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+            }
+            if (usuario.getCurrSubgr2() != null) {
+                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+            }
+            if (usuario.getCurrSubgr3() != null) {
+                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+            }
+            if (usuario.getCurrClase() != null) {
+                query += "AND r.clase='" + usuario.getCurrClase() + "'";
+            }
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
+    }
+
+    private void checkWebserviceFisicos() throws Exception {
+        if (!NetUtils.isOnlineNet(FrmInventario.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
+                    ArrayList resultsDatos = (ArrayList) object;
+
+                    ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
+                    if (resultsDatos.get(0).equals("[]")) {
                         dialogUtils.dissmissDialog();
-                        finish();
-                        db.close();
-
-                    } else {
+                        BaseHelper.tryClose(db);
                         Toast.makeText(FrmInventario.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                    } else {
+                        boolean validar = true;
+
+                        for (int i = 0; i < rawResults.size(); i++) {
+                            JSONObject fisico = ((JSONObject) rawResults.get(i));
+                            if (fisico.getInt("fisico") == 1) {
+                                validar = false;
+                            }
+                        }
+
+                        if (validar == true) {
+                            db = BaseHelper.getWritable(FrmInventario.this);
+
+                            usuario.setCurrGrupo(null);
+                            usuario.setCurrSubgr(null);
+                            usuario.setCurrSubgr2(null);
+                            usuario.setCurrSubgr3(null);
+                            usuario.setCurrClase(null);
+                            usuario.setCurrConteo(1);
+                            usuario.updateCurrent(db);
+
+                            new Inventario().delete(db);
+                            Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
+                            startActivityForResult(i, 1);
+                            Toast.makeText(FrmInventario.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
+                            dialogUtils.dissmissDialog();
+                            finish();
+                            db.close();
+
+                        } else {
+                            Toast.makeText(FrmInventario.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
+            };
+            remote.setContext(FrmInventario.this);
+
+            ArrayList queryDatos = new ArrayList();
+
+            String query = "SELECT fisico " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) ";
+
+            if (usuario.getCurrGrupo() != null) {
+                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
             }
-        };
-        remote.setContext(FrmInventario.this);
+            if (usuario.getCurrSubgr() != null) {
+                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+            }
+            if (usuario.getCurrSubgr2() != null) {
+                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+            }
+            if (usuario.getCurrSubgr3() != null) {
+                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+            }
+            if (usuario.getCurrClase() != null) {
+                query += "AND r.clase='" + usuario.getCurrClase() + "'";
+            }
 
-        ArrayList queryDatos = new ArrayList();
-
-        String query = "SELECT fisico " +
-                "FROM referencias_fis F " +
-                "JOIN referencias r on r.codigo=F.codigo " +
-                "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
-                "AND s.ano=YEAR(getdate()) " +
-                "AND s.mes=MONTH(getdate()) ";
-
-        if (usuario.getCurrGrupo() != null) {
-            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
         }
-        if (usuario.getCurrSubgr() != null) {
-            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-        }
-        if (usuario.getCurrSubgr2() != null) {
-            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-        }
-        if (usuario.getCurrSubgr3() != null) {
-            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-        }
-        if (usuario.getCurrClase() != null) {
-            query += "AND r.clase='" + usuario.getCurrClase() + "'";
-        }
-
-        queryDatos.add(query);
-        System.out.println("QUERYYYYYY///" + query);
-        remote.setQuery(queryDatos);
-        remote.execute();
     }
 
 }

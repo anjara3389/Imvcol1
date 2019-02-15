@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -11,6 +13,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import com.example.imvcol.Utils.NetUtils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -24,7 +28,7 @@ import java.util.ArrayList;
 public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayList> {
 
     private ArrayList query;
-    private Context ctx;
+    private static Context ctx;
 
     private final String USER_AGENT = "Mozilla/5.0";
 
@@ -47,9 +51,8 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
     }
 
     protected ArrayList doInBackground(URL... urls) {
-        ArrayList respuestas = new ArrayList();
         try {
-
+            ArrayList respuestas = new ArrayList();
             for (int i = 0; i < query.size(); i++) {
                 URL url = new URL("http://190.66.24.90:4111/w1/webservices_copia.php");
                 //"http://190.66.24.90:4111/w1/webservices.php"
@@ -93,6 +96,8 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
                     respuestas.add(response.toString());
                 }
             }
+            return respuestas;
+
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(ctx, "Error de entrada/salida /" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -100,7 +105,7 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
             e.printStackTrace();
             Toast.makeText(ctx, "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        return respuestas;
+        return null;
     }
 
     protected void onProgressUpdate(Integer... progress) {
@@ -113,12 +118,11 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
             if (result != null) {
                 receiveData(result);
             } else {
-                throw new Exception("Datos vacíos");
+                throw new Exception("No se pudo completar la operación");
             }
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(ctx, "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
 }
