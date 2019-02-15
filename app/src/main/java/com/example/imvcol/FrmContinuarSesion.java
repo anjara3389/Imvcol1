@@ -64,7 +64,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e, Toast.LENGTH_LONG);
+                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
                 }
 
             }
@@ -95,7 +95,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
                 finish();
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
             }
         }
     }

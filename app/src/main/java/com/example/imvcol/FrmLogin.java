@@ -47,8 +47,8 @@ public class FrmLogin extends AppCompatActivity {
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                String pathDatabase = getDatabasePath("imvcol.db").getAbsolutePath();
-                Toast.makeText(v.getContext(), pathDatabase, Toast.LENGTH_LONG).show();
+                //String pathDatabase = getDatabasePath("invfiscol.db").getAbsolutePath();
+                //Toast.makeText(v.getContext(), pathDatabase, Toast.LENGTH_LONG).show();
                 try {
                     dialogUtils.showDialog(getWindow());
                     checkUserOnWebService(v);

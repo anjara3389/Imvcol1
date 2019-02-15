@@ -100,7 +100,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             BaseHelper.tryClose(db);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(FrmInventario.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         rbLectura.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +148,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         throw new Exception("Introduzca un valor");
                     }
                 } catch (Exception e) {
-                    Toast.makeText(FrmInventario.this, "Error " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
             }
@@ -448,7 +448,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
             if (code == ENVIAR_DATOS) {
@@ -461,7 +461,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     BaseHelper.tryClose(db);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
                 }
             }
             if (code == FINALIZAR_INVENTARIO) {
@@ -488,7 +488,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
             if (code == LIBERAR_SELECCION) {
@@ -503,7 +503,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }

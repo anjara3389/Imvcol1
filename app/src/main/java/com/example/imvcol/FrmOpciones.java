@@ -106,7 +106,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                             }
                             countWebserviceFisicos(v);
                         } catch (Exception e) {
-                            Toast.makeText(FrmOpciones.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(FrmOpciones.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                             e.printStackTrace();
                         }
                     }
@@ -130,9 +130,9 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
@@ -487,7 +487,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 finish();
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Error: " + e, Toast.LENGTH_LONG);
+                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
             }
         }
     }

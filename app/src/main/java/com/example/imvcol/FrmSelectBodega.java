@@ -66,7 +66,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
                         getWebserviceProducts(v, db);
                     } catch (Exception e) {
-                        Toast.makeText(FrmSelectBodega.this, "Error" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(FrmSelectBodega.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
                 }
@@ -80,9 +80,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
