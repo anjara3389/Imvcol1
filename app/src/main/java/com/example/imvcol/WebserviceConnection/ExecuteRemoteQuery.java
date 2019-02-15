@@ -54,7 +54,22 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
         try {
             ArrayList respuestas = new ArrayList();
             for (int i = 0; i < query.size(); i++) {
-                URL url = new URL("http://190.66.24.90:4111/w1/webservices_copia.php");
+                String ip = NetUtils.getIP();
+                System.out.println("MIRARRRRR!" + ip);
+                String[] ipParts = ip.split("[.]");
+
+                String urlStr = "";
+
+                if (ipParts[0].equals("192") && ipParts[1].equals("68")) {
+                    urlStr = "http://192.68.1.217/w1/webservices_copia.php";
+                } else {
+                    urlStr = "http://190.66.24.90:4111/w1/webservices_copia.php";
+                }
+
+                System.out.println("MIRARRRRR!" + urlStr);
+
+                URL url = new URL(urlStr);
+
                 //"http://190.66.24.90:4111/w1/webservices.php"
                 //http://192.68.1.217/w1/webservices.php
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
