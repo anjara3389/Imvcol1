@@ -143,12 +143,14 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             ArrayList queryDatos = new ArrayList();
 
             String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
-                    "FROM v_referencias_sto s " +
-                    "JOIN referencias r on r.codigo=s.codigo " +
-                    "JOIN referencias_alt a on r.codigo=a.codigo " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
+                    "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
                     "WHERE s.bodega='" + currUser.getCurrBodega() + "' " +
-                    " AND s.ano=YEAR(getdate()) " +
-                    " AND s.mes=MONTH(getdate()) ";
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) ";
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
             remote.setQuery(queryDatos);
