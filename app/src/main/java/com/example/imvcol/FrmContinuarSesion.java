@@ -34,17 +34,25 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
         btnContinuar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (usuario.getCurrGrupo() != null) {
-                    Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
-                    //i.putExtra("diferencia", true);
-                    startActivityForResult(i, 1);
-                    finish();
+                if (usuario.getCurrBodega() != null) {
+                    if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null) {
+                        Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
+                        //i.putExtra("diferencia", true);
+                        startActivityForResult(i, 1);
+                        finish();
+                    } else {
+                        Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
+                        //i.putExtra("diferencia", true);
+                        startActivityForResult(i, 1);
+                        finish();
+                    }
                 } else {
-                    Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
+                    Intent i = new Intent(FrmContinuarSesion.this, FrmSelectBodega.class);
                     //i.putExtra("diferencia", true);
                     startActivityForResult(i, 1);
                     finish();
                 }
+
             }
 
         });

@@ -92,7 +92,7 @@ public class Inventario {
     public Inventario selectInventario(SQLiteDatabase db, String producto) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT fecha,bodega,producto,conteo1,usuario1,conteo2,usuario2,conteo3,usuario3 " +
                 "FROM inventario " +
-                "WHERE producto= " + producto);
+                "WHERE producto= '" + producto + "'");
         Object[] rawInventario = sq.getRecord(db);
 
         if (rawInventario != null && rawInventario.length > 0) {
@@ -184,7 +184,7 @@ public class Inventario {
     }
 
     public void updateCurrent(SQLiteDatabase db, int conteo, String producto) {
-        db.update("inventario", getCurrentValues(conteo), "producto=" + producto, null);
+        db.update("inventario", getCurrentValues(conteo), "producto='" + producto + "'", null);
     }
 
     public String getFecha() {

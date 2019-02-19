@@ -1,6 +1,5 @@
 package com.example.imvcol;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -8,7 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
