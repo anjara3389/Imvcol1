@@ -21,7 +21,7 @@ public class ProductosAdapter extends ArrayAdapter<LstItem> implements View.OnCl
     }
 
     public ProductosAdapter(ArrayList<LstItem> datos, Context context) {
-        super(context, R.layout.item, datos);
+        super(context, R.layout.list_view_item, datos);
         this.context = context;
         this.dataSet = datos;
     }
@@ -37,7 +37,7 @@ public class ProductosAdapter extends ArrayAdapter<LstItem> implements View.OnCl
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.item, parent, false);
+            convertView = inflater.inflate(R.layout.list_view_item, parent, false);
 
             viewHolder.txtNombre = convertView.findViewById(R.id.item_txt_nombre_producto);
             viewHolder.txtCantidad = convertView.findViewById(R.id.item_txt_cantidad);

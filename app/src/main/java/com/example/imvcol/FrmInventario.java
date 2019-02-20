@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -271,8 +272,25 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         mapFaltantes = (HashMap<Integer, String>) rawFaltantes.get(1);
         dataSpnFaltantes = (String[]) rawFaltantes.get(0);
 
-        adapterFaltantes = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnFaltantes);
-        adapterFaltantes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterFaltantes = new ArrayAdapter(getApplicationContext(), R.layout.spinner_item, R.id.spinner_item_text, dataSpnFaltantes){
+            @Override
+            public View getDropDownView(final int position,final View convertView,final ViewGroup parent)
+            {
+                final View v=super.getDropDownView(position,convertView,parent);
+                v.post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        ((TextView)v.findViewById( R.id.spinner_item_text)).setSingleLine(false);
+                    }
+                });
+                return v;
+            }
+        };;
+        //adapterFaltantes = ArrayAdapter.createFromResource(getApplicationContext(),dataSpnFaltantes,R.layout.spinner_item);
+
+        adapterFaltantes.setDropDownViewResource(R.layout.spinner_item);
         spnFaltantes.setAdapter(adapterFaltantes);
         BaseHelper.tryClose(db);
 
