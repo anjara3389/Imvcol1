@@ -15,7 +15,7 @@ public class Inicio extends AppCompatActivity {
         try {
             SQLiteDatabase db = BaseHelper.getReadable(this);
             Usuario usuario = new Usuario().selectUsuario(db);
-            if (usuario != null && usuario.getUsuario() != null && usuario.getClave() != null) {
+            if (usuario != null && usuario.getUsuario() != null && usuario.getClave() != null && new Bodega().countBodegas(db) > 0) {
                 Intent i = new Intent(this, FrmContinuarSesion.class);
                 startActivityForResult(i, 1);
                 finish();

@@ -147,7 +147,7 @@ public class Producto {
                 condition +
                 ") " +
                 secCondition +
-                "ORDER BY p.descripcion";
+                "ORDER BY p.descripcion ASC";
         System.out.println("AQUIIII QUERY " + query);
 
         SQLiteQuery sq = new SQLiteQuery(query);
