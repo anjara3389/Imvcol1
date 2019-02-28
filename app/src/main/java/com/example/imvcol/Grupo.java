@@ -29,10 +29,14 @@ public class Grupo {
     }
 
     public Object[][] selectGrupos(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT grupo,descripcion " +
-                "FROM grupo");
+        SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT g.grupo,g.descripcion " +
+                "FROM grupo g " +
+                "LEFT JOIN producto p ON p.grupo=g.grupo  " +
+                "WHERE p.grupo=g.grupo OR g.grupo=-1 " +
+                "ORDER BY CAST(g.grupo as integer) ASC");
         return sq.getRecords(db);
     }
+
     public void delete(SQLiteDatabase db) {
         db.execSQL("DELETE FROM grupo");
     }

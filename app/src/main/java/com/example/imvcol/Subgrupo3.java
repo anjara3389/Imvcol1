@@ -43,10 +43,15 @@ public class Subgrupo3 {
     }
 
     public Object[][] selectSubgrupos3(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT subgrupo3,descripcion,grupo,subgrupo,subgrupo2 " +
-                "FROM subgrupo3");
+        SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT s.subgrupo3,s.descripcion,s.grupo,s.subgrupo,s.subgrupo2 " +
+                "FROM subgrupo3 s " +
+                "LEFT JOIN producto p ON p.subgr3=s.subgrupo3 OR p.subgr3=-1 " +
+                "WHERE p.subgr3=s.subgrupo3 OR s.subgrupo3=-1 " +
+                "ORDER BY CAST(s.subgrupo3 as integer) ASC");
+
         return sq.getRecords(db);
     }
+
     public void delete(SQLiteDatabase db) {
         db.execSQL("DELETE FROM subgrupo3");
     }

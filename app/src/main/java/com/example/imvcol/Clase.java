@@ -34,10 +34,15 @@ public class Clase {
     }
 
     public Object[][] selectClases(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT clase,descripcion " +
-                "FROM clase");
+        SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT c.clase,c.descripcion " +
+                "FROM clase c " +
+                "LEFT JOIN producto p ON p.clase=c.clase " +
+                "WHERE p.clase=c.clase OR c.clase=-1 " +
+                "ORDER BY CAST(c.clase as integer) ASC");
+
         return sq.getRecords(db);
     }
+
     public void delete(SQLiteDatabase db) {
         db.execSQL("DELETE FROM clase");
     }

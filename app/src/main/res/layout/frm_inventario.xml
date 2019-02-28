@@ -38,7 +38,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="130dp"
         android:ems="10"
-        android:hint="Producto"
+        android:hint="Nombre del producto"
         android:inputType="textMultiLine" />
 
     <RadioGroup

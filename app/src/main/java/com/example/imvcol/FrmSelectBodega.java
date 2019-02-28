@@ -105,8 +105,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         spnBodega.setAdapter(adapterBodegas);
 
         String[] dataSpnModo = new String[2];
-        dataSpnModo[0] = "Lista";
-        dataSpnModo[1] = "Barras";
+        dataSpnModo[0] = "Listado";
+        dataSpnModo[1] = "Código de Barras";
 
         ArrayAdapter<String> adapterModo = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnModo);
         adapterModo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -129,7 +129,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         BaseHelper.tryClose(db);
                         Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
-                        fillDatabase(rawProductos);
+                        fillProductsOnDatabase(rawProductos);
                         dialogUtils.dissmissDialog();
                         Intent i = new Intent(v.getContext(), FrmOpciones.class);
                         //i.putExtra("datos", resultsDatos);
@@ -158,7 +158,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         }
     }
 
-    private void fillDatabase(ArrayList rawProductos) throws JSONException {
+    private void fillProductsOnDatabase(ArrayList rawProductos) throws JSONException {
         SQLiteDatabase db = BaseHelper.getWritable(this);
         System.out.println("CARGANDOOOOO" + rawProductos.get(0));
         new Producto().delete(db);
