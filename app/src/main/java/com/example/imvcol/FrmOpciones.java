@@ -101,7 +101,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                             usuario.setCurrSubgr(changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())));
                             if (usuario.getModo() == usuario.MODO_LISTA) {
                                 usuario.setCurrSubgr2(changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())));
-                                usuario.setCurrSubgr3(changeValue(mapSubgrupo3.get(spnSubgrupo2.getSelectedItemPosition())));
+                                usuario.setCurrSubgr3(changeValue(mapSubgrupo3.get(spnSubgrupo3.getSelectedItemPosition())));
                                 usuario.setCurrClase(changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
                             }
                             countWebserviceFisicos(v);

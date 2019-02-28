@@ -39,7 +39,9 @@ public class Subgrupo {
         SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT s.subgrupo,s.descripcion,s.grupo " +
                 "FROM subgrupo s " +
                 "LEFT JOIN producto p ON p.subgrupo=s.subgrupo  " +
-                "WHERE p.subgrupo=s.subgrupo OR s.subgrupo=-1 " +
+                "WHERE (p.grupo=s.grupo " +
+                "AND p.subgrupo=s.subgrupo) " +
+                "OR s.subgrupo=-1 " +
                 "ORDER BY CAST(s.subgrupo as integer) ASC");
         return sq.getRecords(db);
     }

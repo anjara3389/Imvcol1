@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 
@@ -88,7 +89,6 @@ public class FrmLogin extends AppCompatActivity {
                             getWebserviceData(v, db);
                         } else {
                             Intent i = new Intent(v.getContext(), FrmSelectBodega.class);
-                            // i.putExtra("datos", resultsDatos);
                             startActivityForResult(i, 1);
                             BaseHelper.tryClose(db);
                             dialogUtils.dissmissDialog();
@@ -151,6 +151,38 @@ public class FrmLogin extends AppCompatActivity {
         new Subgrupo3().insertEmpty(db);
         new Clase().insertEmpty(db);
 
+        for (int i = 0; i < resultsDatos.size(); i++) {
+            ArrayList raw = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(i)), this);
+
+            for (int j = 0; j < raw.size(); j++) {
+                JSONObject rawJson = ((JSONObject) raw.get(j));
+
+                if (i == 0) {
+                    Bodega bodega = new Bodega(rawJson.getString("BODEGA"), rawJson.getString("DESCRIPCION"));
+                    bodega.insert(db);
+                } else if (i == 1){
+                    Grupo grupo = new Grupo(rawJson.getString("grupo"), rawJson.getString("descripcion"));
+                    grupo.insert(db);
+                }
+                else if (i == 2){
+                    Subgrupo subgrupo = new Subgrupo(rawJson.getString("subgrupo"), rawJson.getString("grupo"), rawJson.getString("descripcion"));
+                    subgrupo.insert(db);
+                }
+                else if (i == 3){
+                    Subgrupo2 subgrupo2 = new Subgrupo2(rawJson.getString("subgrupo2"), rawJson.getString("grupo"), rawJson.getString("subgrupo"), rawJson.getString("descripcion"));
+                    subgrupo2.insert(db);
+                }
+                else if (i == 4){
+                    Subgrupo3 subgrupo3 = new Subgrupo3(rawJson.getString("subgrupo3"), rawJson.getString("grupo"), rawJson.getString("subgrupo"), rawJson.getString("subgrupo2"), rawJson.getString("descripcion"));
+                    subgrupo3.insert(db);
+                }
+                else if (i == 5){
+                    Clase clase = new Clase(rawJson.getString("clase"), rawJson.getString("descripcion"));
+                    clase.insert(db);
+                }
+            }
+        }
+/*
         ArrayList rawBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), this);
         ArrayList rawGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), this);
         ArrayList rawSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(2)), this);
@@ -189,9 +221,8 @@ public class FrmLogin extends AppCompatActivity {
             Clase clase = new Clase(rawClase.getString("clase"), rawClase.getString("descripcion"));
             clase.insert(db);
         }
-
+*/
         Intent i = new Intent(this, FrmSelectBodega.class);
-        // i.putExtra("datos", resultsDatos);
         startActivityForResult(i, 1);
         BaseHelper.tryClose(db);
         dialogUtils.dissmissDialog();
