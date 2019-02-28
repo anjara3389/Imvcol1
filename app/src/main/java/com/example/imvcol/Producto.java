@@ -118,9 +118,16 @@ public class Producto {
         return sq.getRecords(db);
     }
 
+    public int countProductos(SQLiteDatabase db) throws Exception {
+        SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM producto");
+        return sq.getInteger(db);
+    }
+
     public Object[][] selectProductsNotOnInventario(SQLiteDatabase db, Integer conteo, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
 
-        String condition = conteo == null ? "" : (conteo == 1 ? "WHERE i.conteo1 IS NOT NULL " : (conteo == 2 ? "WHERE i.conteo2 IS NOT NULL " : (conteo == 3 ? "WHERE i.conteo3 IS NOT NULL " : "")));
+        String condition = conteo == null ? "" : (conteo == 1 ? "WHERE i.conteo1 IS NOT NULL " :
+                (conteo == 2 ? "WHERE i.conteo2 IS NOT NULL OR i.conteo1=p.cantidad  " :
+                        (conteo == 3 ? "WHERE i.conteo3 IS NOT NULL OR i.conteo1=p.cantidad OR i.conteo2=p.cantidad" : "")));
 
         String secCondition = "";
         if (grupo != null) {
@@ -144,6 +151,7 @@ public class Producto {
                 "WHERE p.producto NOT IN " +
                 "(SELECT i.producto " +
                 "FROM inventario i " +
+                "INNER JOIN producto p on p.producto=i.producto " +
                 condition +
                 ") " +
                 secCondition +

@@ -24,7 +24,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
 
         btnContinuar = findViewById(R.id.frm_continuar_sesion_btn_continuar);
         btnFinalizarInventario = findViewById(R.id.frm_continuar_sesion_btn_finalizar_inventario);
-        SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
+        final SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
         try {
             usuario = new Usuario().selectUsuario(db);
         } catch (Exception e) {
@@ -34,23 +34,28 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
         btnContinuar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (usuario.getCurrBodega() != null) {
-                    if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null) {
-                        Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
-                        //i.putExtra("diferencia", true);
-                        startActivityForResult(i, 1);
-                        finish();
+                try {
+                    if (usuario.getCurrBodega() != null && new Producto().countProductos(db) > 0) {
+                        if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null) {
+                            Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
+                            //i.putExtra("diferencia", true);
+                            startActivityForResult(i, 1);
+                            finish();
+                        } else {
+                            Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
+                            //i.putExtra("diferencia", true);
+                            startActivityForResult(i, 1);
+                            finish();
+                        }
                     } else {
-                        Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
+                        Intent i = new Intent(FrmContinuarSesion.this, FrmSelectBodega.class);
                         //i.putExtra("diferencia", true);
                         startActivityForResult(i, 1);
                         finish();
                     }
-                } else {
-                    Intent i = new Intent(FrmContinuarSesion.this, FrmSelectBodega.class);
-                    //i.putExtra("diferencia", true);
-                    startActivityForResult(i, 1);
-                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
                 }
 
             }
