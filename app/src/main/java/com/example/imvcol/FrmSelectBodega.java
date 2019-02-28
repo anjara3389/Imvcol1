@@ -123,7 +123,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
                     System.out.println("productos1" + resultsDatos.get(0));
-                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmSelectBodega.this);
+                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmSelectBodega.this);
                     if (resultsDatos.get(0).equals("[]")) {
                         dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);

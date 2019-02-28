@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ArrayUtils {
-    public static ArrayList<Object> convertToArrayList(JSONArray jArr, JSONObject begObject, Context ctx) {
+    public static ArrayList<Object> convertToArrayList(JSONArray jArr, Context ctx) {
         try {
             ArrayList<Object> list = new ArrayList<Object>();
-            if (begObject != null) {
+           /* if (begObject != null) {
                 list.add(begObject);
-            }
+            }*/
             for (int i = 0, l = jArr.length(); i < l; i++) {
                 list.add(jArr.get(i));
             }

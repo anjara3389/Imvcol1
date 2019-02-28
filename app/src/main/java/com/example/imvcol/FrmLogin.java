@@ -28,7 +28,6 @@ public class FrmLogin extends AppCompatActivity {
 
     private EditText usuario, contrasenia;
     private Button btnIngresar;
-    private JSONObject zeroBodega, zeroGrupo, zeroSubgrupo, zeroSubgrupo2, zeroSubgrupo3, zeroClase;
     private DialogUtils dialogUtils;
 
     @Override
@@ -47,8 +46,6 @@ public class FrmLogin extends AppCompatActivity {
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //String pathDatabase = getDatabasePath("invfiscol.db").getAbsolutePath();
-                //Toast.makeText(v.getContext(), pathDatabase, Toast.LENGTH_LONG).show();
                 try {
                     dialogUtils.showDialog(getWindow());
                     checkUserOnWebService(v);
@@ -147,13 +144,19 @@ public class FrmLogin extends AppCompatActivity {
     }
 
     private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {
-        putZeros();
-        ArrayList rawBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), zeroBodega, this);
-        ArrayList rawGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), zeroGrupo, this);
-        ArrayList rawSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(2)), zeroSubgrupo, this);
-        ArrayList rawSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(3)), zeroSubgrupo2, this);
-        ArrayList rawSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(4)), zeroSubgrupo3, this);
-        ArrayList rawClases = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(5)), zeroClase, this);
+        new Bodega().insertEmpty(db);
+        new Grupo().insertEmpty(db);
+        new Subgrupo().insertEmpty(db);
+        new Subgrupo2().insertEmpty(db);
+        new Subgrupo3().insertEmpty(db);
+        new Clase().insertEmpty(db);
+
+        ArrayList rawBodegas = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), this);
+        ArrayList rawGrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), this);
+        ArrayList rawSubgrupos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(2)), this);
+        ArrayList rawSubgrupos2 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(3)), this);
+        ArrayList rawSubgrupos3 = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(4)), this);
+        ArrayList rawClases = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(5)), this);
 
 
         for (int i = 0; i < rawBodegas.size(); i++) {
@@ -193,34 +196,6 @@ public class FrmLogin extends AppCompatActivity {
         BaseHelper.tryClose(db);
         dialogUtils.dissmissDialog();
         finish();
-    }
-
-
-    private void putZeros() throws JSONException {
-        zeroBodega = new JSONObject();
-        zeroBodega.put("BODEGA", "-1");
-        zeroBodega.put("DESCRIPCION", "Seleccione una bodega");
-        zeroGrupo = new JSONObject();
-        zeroGrupo.put("grupo", "-1");
-        zeroGrupo.put("descripcion", "Seleccione un grupo");
-        zeroSubgrupo = new JSONObject();
-        zeroSubgrupo.put("grupo", "-1");
-        zeroSubgrupo.put("subgrupo", "-1");
-        zeroSubgrupo.put("descripcion", "Seleccione un subgrupo");
-        zeroSubgrupo2 = new JSONObject();
-        zeroSubgrupo2.put("grupo", -1);
-        zeroSubgrupo2.put("subgrupo", -1);
-        zeroSubgrupo2.put("subgrupo2", -1);
-        zeroSubgrupo2.put("descripcion", "Seleccione un subgrupo2");
-        zeroSubgrupo3 = new JSONObject();
-        zeroSubgrupo3.put("grupo", -1);
-        zeroSubgrupo3.put("subgrupo", -1);
-        zeroSubgrupo3.put("subgrupo2", -1);
-        zeroSubgrupo3.put("subgrupo3", -1);
-        zeroSubgrupo3.put("descripcion", "Seleccione un subgrupo3");
-        zeroClase = new JSONObject();
-        zeroClase.put("clase", -1);
-        zeroClase.put("descripcion", "Seleccione una clase");
     }
 }
 

@@ -296,7 +296,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
-                    JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmOpciones.this).get(0);
+                    JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this).get(0);
                     int cantidadFisicos = Integer.parseInt(rawResult.getString("computed"));
 
                     if (resultsDatos.get(0).equals("[]")) {
@@ -399,7 +399,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 SQLiteDatabase db = BaseHelper.getWritable(FrmOpciones.this);
                 ArrayList resultsDatos = (ArrayList) object;
 
-                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmOpciones.this);
+                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)),FrmOpciones.this);
                 if (resultsDatos.get(0).equals("[]")) {
                     dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);

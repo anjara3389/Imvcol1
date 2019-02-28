@@ -624,7 +624,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
 
-                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
+                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmInventario.this);
                     if (resultsDatos.get(0).equals("[]")) {
                         dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
@@ -762,7 +762,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);
                     ArrayList resultsDatos = (ArrayList) object;
 
-                    ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), null, FrmInventario.this);
+                    ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmInventario.this);
                     if (resultsDatos.get(0).equals("[]")) {
                         dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);

@@ -47,4 +47,9 @@ public class Clase {
         db.execSQL("DELETE FROM clase");
     }
 
+    public int insertEmpty(SQLiteDatabase db) {
+        Clase empty = new Clase("-1", "Seleccione una clase");
+        return empty.insert(db);
+    }
+
 }

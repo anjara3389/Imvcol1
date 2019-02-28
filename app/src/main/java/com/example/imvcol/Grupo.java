@@ -41,4 +41,10 @@ public class Grupo {
         db.execSQL("DELETE FROM grupo");
     }
 
+    public int insertEmpty(SQLiteDatabase db) {
+        Grupo empty = new Grupo("-1", "Seleccione un grupo");
+        return empty.insert(db);
+    }
+
+
 }

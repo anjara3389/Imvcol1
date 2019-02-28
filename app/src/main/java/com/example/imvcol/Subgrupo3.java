@@ -55,4 +55,9 @@ public class Subgrupo3 {
     public void delete(SQLiteDatabase db) {
         db.execSQL("DELETE FROM subgrupo3");
     }
+
+    public int insertEmpty(SQLiteDatabase db) {
+        Subgrupo3 empty = new Subgrupo3("-1", "-1", "-1", "-1", "Seleccione un subgrupo 3");
+        return empty.insert(db);
+    }
 }
