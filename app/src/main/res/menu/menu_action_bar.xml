@@ -12,6 +12,9 @@
     android:id="@+id/action_finalizar_conteo"
     android:title="Cambiar conteo"></item>
     <item
+        android:id="@+id/action_generar_reporte"
+        android:title="Generar Reporte"></item>
+    <item
         android:id="@+id/action_enviar_datos"
         android:title="Enviar datos "></item>
     <item

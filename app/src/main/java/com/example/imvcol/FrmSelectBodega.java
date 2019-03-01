@@ -147,7 +147,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     "JOIN referencias r on r.codigo=F.codigo " +
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
                     "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
-                    "WHERE s.bodega='" + currUser.getCurrBodega() + "' " +
+                    "WHERE s.stock<>0 and s.bodega='" + currUser.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate()) " +
                     "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) ";

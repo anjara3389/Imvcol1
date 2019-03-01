@@ -4,23 +4,19 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.BadParcelableException;
-import android.os.strictmode.SqliteObjectLeakedViolation;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,12 +28,8 @@ import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
 import com.example.imvcol.com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -272,22 +264,20 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         mapFaltantes = (HashMap<Integer, String>) rawFaltantes.get(1);
         dataSpnFaltantes = (String[]) rawFaltantes.get(0);
 
-        adapterFaltantes = new ArrayAdapter(getApplicationContext(), R.layout.spinner_item, R.id.spinner_item_text, dataSpnFaltantes){
+        adapterFaltantes = new ArrayAdapter(getApplicationContext(), R.layout.spinner_item, R.id.spinner_item_text, dataSpnFaltantes) {
             @Override
-            public View getDropDownView(final int position,final View convertView,final ViewGroup parent)
-            {
-                final View v=super.getDropDownView(position,convertView,parent);
-                v.post(new Runnable()
-                {
+            public View getDropDownView(final int position, final View convertView, final ViewGroup parent) {
+                final View v = super.getDropDownView(position, convertView, parent);
+                v.post(new Runnable() {
                     @Override
-                    public void run()
-                    {
-                        ((TextView)v.findViewById( R.id.spinner_item_text)).setSingleLine(false);
+                    public void run() {
+                        ((TextView) v.findViewById(R.id.spinner_item_text)).setSingleLine(false);
                     }
                 });
                 return v;
             }
-        };;
+        };
+        ;
         //adapterFaltantes = ArrayAdapter.createFromResource(getApplicationContext(),dataSpnFaltantes,R.layout.spinner_item);
 
         adapterFaltantes.setDropDownViewResource(R.layout.spinner_item);
@@ -353,6 +343,14 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 YesNoDialogFragment dial = new YesNoDialogFragment();
                 dial.setInfo(FrmInventario.this, FrmInventario.this, "Finalizar conteo", "¿Está seguro de cambiar el conteo?", CAMBIAR_CONTEO);
                 dial.show(getSupportFragmentManager(), "MyDialog");
+                break;
+            case R.id.action_generar_reporte:
+                try {
+                    //generarReporte();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.action_enviar_datos:
                 YesNoDialogFragment dial3 = new YesNoDialogFragment();
@@ -445,7 +443,61 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         btnAceptar.setFocusableInTouchMode(enable);
         btnAceptar.setClickable(enable);
     }
+/*
+    public void generarReporte() throws Exception {
 
+        // create folder to save the pdf
+
+        // new FileOutputStream("/Internal storage/")
+
+        File pdfFolder = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), "FolderName");
+        if (!pdfFolder.exists()) {
+            pdfFolder.mkdir();
+            Log.i("creat", "Pdf Directory created");
+        }
+
+        // end creat folder
+
+        // create file name using todaydate.
+
+        Date date = new Date();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
+        //File myFile = new File(pdfFolder + "/" + timeStamp + ".pdf");
+
+        //OutputStream output = new FileOutputStream(myFile);
+        SQLiteDatabase db = BaseHelper.getReadable(this);
+        Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        BaseHelper.tryClose(db);
+
+        PdfWriter writer = new PdfWriter(pdfFolder + "/" + timeStamp + ".pdf");
+        com.itextpdf.kernel.pdf.PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+        document.add(new Paragraph("Diferencias Bodega " + usuario.getCurrBodega()));
+        document.add(new Paragraph("Grupo " + usuario.getCurrGrupo()));
+        document.add(new Paragraph("Subgrupo " + usuario.getCurrSubgr()));
+
+        if (usuario.getCurrSubgr2() != null) {
+            document.add(new Paragraph("Subgrupo2 " + usuario.getCurrSubgr2()));
+        }
+        if (usuario.getCurrSubgr3() != null) {
+            document.add(new Paragraph("Subgrupo3 " + usuario.getCurrSubgr3()));
+        }
+        if (usuario.getCurrClase() != null) {
+            document.add(new Paragraph("Clase " + usuario.getCurrClase()));
+        }
+        document.add(new Paragraph("Conteo " + usuario.getCurrConteo()));
+        document.add(new Paragraph("Fecha de generación: " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date)));
+        document.add(new Paragraph(""));
+        document.add(new Paragraph(""));
+
+        for (int i = 0; i < inventarios.length; i++) {
+            document.add(new Paragraph(inventarios[i][0] + "-" + (inventarios[i][1] == null ? "Sin nombre" : inventarios[i][1]) + "   " +
+                    inventarios[i][usuario.getCurrConteo() + 2]));
+        }
+        document.close();
+    }
+*/
     @Override
     public void onFinishDialog(boolean ans, int code) {
         if (ans == true) {
