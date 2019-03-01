@@ -26,8 +26,17 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    //implementation 'com.itextpdf:itext7-core:7.1.5'
-    //implementation 'com.itextpdf:io:7.1.5'
-    //implementation 'com.itextpdf:kernel:7.1.5'
-    //implementation 'com.itextpdf:layout:7.1.5'
+
+    //compile 'com.itextpdf:itext-pdfa:5.5.10'
+    //compile 'com.itextpdf:itextg:5.5.10'
+    //compile group: 'com.itextpdf.tool', name: 'xmlworker', version: '5.5.10'
+
+    implementation 'com.itextpdf:itextpdf:5.0.6'
+
+    //implementation 'com.itextpdf:itext7-core:7.0.0'
+    //implementation 'com.itextpdf:itext-pdfa:5.5.13'
+    //implementation 'com.itextpdf:io:5.5.13'
+    //implementation 'com.itextpdf:kernel:5.5.13'
+    //implementation 'com.itextpdf:layout:5.5.13'
+
 }

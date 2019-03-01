@@ -1,11 +1,16 @@
 package com.example.imvcol;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.pdf.PdfDocument;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,15 +26,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
 import com.example.imvcol.com.google.zxing.integration.android.IntentResult;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -346,7 +360,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 break;
             case R.id.action_generar_reporte:
                 try {
-                    //generarReporte();
+                    generarReporte();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -443,12 +457,91 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         btnAceptar.setFocusableInTouchMode(enable);
         btnAceptar.setClickable(enable);
     }
-/*
-    public void generarReporte() throws Exception {
 
+    public void generarReporte() throws Exception {
+        /*File directory = getFilesDir();
+        //Create file path for Pdf
+        String fpath = "difer" + ".pdf";
+        File file = new File(directory, fpath);
+        if (!file.exists()) {
+            file.createNewFile();
+        }*/
+
+        File directory = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), "");
+        if (!directory.exists()) {
+            directory.mkdir();
+            Log.i("creat", "Pdf Directory created");
+        }
+
+        File file = new File(directory + "/" + "difer" + ".pdf");
+
+
+        System.out.println("ESTA ES LA RUTA  " + file.getPath());
+
+        Date date = new Date();
+        SQLiteDatabase db = BaseHelper.getReadable(this);
+        Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        BaseHelper.tryClose(db);
+
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(file.getAbsoluteFile()));
+        document.open();
+        document.add(new Paragraph("Diferencias Bodega " + usuario.getCurrBodega()));
+        document.add(new Paragraph("Grupo " + usuario.getCurrGrupo()));
+        document.add(new Paragraph("Subgrupo " + usuario.getCurrSubgr()));
+
+        if (usuario.getCurrSubgr2() != null) {
+            document.add(new Paragraph("Subgrupo2 " + usuario.getCurrSubgr2()));
+        }
+        if (usuario.getCurrSubgr3() != null) {
+            document.add(new Paragraph("Subgrupo3 " + usuario.getCurrSubgr3()));
+        }
+        if (usuario.getCurrClase() != null) {
+            document.add(new Paragraph("Clase " + usuario.getCurrClase()));
+        }
+        document.add(new Paragraph("Conteo " + usuario.getCurrConteo()));
+        document.add(new Paragraph("Fecha de generación: " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date)));
+        document.add(new Paragraph(""));
+        document.add(new Paragraph(""));
+
+        for (int i = 0; i < inventarios.length; i++) {
+            document.add(new Paragraph(inventarios[i][0] + "-" + (inventarios[i][1] == null ? "Sin nombre" : inventarios[i][1]) + "   " +
+                    inventarios[i][usuario.getCurrConteo() + 2]));
+        }
+        document.close();
+
+
+        Toast.makeText(FrmInventario.this, "Archivo generado", Toast.LENGTH_LONG).show();
+
+
+
+        /*
+
+
+
+
+
+        //using add method in document to insert a paragraph
+        document.add(new Paragraph("My First Pdf !"));
+        document.add(new Paragraph("Hello World"));
+        // close document
+
+
+
+
+
+
+
+
+        //---------------------------------------------------
         // create folder to save the pdf
 
         // new FileOutputStream("/Internal storage/")
+
+
+
+
 
         File pdfFolder = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOCUMENTS), "FolderName");
@@ -495,9 +588,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             document.add(new Paragraph(inventarios[i][0] + "-" + (inventarios[i][1] == null ? "Sin nombre" : inventarios[i][1]) + "   " +
                     inventarios[i][usuario.getCurrConteo() + 2]));
         }
-        document.close();
+        document.close();*/
     }
-*/
+
     @Override
     public void onFinishDialog(boolean ans, int code) {
         if (ans == true) {

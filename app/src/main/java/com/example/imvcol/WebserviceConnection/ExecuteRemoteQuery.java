@@ -137,7 +137,7 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(ctx, "Error/" + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(ctx, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }
