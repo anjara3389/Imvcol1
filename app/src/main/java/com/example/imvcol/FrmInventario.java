@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.imvcol.Item.ProductosAdapter;
 import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
@@ -799,6 +800,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         if (validar == true) {
 
                             new Inventario().delete(db);
+                            new Producto().delete(db);
                             usuario.setCurrGrupo(null);
                             usuario.setCurrSubgr(null);
                             usuario.setCurrSubgr2(null);

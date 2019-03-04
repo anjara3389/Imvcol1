@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
-    DialogUtils dialogUtils;
+    //DialogUtils dialogUtils;
     private Spinner spnBodega;
     private Spinner spnModo;
     private Spinner spnTipoBodega;
@@ -74,8 +74,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         Toast.makeText(FrmSelectBodega.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
                     } else {
                         try {
-                            dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
-                            dialogUtils.showDialog(getWindow());
+                            //dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
+                            //dialogUtils.showDialog(getWindow());
                             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                             currUser = new Usuario().selectUsuario(db);
                             currUser.setCurrBodega(mapBodega.get(spnBodega.getSelectedItemPosition()));
@@ -84,7 +84,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                             currUser.setDatosEnviados(false);
                             currUser.updateCurrent(db);
                             BaseHelper.tryClose(db);
-                            getWebserviceProducts(v);
+                            Intent i = new Intent(v.getContext(), FrmOpciones.class);
+                            startActivityForResult(i, 1);
+                            finish();
                         } catch (Exception e) {
                             Toast.makeText(FrmSelectBodega.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                             e.printStackTrace();
@@ -92,7 +94,6 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     }
                 }
             });
-
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -111,7 +112,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     }
 
-    private void prepareSpinners() throws Exception {
+    private void prepareSpinners() {
         String[] dataSpnTipoBodega = new String[4];
         dataSpnTipoBodega[0] = "Agros";
         dataSpnTipoBodega[1] = "Puntos";
@@ -146,7 +147,6 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     private boolean validarTipoBodega(String bodega) {
         int bodegaInt = Integer.parseInt(bodega);
-        System.out.println("BODEGA " + bodega);
         if ((spnTipoBodega.getSelectedItemPosition() == 0 && bodegaInt > 1500 && bodegaInt < 1600) ||
                 (spnTipoBodega.getSelectedItemPosition() == 1 && bodegaInt > 1200 && bodegaInt < 1300) ||
                 (spnTipoBodega.getSelectedItemPosition() == 2 && bodegaInt >= 100 && bodegaInt < 400) ||
@@ -158,68 +158,6 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         return false;
     }
 
-    private void getWebserviceProducts(final View v) throws Exception {
-        if (!NetUtils.isOnlineNet(FrmSelectBodega.this)) {
-            dialogUtils.dissmissDialog();
-            throw new Exception("No hay conexión a internet");
-        } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-                @Override
-                public void receiveData(Object object) throws Exception {
-                    ArrayList resultsDatos = (ArrayList) object;
-                    System.out.println("productos1" + resultsDatos.get(0));
-                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmSelectBodega.this);
-                    if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
-                        Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
-                    } else {
-                        fillProductsOnDatabase(rawProductos);
-                        dialogUtils.dissmissDialog();
-                        Intent i = new Intent(v.getContext(), FrmOpciones.class);
-                        startActivityForResult(i, 1);
-                        finish();
-                    }
-                }
-            };
-            remote.setContext(v.getContext());
-            ArrayList queryDatos = new ArrayList();
-
-            String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
-                    "FROM referencias_fis F " +
-                    "JOIN referencias r on r.codigo=F.codigo " +
-                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
-                    "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
-                    "WHERE s.stock<>0 and s.bodega='" + currUser.getCurrBodega() + "' " +
-                    "AND s.ano=YEAR(getdate()) " +
-                    "AND s.mes=MONTH(getdate()) " +
-                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) ";
-            queryDatos.add(query);
-            System.out.println("QUERYYYYYY///" + query);
-            remote.setQuery(queryDatos);
-            remote.execute();
-        }
-    }
-
-    private void fillProductsOnDatabase(ArrayList rawProductos) throws JSONException {
-        SQLiteDatabase db = BaseHelper.getWritable(this);
-        System.out.println("CARGANDOOOOO" + rawProductos.get(0));
-        new Producto().delete(db);
-
-        for (int i = 0; i < rawProductos.size(); i++) {
-            JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
-            Producto producto = new Producto(rawProducto.getString("codigo"),
-                    rawProducto.getString("descripcion"),
-                    rawProducto.getString("stock"),
-                    rawProducto.getString("alterno"),
-                    rawProducto.getString("grupo"),
-                    rawProducto.getString("subgrupo"),
-                    rawProducto.getString("subgrupo2"),
-                    rawProducto.getString("subgrupo3"),
-                    rawProducto.getString("clase"));
-            producto.insert(db);
-        }
-        BaseHelper.tryClose(db);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

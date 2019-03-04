@@ -79,6 +79,10 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 lblSubgrupo3.setVisibility(View.GONE);
             }
 
+            dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
+            dialogUtils.showDialog(getWindow());
+            getWebserviceProducts();
+
             btnAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -89,12 +93,12 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         mapSubgrupo3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
                         mapClase = (HashMap<Integer, String>) rawClases.get(1);
                     }
-                    if (changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())) == null) {
-                        Toast.makeText(FrmOpciones.this, "Debe seleccionar un grupo", Toast.LENGTH_LONG).show();
-                    } else if (changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())) == null) {
-                        Toast.makeText(FrmOpciones.this, "Debe seleccionar un subgrupo", Toast.LENGTH_LONG).show();
-                    } else {
-                        try {
+                    try {
+                        if (changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())) == null) {
+                            throw new Exception("Debe seleccionar un grupo");
+                        } else if (changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                            throw new Exception("Debe seleccionar un subgrupo");
+                        } else {
                             dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
                             dialogUtils.showDialog(getWindow());
                             usuario.setCurrGrupo(changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())));
@@ -105,35 +109,22 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                                 usuario.setCurrClase(changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
                             }
                             countWebserviceFisicos(v);
-                        } catch (Exception e) {
-                            Toast.makeText(FrmOpciones.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
                         }
+                    } catch (Exception e) {
+                        Toast.makeText(FrmOpciones.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
                     }
                 }
+
             });
-
-            db = BaseHelper.getReadable(this);
-            wholeGrupos = new Grupo().selectGrupos(db);
-            wholeSubgrupos = new Subgrupo().selectSubgrupos(db);
-            if (usuario.getModo() == usuario.MODO_LISTA) {
-                wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);
-                wholeSubgrupos3 = new Subgrupo3().selectSubgrupos3(db);
-                wholeClases = new Clase().selectClases(db);
-            }
-
-            if (wholeGrupos != null && (wholeSubgrupos != null || usuario.getModo() == usuario.MODO_BARRAS)) {
-                if (usuario.getModo() == usuario.MODO_LISTA) {
-                    prepareClases();
-                }
-                prepareGrupos();
-            }
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            dialogUtils.dissmissDialog();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
+            dialogUtils.dissmissDialog();
         }
     }
 
@@ -399,7 +390,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 SQLiteDatabase db = BaseHelper.getWritable(FrmOpciones.this);
                 ArrayList resultsDatos = (ArrayList) object;
 
-                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)),FrmOpciones.this);
+                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this);
                 if (resultsDatos.get(0).equals("[]")) {
                     dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
@@ -462,6 +453,87 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         remote.setQuery(queryDatos);
         remote.execute();
     }
+
+    private void getWebserviceProducts() throws Exception {
+        if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultsDatos = (ArrayList) object;
+                    System.out.println("productos1" + resultsDatos.get(0));
+                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this);
+                    if (resultsDatos.get(0).equals("[]")) {
+                        dialogUtils.dissmissDialog();
+                        Toast.makeText(FrmOpciones.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
+                    } else {
+                        fillProductsOnDatabase(rawProductos);
+
+                        SQLiteDatabase db = BaseHelper.getReadable(FrmOpciones.this);
+                        wholeGrupos = new Grupo().selectGrupos(db);
+                        wholeSubgrupos = new Subgrupo().selectSubgrupos(db);
+                        if (usuario.getModo() == usuario.MODO_LISTA) {
+                            wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);
+                            wholeSubgrupos3 = new Subgrupo3().selectSubgrupos3(db);
+                            wholeClases = new Clase().selectClases(db);
+                        }
+
+                        if (wholeGrupos != null && (wholeSubgrupos != null || usuario.getModo() == usuario.MODO_BARRAS)) {
+                            if (usuario.getModo() == usuario.MODO_LISTA) {
+                                prepareClases();
+                            }
+                            prepareGrupos();
+                        }
+                        BaseHelper.tryClose(db);
+                        dialogUtils.dissmissDialog();
+
+                    }
+                }
+            };
+            remote.setContext(FrmOpciones.this);
+            ArrayList queryDatos = new ArrayList();
+
+            String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
+                    "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
+                    "WHERE s.stock<>0 " +
+                    "AND s.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
+                    "AND F.fisico=0";
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
+    }
+
+    private void fillProductsOnDatabase(ArrayList rawProductos) throws JSONException {
+        SQLiteDatabase db = BaseHelper.getWritable(this);
+        System.out.println("CARGANDOOOOO" + rawProductos.get(0));
+        new Producto().delete(db);
+
+        for (int i = 0; i < rawProductos.size(); i++) {
+            JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
+            Producto producto = new Producto(rawProducto.getString("codigo"),
+                    rawProducto.getString("descripcion"),
+                    rawProducto.getString("stock"),
+                    rawProducto.getString("alterno"),
+                    rawProducto.getString("grupo"),
+                    rawProducto.getString("subgrupo"),
+                    rawProducto.getString("subgrupo2"),
+                    rawProducto.getString("subgrupo3"),
+                    rawProducto.getString("clase"));
+            producto.insert(db);
+        }
+        BaseHelper.tryClose(db);
+    }
+
 
     @Override
     public void onFinishDialog(boolean ans, int code) {
