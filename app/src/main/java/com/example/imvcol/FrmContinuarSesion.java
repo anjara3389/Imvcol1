@@ -89,23 +89,27 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
         if (code == FINALIZAR_INVENTARIO) {
             try {
                 SQLiteDatabase db = BaseHelper.getWritable(FrmContinuarSesion.this);
-                new Usuario().delete(db);
-                new Inventario().delete(db);
-                new Bodega().delete(db);
-                new Producto().delete(db);
-                new Grupo().delete(db);
-                new Subgrupo().delete(db);
-                new Subgrupo2().delete(db);
-                new Subgrupo3().delete(db);
-                new Clase().delete(db);
-                BaseHelper.tryClose(db);
-                //dialogUtils.dissmissDialog();
+                if (new Producto().countProductos(db) > 0 && new Inventario().countInventarios(db) == 0) {
+                    throw new Exception("Debe liberar la selección");
+                } else {
+                    new Usuario().delete(db);
+                    new Inventario().delete(db);
+                    new Bodega().delete(db);
+                    new Producto().delete(db);
+                    new Grupo().delete(db);
+                    new Subgrupo().delete(db);
+                    new Subgrupo2().delete(db);
+                    new Subgrupo3().delete(db);
+                    new Clase().delete(db);
+                    BaseHelper.tryClose(db);
+                    //dialogUtils.dissmissDialog();
 
-                Intent i = new Intent(FrmContinuarSesion.this, FrmLogin.class);
-                startActivityForResult(i, 1);
-                BaseHelper.tryClose(db);
-                Toast.makeText(FrmContinuarSesion.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
-                finish();
+                    Intent i = new Intent(FrmContinuarSesion.this, FrmLogin.class);
+                    startActivityForResult(i, 1);
+                    BaseHelper.tryClose(db);
+                    Toast.makeText(FrmContinuarSesion.this, "El inventario finalizó exitosamente", Toast.LENGTH_LONG).show();
+                    finish();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
