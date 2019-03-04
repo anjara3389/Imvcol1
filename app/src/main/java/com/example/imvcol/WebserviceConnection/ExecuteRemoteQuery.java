@@ -61,9 +61,11 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
                 String urlStr = "";
 
                 if (ipParts[0].equals("192") && ipParts[1].equals("68")) {
-                    urlStr = "http://192.68.1.217/w1/webservices_copia.php";
+                    //urlStr = "http://192.68.1.217/w1/webservices_copia.php";
+                    urlStr = "http://192.68.1.217/w1/webservices.php";
                 } else {
-                    urlStr = "http://190.66.24.90:4111/w1/webservices_copia.php";
+                    //urlStr = "http://190.66.24.90:4111/w1/webservices_copia.php";
+                    urlStr = "http://190.66.24.90:4111/w1/webservices.php";
                 }
 
                 System.out.println("MIRARRRRR!" + urlStr);
@@ -95,7 +97,7 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
                 if (responseCode != 200) {
                     throw new Exception("Error " + responseCode);
                 } else {
-                    System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices_copia.php");
+                    System.out.println("\nSending 'POST' request to URL : " + "http://190.66.24.90:4111/w1/webservices.php");
                     System.out.println("Post parameters : " + urlParameters);
                     System.out.println("Response Code : " + responseCode);
 

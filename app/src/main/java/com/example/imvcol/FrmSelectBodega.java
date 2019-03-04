@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -29,6 +30,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
     DialogUtils dialogUtils;
     private Spinner spnBodega;
     private Spinner spnModo;
+    private Spinner spnTipoBodega;
     private Object[][] wholeBodegas;
     private ArrayList rawBodegas;
     private Usuario currUser;
@@ -39,45 +41,58 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_select_bodega);
-
-        Button btnSiguiente = findViewById(R.id.frm_select_bodega_btn_siguiente);
-        spnBodega = findViewById(R.id.frm_select_bodega_spn_bodega);
-        spnModo = findViewById(R.id.frm_select_bodega_spn_modo);
-
-        btnSiguiente.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                HashMap<Integer, String> mapBodega = (HashMap<Integer, String>) rawBodegas.get(1);
-                if (changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())) == null) {
-                    Toast.makeText(FrmSelectBodega.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
-                } else {
-                    try {
-                        dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
-                        dialogUtils.showDialog(getWindow());
-                        SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                        currUser = new Usuario().selectUsuario(db);
-                        currUser.setCurrBodega(mapBodega.get(spnBodega.getSelectedItemPosition()));
-                        currUser.setCurrConteo(1);
-
-                        System.out.println("POSICIÓN!!!!!!!!" + spnModo.getSelectedItemPosition());
-                        currUser.setModo(spnModo.getSelectedItemPosition());
-                        currUser.setDatosEnviados(false);
-                        currUser.updateCurrent(db);
-
-                        getWebserviceProducts(v, db);
-                    } catch (Exception e) {
-                        Toast.makeText(FrmSelectBodega.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
         try {
+            Button btnSiguiente = findViewById(R.id.frm_select_bodega_btn_siguiente);
+            spnBodega = findViewById(R.id.frm_select_bodega_spn_bodega);
+            spnModo = findViewById(R.id.frm_select_bodega_spn_modo);
+            spnTipoBodega = findViewById(R.id.frm_select_bodega_spn_tipo_bodega);
+
             SQLiteDatabase db = BaseHelper.getReadable(this);
             wholeBodegas = new Bodega().selectBodegas(db);
+            BaseHelper.tryClose(db);
             if (wholeBodegas != null) {
                 prepareSpinners();
             }
+
+            spnTipoBodega.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    filterBodegasSpinner();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+            btnSiguiente.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HashMap<Integer, String> mapBodega = (HashMap<Integer, String>) rawBodegas.get(1);
+                    if (changeValue(mapBodega.get(spnBodega.getSelectedItemPosition())) == null) {
+                        Toast.makeText(FrmSelectBodega.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
+                    } else {
+                        try {
+                            dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
+                            dialogUtils.showDialog(getWindow());
+                            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+                            currUser = new Usuario().selectUsuario(db);
+                            currUser.setCurrBodega(mapBodega.get(spnBodega.getSelectedItemPosition()));
+                            currUser.setCurrConteo(1);
+                            currUser.setModo(spnModo.getSelectedItemPosition());
+                            currUser.setDatosEnviados(false);
+                            currUser.updateCurrent(db);
+                            BaseHelper.tryClose(db);
+                            getWebserviceProducts(v);
+                        } catch (Exception e) {
+                            Toast.makeText(FrmSelectBodega.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -96,24 +111,54 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     }
 
-    private void prepareSpinners() {
-        rawBodegas = ArrayUtils.mapObjects(wholeBodegas);
-        String[] dataSpnBodegas = (String[]) rawBodegas.get(0);
-
-        ArrayAdapter<String> adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
-        adapterBodegas.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnBodega.setAdapter(adapterBodegas);
+    private void prepareSpinners() throws Exception {
+        String[] dataSpnTipoBodega = new String[4];
+        dataSpnTipoBodega[0] = "Agros";
+        dataSpnTipoBodega[1] = "Puntos";
+        dataSpnTipoBodega[2] = "Plantas";
+        dataSpnTipoBodega[3] = "Regionales";
+        ArrayAdapter<String> adapterTipoBodega = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnTipoBodega);
+        adapterTipoBodega.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnTipoBodega.setAdapter(adapterTipoBodega);
 
         String[] dataSpnModo = new String[2];
         dataSpnModo[0] = "Listado";
         dataSpnModo[1] = "Código de Barras";
-
         ArrayAdapter<String> adapterModo = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnModo);
         adapterModo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnModo.setAdapter(adapterModo);
     }
 
-    private void getWebserviceProducts(final View v, final SQLiteDatabase db) throws Exception {
+    private void filterBodegasSpinner() {
+        ArrayList selectedBodegas = new ArrayList();
+
+        for (int i = 0; i < wholeBodegas.length; i++) {
+            if (validarTipoBodega(wholeBodegas[i][0].toString())) {
+                selectedBodegas.add(wholeBodegas[i]);
+            }
+        }
+        rawBodegas = ArrayUtils.mapObjects(selectedBodegas);
+        String[] dataSpnBodegas = (String[]) rawBodegas.get(0);
+        ArrayAdapter<String> adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
+        adapterBodegas.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnBodega.setAdapter(adapterBodegas);
+    }
+
+    private boolean validarTipoBodega(String bodega) {
+        int bodegaInt = Integer.parseInt(bodega);
+        System.out.println("BODEGA " + bodega);
+        if ((spnTipoBodega.getSelectedItemPosition() == 0 && bodegaInt > 1500 && bodegaInt < 1600) ||
+                (spnTipoBodega.getSelectedItemPosition() == 1 && bodegaInt > 1200 && bodegaInt < 1300) ||
+                (spnTipoBodega.getSelectedItemPosition() == 2 && bodegaInt >= 100 && bodegaInt < 400) ||
+                (spnTipoBodega.getSelectedItemPosition() == 3 &&
+                        ((bodegaInt >= 500 && bodegaInt < 1000) ||
+                                (bodegaInt >= 1900 && bodegaInt < 1920)))) {
+            return true;
+        }
+        return false;
+    }
+
+    private void getWebserviceProducts(final View v) throws Exception {
         if (!NetUtils.isOnlineNet(FrmSelectBodega.this)) {
             dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
@@ -126,20 +171,17 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmSelectBodega.this);
                     if (resultsDatos.get(0).equals("[]")) {
                         dialogUtils.dissmissDialog();
-                        BaseHelper.tryClose(db);
                         Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
                         fillProductsOnDatabase(rawProductos);
                         dialogUtils.dissmissDialog();
                         Intent i = new Intent(v.getContext(), FrmOpciones.class);
-                        //i.putExtra("datos", resultsDatos);
                         startActivityForResult(i, 1);
                         finish();
                     }
                 }
             };
             remote.setContext(v.getContext());
-
             ArrayList queryDatos = new ArrayList();
 
             String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
@@ -189,6 +231,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
+        menu.findItem(R.id.action_generar_reporte).setVisible(false);
         setTitle("INVFISCOL 1.0");
         return true;
     }
