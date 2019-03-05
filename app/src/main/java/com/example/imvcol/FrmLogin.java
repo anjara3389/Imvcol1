@@ -104,7 +104,8 @@ public class FrmLogin extends AppCompatActivity {
             queryUsers.add("SELECT * " +
                     "FROM USUARIOS " +
                     "WHERE USUARIO=UPPER('" + usuario.getText() + "') " +
-                    "AND CLAVE=UPPER('" + contrasenia.getText() + "')");
+                    "AND CLAVE=UPPER('" + contrasenia.getText() + "') " +
+                    "AND BLOQUEADO IS NULL");
 
             remoteQuery.setQuery(queryUsers);
             remoteQuery.execute();

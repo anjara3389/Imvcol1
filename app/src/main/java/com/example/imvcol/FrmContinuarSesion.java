@@ -35,6 +35,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
             @Override
             public void onClick(View v) {
                 try {
+                    SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
                     if (usuario.getCurrBodega() != null && new Producto().countProductos(db) > 0) {
                         if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null) {
                             Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
@@ -77,7 +78,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
+                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -112,7 +113,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
+                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
