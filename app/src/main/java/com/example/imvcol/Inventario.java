@@ -147,10 +147,10 @@ public class Inventario {
         if (diferencia) {
             query += "AND " +
                     "(CASE WHEN (i.conteo1>=0 AND i.conteo2 IS NULL AND i.conteo3 IS NULL) " +
-                    "THEN p.cantidad<>i.conteo1 " +
+                    "THEN (p.cantidad<>i.conteo1 OR i.conteo1 IS NULL) " +
                     "WHEN(i.conteo2>=0 AND i.conteo3 IS NULL) " +
-                    "THEN p.cantidad<>i.conteo2 " +
-                    "ELSE p.cantidad<>i.conteo3 END)";
+                    "THEN (p.cantidad<>i.conteo2 OR i.conteo2 IS NULL) " +
+                    "ELSE (p.cantidad<>i.conteo3 OR i.conteo3 IS NULL) END)";
         }
 
         SQLiteQuery sq = new SQLiteQuery(query);
