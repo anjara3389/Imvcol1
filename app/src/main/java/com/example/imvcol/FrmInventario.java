@@ -259,18 +259,24 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void prepareFaltantesSpinner() throws Exception {
         final SQLiteDatabase db = BaseHelper.getReadable(this);
-        Object[][] falta = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
-        wholeFaltantes = new Object[falta != null ? falta.length + 1 : 0 + 1][2];
-        wholeFaltantes[0][0] = "-1";
-        wholeFaltantes[0][1] = "Seleccione un producto";
-
+        wholeFaltantes = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        if (wholeFaltantes == null) {
+            wholeFaltantes = new Object[1][2];
+            wholeFaltantes[0][0] = "-1";
+            wholeFaltantes[0][1] = "No hay faltantes";
+        }
+        //Object[][] falta = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        // wholeFaltantes = new Object[falta != null ? falta.length : 0][2];
+        //wholeFaltantes[0][0] = "-1";
+        //wholeFaltantes[0][1] = "Seleccione un producto";
+/*
         if (falta != null) {
             for (int i = 0; i < falta.length; i++) {
                 for (int j = 0; j < falta[0].length; j++) {
-                    wholeFaltantes[i + 1][j] = falta[i][j];
+                    wholeFaltantes[i][j] = falta[i][j];
                 }
             }
-        }
+        }*/
 
         rawFaltantes = ArrayUtils.mapObjects(wholeFaltantes);
 
@@ -304,15 +310,18 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             if (mapFaltantes.get(spnFaltantes.getSelectedItemPosition()) != "-1") {
                                 SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                                 selectedProduct = new Producto().selectProductByNumber(db, mapFaltantes.get(spnFaltantes.getSelectedItemPosition()), 0, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
-                                producto.setText(selectedProduct[1].toString());
-                                numero.setText(selectedProduct[0].toString());
+                                //producto.setText(selectedProduct[1].toString());
+                                //numero.setText(selectedProduct[0].toString());
                                 BaseHelper.tryClose(db);
-                                disableEnableCargar(false);
+                                disableEnableCantidad(true);
+
+
+                                // disableEnableCargar(false);
                             } else {
                                 //disableEnableCargar(true);
                                 selectedProduct = null;
-                                producto.setText("");
-                                numero.setText("");
+                                //producto.setText("");
+                                //numero.setText("");
                                 cantidad.setText("");
                                 rbCodigo.setChecked(true);
                                 rbLectura.setChecked(false);
@@ -803,12 +812,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         if (validar == true) {
                             new Producto().updateProductosOnInventario(db);
                             new Inventario().delete(db);
-                            //new Producto().delete(db);
-                            //usuario.setCurrGrupo(null);
-                            //usuario.setCurrSubgr(null);
-                            //usuario.setCurrSubgr2(null);
-                            //usuario.setCurrSubgr3(null);
-                            //usuario.setCurrClase(null);
                             usuario.setCurrConteo(1);
                             usuario.setDatosEnviados(true);
                             usuario.updateCurrent(db);
