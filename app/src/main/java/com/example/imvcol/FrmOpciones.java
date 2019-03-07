@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
@@ -36,7 +38,6 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     private Spinner spnSubgrupo3;
     private Spinner spnSubgrupo2;
     private Spinner spnClase;
-    private TextView lblSubgrupo;
     private TextView lblSubgrupo2;
     private TextView lblSubgrupo3;
     private TextView lblClase;
@@ -44,11 +45,12 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     private ArrayList rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
     private Usuario usuario;
     private static final int FINALIZAR_INVENTARIO = 3;
-    HashMap<Integer, String> mapGrupo;
-    HashMap<Integer, String> mapSubgrupo;
-    HashMap<Integer, String> mapSubgrupo2;
-    HashMap<Integer, String> mapSubgrupo3;
-    HashMap<Integer, String> mapClase;
+    private static final int SELECCION_ANTERIOR = 0;
+    HashMap<Integer, String> mapGrupos;
+    HashMap<Integer, String> mapSubgrupos;
+    HashMap<Integer, String> mapSubgrupos2;
+    HashMap<Integer, String> mapSubgrupos3;
+    HashMap<Integer, String> mapClases;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,6 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             spnSubgrupo3 = findViewById(R.id.frm_opciones_spn_subgrupo_3);
             spnClase = findViewById(R.id.frm_opciones_spn_clase);
             lblClase = findViewById(R.id.frm_opciones_lbl_clase_);
-            lblSubgrupo = findViewById(R.id.frm_opciones_lbl_subgrupo);
             lblSubgrupo2 = findViewById(R.id.frm_opciones_lbl_subgrupo_2);
             lblSubgrupo3 = findViewById(R.id.frm_opciones_lbl_subgrupo_3);
 
@@ -79,34 +80,56 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 lblSubgrupo3.setVisibility(View.GONE);
             }
 
-            dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
-            dialogUtils.showDialog(getWindow());
-            getWebserviceProducts();
+            //dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
+            //dialogUtils.showDialog(getWindow());
+
+            db = BaseHelper.getReadable(FrmOpciones.this);
+            wholeGrupos = new Grupo().selectGrupos(db);
+            wholeSubgrupos = new Subgrupo().selectSubgrupos(db);
+            if (usuario.getModo() == usuario.MODO_LISTA) {
+                wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);
+                wholeSubgrupos3 = new Subgrupo3().selectSubgrupos3(db);
+                wholeClases = new Clase().selectClases(db);
+
+                System.out.println("SUBGRUPOS3/////" + wholeSubgrupos3);
+            }
+
+            if (wholeGrupos != null && (wholeSubgrupos != null || usuario.getModo() == usuario.MODO_BARRAS)) {
+                if (usuario.getModo() == usuario.MODO_LISTA) {
+                    prepareClases();
+                }
+                prepareGrupos();
+            }
+            BaseHelper.tryClose(db);
+
+            mapGrupos = (HashMap<Integer, String>) rawGrupos.get(1);
+
+            continuarSeleccion();
 
             btnAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mapGrupo = (HashMap<Integer, String>) rawGrupos.get(1);
-                    mapSubgrupo = (HashMap<Integer, String>) rawSubgrupos.get(1);
-                    if (usuario.getModo() == usuario.MODO_LISTA) {
-                        mapSubgrupo2 = (HashMap<Integer, String>) rawSubgrupos2.get(1);
-                        mapSubgrupo3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
-                        mapClase = (HashMap<Integer, String>) rawClases.get(1);
-                    }
                     try {
-                        if (changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())) == null) {
+                        //mapGrupos = (HashMap<Integer, String>) rawGrupos.get(1);
+                        mapSubgrupos = (HashMap<Integer, String>) rawSubgrupos.get(1);
+                        if (usuario.getModo() == usuario.MODO_LISTA) {
+                            mapSubgrupos2 = (HashMap<Integer, String>) rawSubgrupos2.get(1);
+                            mapSubgrupos3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
+                            mapClases = (HashMap<Integer, String>) rawClases.get(1);
+                        }
+                        if (changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
                             throw new Exception("Debe seleccionar un grupo");
-                        } else if (changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                        } else if (changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
                             throw new Exception("Debe seleccionar un subgrupo");
                         } else {
                             dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
                             dialogUtils.showDialog(getWindow());
-                            usuario.setCurrGrupo(changeValue(mapGrupo.get(spnGrupo.getSelectedItemPosition())));
-                            usuario.setCurrSubgr(changeValue(mapSubgrupo.get(spnSubgrupo.getSelectedItemPosition())));
+                            usuario.setCurrGrupo(changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())));
+                            usuario.setCurrSubgr(changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())));
                             if (usuario.getModo() == usuario.MODO_LISTA) {
-                                usuario.setCurrSubgr2(changeValue(mapSubgrupo2.get(spnSubgrupo2.getSelectedItemPosition())));
-                                usuario.setCurrSubgr3(changeValue(mapSubgrupo3.get(spnSubgrupo3.getSelectedItemPosition())));
-                                usuario.setCurrClase(changeValue(mapClase.get(spnClase.getSelectedItemPosition())));
+                                usuario.setCurrSubgr2(changeValue(mapSubgrupos2.get(spnSubgrupo2.getSelectedItemPosition())));
+                                usuario.setCurrSubgr3(changeValue(mapSubgrupos3.get(spnSubgrupo3.getSelectedItemPosition())));
+                                usuario.setCurrClase(changeValue(mapClases.get(spnClase.getSelectedItemPosition())));
                             }
                             countWebserviceFisicos(v);
                         }
@@ -120,11 +143,15 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            dialogUtils.dissmissDialog();
+            if (dialogUtils != null) {
+                dialogUtils.dissmissDialog();
+            }
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            dialogUtils.dissmissDialog();
+            if (dialogUtils != null) {
+                dialogUtils.dissmissDialog();
+            }
         }
     }
 
@@ -175,6 +202,59 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         return true;
     }
 
+    private void continuarSeleccion() {
+        boolean validation = false;
+        for (int i = 0; i < wholeGrupos.length; i++) {
+            System.out.println("wholegrupos " + wholeGrupos[i][0]);
+            System.out.println("wholegruposxxx " + usuario.getCurrGrupo());
+
+            if (wholeGrupos[i][0].equals(usuario.getCurrGrupo())) {//si el grupo existe
+                validation = true;
+                if (usuario.getCurrSubgr2() != null) {
+                    boolean validation2 = false;
+
+                    for (int j = 0; j < wholeSubgrupos.length; j++) {
+                        if (wholeSubgrupos[j][0].equals(usuario.getCurrSubgr())) {
+                            validation2 = true;
+
+                            System.out.println("wholesubgrupos " + wholeSubgrupos[j][0]);
+                            System.out.println("wholeSUBgruposxxx " + usuario.getCurrSubgr());
+
+                            if (usuario.getCurrSubgr3() != null) {
+                                boolean validation3 = false;
+                                for (int k = 0; k < wholeSubgrupos2.length; k++) {
+                                    System.out.println("whole2grupos " + wholeSubgrupos2[k][0]);
+                                    System.out.println("wholeSUBgruposxxx " + usuario.getCurrSubgr2());
+
+                                    if (wholeSubgrupos2[k][0].equals(usuario.getCurrSubgr2())) {
+                                        validation3 = true;
+                                    }
+                                }
+                                validation = validation && validation3;
+                            }
+                        }
+                    }
+                    validation = validation && validation2;
+                }
+            }
+        }
+        System.out.println("validation " + validation);
+        if (validation) {
+            YesNoDialogFragment dial = new YesNoDialogFragment();
+            dial.setInfo(FrmOpciones.this, FrmOpciones.this, "Continuar con selección", "¿Desea continuar con la selección anterior?", SELECCION_ANTERIOR);
+            dial.show(getSupportFragmentManager(), "MyDialog");
+        } else {
+           /* SQLiteDatabase db = BaseHelper.getReadable(FrmOpciones.this);
+            usuario.setCurrGrupo(null);
+            usuario.setCurrSubgr(null);
+            usuario.setCurrSubgr2(null);
+            usuario.setCurrSubgr3(null);
+            usuario.setCurrClase(null);
+            usuario.updateCurrent(db);
+            BaseHelper.tryClose(db);*/
+        }
+    }
+
     private void prepareGrupos() {
         rawGrupos = ArrayUtils.mapObjects(wholeGrupos);
         String[] dataSpnGrupos = (String[]) rawGrupos.get(0);
@@ -195,14 +275,19 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     }
 
     private void prepareSubgrupos(final String grupoId) {
+
+        System.out.println("GRUPO ID//" + grupoId);
         ArrayList selected = new ArrayList();
 
         for (int i = 0; i < wholeSubgrupos.length; i++) {
+
             Object[] subgrupo = wholeSubgrupos[i];
+            System.out.println("GRUPO IDxxxxx//" + subgrupo[2]);
             if (subgrupo[0].equals("-1") || subgrupo[2].equals(grupoId)) {
                 selected.add(subgrupo);
             }
         }
+        System.out.println("selected subgrupos//" + selected);
 
         rawSubgrupos = ArrayUtils.mapObjects(selected);
         String[] dataSpnSubgrupos = (String[]) rawSubgrupos.get(0);
@@ -454,90 +539,10 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         remote.execute();
     }
 
-    private void getWebserviceProducts() throws Exception {
-        if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
-            dialogUtils.dissmissDialog();
-            throw new Exception("No hay conexión a internet");
-        } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
-                @Override
-                public void receiveData(Object object) throws Exception {
-                    ArrayList resultsDatos = (ArrayList) object;
-                    System.out.println("productos1" + resultsDatos.get(0));
-                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this);
-                    if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
-                        Toast.makeText(FrmOpciones.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
-                    } else {
-                        fillProductsOnDatabase(rawProductos);
-
-                        SQLiteDatabase db = BaseHelper.getReadable(FrmOpciones.this);
-                        wholeGrupos = new Grupo().selectGrupos(db);
-                        wholeSubgrupos = new Subgrupo().selectSubgrupos(db);
-                        if (usuario.getModo() == usuario.MODO_LISTA) {
-                            wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);
-                            wholeSubgrupos3 = new Subgrupo3().selectSubgrupos3(db);
-                            wholeClases = new Clase().selectClases(db);
-                        }
-
-                        if (wholeGrupos != null && (wholeSubgrupos != null || usuario.getModo() == usuario.MODO_BARRAS)) {
-                            if (usuario.getModo() == usuario.MODO_LISTA) {
-                                prepareClases();
-                            }
-                            prepareGrupos();
-                        }
-                        BaseHelper.tryClose(db);
-                        dialogUtils.dissmissDialog();
-
-                    }
-                }
-            };
-            remote.setContext(FrmOpciones.this);
-            ArrayList queryDatos = new ArrayList();
-
-            String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
-                    "FROM referencias_fis F " +
-                    "JOIN referencias r on r.codigo=F.codigo " +
-                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
-                    "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
-                    "WHERE s.stock<>0 " +
-                    "AND s.bodega='" + usuario.getCurrBodega() + "' " +
-                    "AND s.ano=YEAR(getdate()) " +
-                    "AND s.mes=MONTH(getdate()) " +
-                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
-                    "AND F.fisico=0";
-            queryDatos.add(query);
-            System.out.println("QUERYYYYYY///" + query);
-            remote.setQuery(queryDatos);
-            remote.execute();
-        }
-    }
-
-    private void fillProductsOnDatabase(ArrayList rawProductos) throws JSONException {
-        SQLiteDatabase db = BaseHelper.getWritable(this);
-        System.out.println("CARGANDOOOOO" + rawProductos.get(0));
-        new Producto().delete(db);
-
-        for (int i = 0; i < rawProductos.size(); i++) {
-            JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
-            Producto producto = new Producto(rawProducto.getString("codigo"),
-                    rawProducto.getString("descripcion"),
-                    rawProducto.getString("stock"),
-                    rawProducto.getString("alterno"),
-                    rawProducto.getString("grupo"),
-                    rawProducto.getString("subgrupo"),
-                    rawProducto.getString("subgrupo2"),
-                    rawProducto.getString("subgrupo3"),
-                    rawProducto.getString("clase"));
-            producto.insert(db);
-        }
-        BaseHelper.tryClose(db);
-    }
-
 
     @Override
     public void onFinishDialog(boolean ans, int code) {
-        if (code == FINALIZAR_INVENTARIO) {
+        if (code == FINALIZAR_INVENTARIO && ans) {
             try {
                 SQLiteDatabase db = BaseHelper.getWritable(this);
                 new Usuario().delete(db);
@@ -560,6 +565,52 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
+            }
+        }
+        if (code == SELECCION_ANTERIOR) {
+            if (ans) {
+                if (usuario.getCurrSubgr() != null) {
+                    for (Map.Entry<Integer, String> grupoEntry : mapGrupos.entrySet()) {
+                        if (grupoEntry.getValue().equals(usuario.getCurrGrupo())) {
+                            spnGrupo.setSelection(grupoEntry.getKey());
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    mapSubgrupos = (HashMap<Integer, String>) rawSubgrupos.get(1);
+                                    if (usuario.getCurrSubgr2() != null) {
+                                        for (Map.Entry<Integer, String> subgrupoEntry : mapSubgrupos.entrySet()) {
+                                            if (subgrupoEntry.getKey().toString().equals(usuario.getCurrSubgr())) {
+                                                spnSubgrupo.setSelection(subgrupoEntry.getKey());
+                                                Handler handler = new Handler();
+                                                handler.postDelayed(new Runnable() {
+                                                    public void run() {
+                                                        mapSubgrupos2 = (HashMap<Integer, String>) rawSubgrupos2.get(1);
+                                                        if (usuario.getCurrSubgr3() != null) {
+                                                            for (Map.Entry<Integer, String> subgrupo2entry : mapSubgrupos2.entrySet()) {
+                                                                if (subgrupo2entry.getKey().toString().equals(usuario.getCurrSubgr2())) {
+                                                                    spnSubgrupo2.setSelection(subgrupo2entry.getKey());
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }, 2000);
+                                            }
+                                        }
+                                    }
+                                }
+                            }, 1000);
+                        }
+                    }
+                }
+            } else {
+                usuario.setCurrGrupo(null);
+                usuario.setCurrSubgr(null);
+                usuario.setCurrSubgr2(null);
+                usuario.setCurrSubgr3(null);
+                usuario.setCurrClase(null);
+                SQLiteDatabase db = BaseHelper.getWritable(this);
+                usuario.updateCurrent(db);
+                BaseHelper.tryClose(db);
             }
         }
     }

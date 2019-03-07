@@ -593,10 +593,10 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     @Override
     public void onFinishDialog(boolean ans, int code) {
         if (ans == true) {
-            if (code == SUMAR_CANTIDAD) {
+            if (code == SUMAR_CANTIDAD && ans) {
                 updateCantidad(Integer.parseInt(cantidad.getText().toString()));
             }
-            if (code == CAMBIAR_CONTEO) {
+            if (code == CAMBIAR_CONTEO && ans) {
                 try {
                     if (usuario.getCurrConteo() < 3) {
                         SQLiteDatabase db = BaseHelper.getWritable(this);
@@ -613,7 +613,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
-            if (code == ENVIAR_DATOS) {
+            if (code == ENVIAR_DATOS && ans) {
                 try {
                     dialogUtils = new DialogUtils(this, "Cargando");
                     dialogUtils.showDialog(this.getWindow());
@@ -626,7 +626,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
                 }
             }
-            if (code == FINALIZAR_INVENTARIO) {
+            if (code == FINALIZAR_INVENTARIO && ans) {
                 try {
                     SQLiteDatabase db = BaseHelper.getWritable(this);
                     if (new Inventario().countInventarios(db) == 0) {
@@ -658,7 +658,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
-            if (code == LIBERAR_SELECCION) {
+            if (code == LIBERAR_SELECCION && ans) {
                 try {
                     dialogUtils = new DialogUtils(this, "Cargando");
                     dialogUtils.showDialog(this.getWindow());
@@ -801,14 +801,14 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             }
                         }
                         if (validar == true) {
-
+                            new Producto().updateProductosOnInventario(db);
                             new Inventario().delete(db);
-                            new Producto().delete(db);
-                            usuario.setCurrGrupo(null);
-                            usuario.setCurrSubgr(null);
-                            usuario.setCurrSubgr2(null);
-                            usuario.setCurrSubgr3(null);
-                            usuario.setCurrClase(null);
+                            //new Producto().delete(db);
+                            //usuario.setCurrGrupo(null);
+                            //usuario.setCurrSubgr(null);
+                            //usuario.setCurrSubgr2(null);
+                            //usuario.setCurrSubgr3(null);
+                            //usuario.setCurrClase(null);
                             usuario.setCurrConteo(1);
                             usuario.setDatosEnviados(true);
                             usuario.updateCurrent(db);

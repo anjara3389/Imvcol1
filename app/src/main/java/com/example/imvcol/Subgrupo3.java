@@ -45,12 +45,15 @@ public class Subgrupo3 {
     public Object[][] selectSubgrupos3(SQLiteDatabase db) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT s.subgrupo3,s.descripcion,s.grupo,s.subgrupo,s.subgrupo2 " +
                 "FROM subgrupo3 s " +
-                "LEFT JOIN producto p ON p.subgr3=s.subgrupo3 OR p.subgr3=-1 " +
-                "WHERE (p.subgr3=s.subgrupo3 " +
-                "AND p.grupo=s.grupo " +
-                "AND p.subgrupo=s.subgrupo " +
-                "AND p.subgr2=s.subgrupo2 ) " +
-                "OR s.subgrupo3=-1 " +
+                "LEFT JOIN producto p ON p.subgr3=s.subgrupo3 " +
+                "WHERE (" +
+                " (p.subgr3=s.subgrupo3 " +
+                " AND p.grupo=s.grupo " +
+                " AND p.subgrupo=s.subgrupo " +
+                " AND p.subgr2=s.subgrupo2 ) " +
+                "OR s.subgrupo3=-1" +
+                ") " +
+                "AND (p.inventareado<>1 OR p.inventareado is NULL) " +
                 "ORDER BY CAST(s.subgrupo3 as integer) ASC");
 
         return sq.getRecords(db);

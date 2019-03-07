@@ -37,7 +37,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
                 try {
                     SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
                     if (usuario.getCurrBodega() != null && new Producto().countProductos(db) > 0) {
-                        if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null) {
+                        if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null && !usuario.getDatosEnviados()) {
                             Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
                             //i.putExtra("diferencia", true);
                             startActivityForResult(i, 1);
@@ -87,7 +87,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
 
     @Override
     public void onFinishDialog(boolean ans, int code) {
-        if (code == FINALIZAR_INVENTARIO) {
+        if (code == FINALIZAR_INVENTARIO && ans) {
             try {
                 SQLiteDatabase db = BaseHelper.getWritable(FrmContinuarSesion.this);
                 if (new Producto().countProductos(db) > 0 && new Inventario().countInventarios(db) == 0) {

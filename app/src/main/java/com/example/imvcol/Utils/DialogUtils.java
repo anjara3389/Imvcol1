@@ -20,7 +20,7 @@ public class DialogUtils {
     }
 
     public void showDialog(Window window) {
-        if (!dialog.isShowing()) {
+        if (dialog != null && !dialog.isShowing()) {
             dialog.show();
             window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

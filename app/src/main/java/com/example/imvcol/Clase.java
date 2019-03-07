@@ -37,9 +37,9 @@ public class Clase {
         SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT c.clase,c.descripcion " +
                 "FROM clase c " +
                 "LEFT JOIN producto p ON p.clase=c.clase " +
-                "WHERE p.clase=c.clase OR c.clase=-1 " +
+                "WHERE (p.clase=c.clase OR c.clase=-1) " +
+                "AND (p.inventareado<>1 OR p.inventareado is NULL) " +
                 "ORDER BY CAST(c.clase as integer) ASC");
-
         return sq.getRecords(db);
     }
 

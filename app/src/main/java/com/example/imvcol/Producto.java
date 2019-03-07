@@ -14,12 +14,13 @@ public class Producto {
     private String subgr2;
     private String subgr3;
     private String clase;
+    private Boolean inventareado;
 
     public Producto() {
 
     }
 
-    public Producto(String producto, String descripcion, String cantidad, String barras, String grupo, String subgrupo, String subgr2, String subgr3, String clase) {
+    public Producto(String producto, String descripcion, String cantidad, String barras, String grupo, String subgrupo, String subgr2, String subgr3, String clase, Boolean inventareado) {
         this.producto = producto;
         this.descripcion = descripcion;
         this.cantidad = cantidad;
@@ -29,6 +30,7 @@ public class Producto {
         this.subgr2 = subgr2;
         this.subgr3 = subgr3;
         this.clase = clase;
+        this.inventareado = inventareado;
 
     }
 
@@ -43,6 +45,7 @@ public class Producto {
         c.put("subgr2", subgr2);
         c.put("subgr3", subgr3);
         c.put("clase", clase);
+        c.put("inventareado", inventareado);
         return c;
     }
 
@@ -51,7 +54,7 @@ public class Producto {
     }
 
     public Object[][] selectProductos(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT producto,descripcion,cantidad,barras,grupo,subgrupo,subgr2,subgr3,clase " +
+        SQLiteQuery sq = new SQLiteQuery("SELECT producto,descripcion,cantidad,barras,grupo,subgrupo,subgr2,subgr3,clase,inventareado " +
                 "FROM producto");
         return sq.getRecords(db);
     }
@@ -160,6 +163,14 @@ public class Producto {
 
         SQLiteQuery sq = new SQLiteQuery(query);
         return sq.getRecords(db);
+    }
+
+    public void updateProductosOnInventario(SQLiteDatabase db) {
+        String query = "UPDATE producto " +
+                "SET inventareado = 1 " +
+                "WHERE producto IN (SELECT producto FROM inventario)" ;
+
+        db.execSQL(query);
     }
 
     public void delete(SQLiteDatabase db) {

@@ -32,7 +32,8 @@ public class Grupo {
         SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT g.grupo,g.descripcion " +
                 "FROM grupo g " +
                 "LEFT JOIN producto p ON p.grupo=g.grupo  " +
-                "WHERE p.grupo=g.grupo OR g.grupo=-1 " +
+                "WHERE (p.grupo=g.grupo OR g.grupo=-1) " +
+                "AND (p.inventareado<>1 OR p.inventareado is NULL) " +
                 "ORDER BY CAST(g.grupo as integer) ASC");
         return sq.getRecords(db);
     }
