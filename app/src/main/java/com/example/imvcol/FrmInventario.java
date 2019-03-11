@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,9 +32,7 @@ import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
 import com.example.imvcol.com.google.zxing.integration.android.IntentResult;
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -66,6 +65,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     private DialogUtils dialogUtils;
     private Spinner spnFaltantes;
     private HashMap<Integer, String> mapFaltantes;
+    private CardView card;
 
     private Object[][] wholeFaltantes;
     private ArrayList rawFaltantes;
@@ -85,6 +85,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             rbCodigo = findViewById(R.id.frm_inventario_rbtn_codigo);
             rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
             spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
+            card = findViewById(R.id.frm_inventario_card);
+
 
             listaProductos = findViewById(R.id.frm_inventario_lst);
             listaProductos.setClickable(true);
@@ -142,6 +144,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             btnAceptar.setVisibility(View.GONE);
                             btnCancelar.setVisibility(View.GONE);
                             btnCargar.setVisibility(View.GONE);
+                            card.setVisibility(View.GONE);
                         }
 
                     } else if (numero.toString() != "" && numero.getText().length() != 0) {
@@ -171,6 +174,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     btnAceptar.setVisibility(View.VISIBLE);
                     btnCancelar.setVisibility(View.VISIBLE);
                     btnCargar.setVisibility(View.VISIBLE);
+                    card.setVisibility(View.VISIBLE);
 
                     producto.setText(selectedProduct[1].toString());
                     numero.setText(selectedProduct[code == 0 ? 0 : 3].toString());
@@ -193,12 +197,31 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                         currentInventario = new Inventario().selectInventario(db, selectedProduct[0].toString());
 
-                        String rawCantidad = cantidad.getText().toString().replaceAll("\\+", "+");
-                        String[] parts = rawCantidad.replace(" ", "").split("\\+");
-                        int total = 0;
+                        String rawCantidad = cantidad.getText().toString()
+                                .replaceAll("\\+", "+")
+                                .replaceAll("\\*", "*")
+                                .replaceAll("\\(", "(").replaceAll("\\(", "")
+                                .replaceAll("\\)", ")").replaceAll("\\)", "");
 
-                        for (int i = 0; i < parts.length; i++) {
-                            total += Integer.parseInt(parts[i]);
+                        String[] sumParts = rawCantidad.replace(" ", "").split("\\+");
+                        Double total = 0.0;
+                        if (sumParts.length > 1) {
+                            for (int i = 0; i < sumParts.length; i++) {
+                                Double totalMul = 1.0;
+                                String[] multParts = sumParts[i].split("\\*");
+                                for (int j = 0; j < multParts.length; j++) {
+                                    totalMul = totalMul * Double.parseDouble(multParts[j]);
+                                }
+                                sumParts[i] = totalMul.toString();
+                                total += Double.parseDouble(sumParts[i]);
+                            }
+                        } else {
+                            Double totalMul = 1.0;
+                            String[] multParts = rawCantidad.replace(" ", "").split("\\*");
+                            for (int j = 0; j < multParts.length; j++) {
+                                totalMul = totalMul * Double.parseDouble(multParts[j]);
+                            }
+                            total = totalMul;
                         }
 
                         if (currentInventario == null) {
@@ -603,7 +626,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     public void onFinishDialog(boolean ans, int code) {
         if (ans == true) {
             if (code == SUMAR_CANTIDAD && ans) {
-                updateCantidad(Integer.parseInt(cantidad.getText().toString()));
+                updateCantidad(Double.parseDouble(cantidad.getText().toString()));
             }
             if (code == CAMBIAR_CONTEO && ans) {
                 try {
@@ -685,18 +708,18 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         }
     }
 
-    public void updateCantidad(int cant) {
+    public void updateCantidad(Double cant) {
         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
         if (usuario.getCurrConteo() == 1) {
-            int cantidadConteo = currentInventario.getConteo1() == null ? 0 : currentInventario.getConteo1();
+            Double cantidadConteo = currentInventario.getConteo1() == null ? 0 : currentInventario.getConteo1();
             currentInventario.setConteo1(cantidadConteo + cant);
             currentInventario.setUsuario1(usuario.getUsuario());
         } else if (usuario.getCurrConteo() == 2) {
-            int cantidadConteo = currentInventario.getConteo2() == null ? 0 : currentInventario.getConteo2();
+            Double cantidadConteo = currentInventario.getConteo2() == null ? 0 : currentInventario.getConteo2();
             currentInventario.setConteo2(cantidadConteo + cant);
             currentInventario.setUsuario2(usuario.getUsuario());
         } else {
-            int cantidadConteo = currentInventario.getConteo3() == null ? 0 : currentInventario.getConteo3();
+            Double cantidadConteo = currentInventario.getConteo3() == null ? 0 : currentInventario.getConteo3();
             currentInventario.setConteo3(cantidadConteo + cant);
             currentInventario.setUsuario3(usuario.getUsuario());
         }

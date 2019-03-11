@@ -6,125 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".FrmInventario">
 
-    <TextView
-        android:id="@+id/frm_inventario_lbl_faltantes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="5dp"
-        android:text="Faltantes" />
-
-    <Spinner
-        android:id="@+id/frm_inventario_spn_faltantes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginRight="20dp"
-        android:background="@android:color/darker_gray" />
-
-    <TextView
-        android:id="@+id/frm_inventario_lbl_producto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="110dp"
-        android:text="Producto" />
-
-    <EditText
-        android:id="@+id/frm_inventario_txt_producto"
-        android:layout_width="326dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="130dp"
-        android:ems="10"
-        android:hint="Nombre del producto"
-        android:inputType="textMultiLine" />
-
-    <RadioGroup
-        android:id="@+id/frm_inventario_rbgroup_opciones"
-        android:layout_width="318dp"
-        android:layout_height="50dp"
-        android:layout_above="@+id/view_below"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="200dp"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/frm_inventario_rbtn_codigo"
-            android:layout_width="119dp"
-            android:layout_height="59dp"
-            android:layout_marginLeft="22dp"
-            android:layout_weight="1"
-            android:checked="true"
-            android:scaleX="1.3"
-            android:scaleY="1.3"
-            android:text="Código" />
-
-        <RadioButton
-            android:id="@+id/frm_inventario_rbtn_lectura"
-            android:layout_width="17dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:checked="false"
-            android:scaleX="1.3"
-            android:scaleY="1.3"
-            android:text="Barras" />
-    </RadioGroup>
-
-    <EditText
-        android:id="@+id/frm_inventario_txt_numero"
-        android:layout_width="325dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="250dp"
-        android:ems="10"
-        android:hint="Código de producto"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/frm_inventario_btn_cargar"
-        android:layout_width="193dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="80dp"
-        android:layout_marginTop="310dp"
-        android:text=" Cargar " />
-
-    <TextView
-        android:id="@+id/frm_inventario_lbl_cantidad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="390dp"
-        android:text="Cantidad" />
-
-    <EditText
-        android:id="@+id/frm_inventario_txt_cantidad"
-        android:layout_width="326dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="410dp"
-        android:ems="10"
-        android:hint="Cantidad"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/frm_inventario_btn_aceptar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="65dp"
-        android:layout_marginTop="470dp"
-        android:text=" Aceptar " />
-
-    <Button
-        android:id="@+id/frm_inventario_btn_cancelar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="200dp"
-        android:layout_marginTop="470dp"
-        android:text="Cancelar" />
-
     <ListView
         android:id="@+id/frm_inventario_lst"
         android:layout_width="match_parent"
@@ -132,5 +13,142 @@
         android:layout_marginTop="120dp"
         android:background="@android:color/background_light"
         android:visibility="gone" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/frm_inventario_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
+
+        <Button
+            android:id="@+id/frm_inventario_btn_aceptar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="55dp"
+            android:layout_marginTop="440dp"
+            android:layout_marginBottom="5dp"
+            android:text=" Aceptar " />
+
+        <Button
+            android:id="@+id/frm_inventario_btn_cancelar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="190dp"
+            android:layout_marginTop="440dp"
+            android:layout_marginBottom="5dp"
+            android:text="Cancelar" />
+
+        <EditText
+            android:id="@+id/frm_inventario_txt_cantidad"
+            android:layout_width="326dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="390dp"
+            android:ems="10"
+            android:hint="Cantidad"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/frm_inventario_lbl_cantidad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="370dp"
+            android:text="Cantidad" />
+
+        <TextView
+            android:id="@+id/frm_inventario_lbl_faltantes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:text="Faltantes" />
+
+        <Spinner
+            android:id="@+id/frm_inventario_spn_faltantes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginRight="20dp"
+            android:background="@android:color/darker_gray" />
+
+        <Button
+            android:id="@+id/frm_inventario_btn_cargar"
+            android:layout_width="193dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="280dp"
+            android:layout_marginBottom="20dp"
+            android:text=" Cargar " />
+
+        <TextView
+            android:id="@+id/frm_inventario_lbl_producto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="130dp"
+            android:text="Búsqueda" />
+
+        <EditText
+            android:id="@+id/frm_inventario_txt_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="140dp"
+            android:layout_marginRight="10dp"
+            android:ems="10"
+            android:hint="Nombre del producto"
+            android:inputType="textMultiLine" />
+
+        <EditText
+            android:id="@+id/frm_inventario_txt_numero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="240dp"
+            android:layout_marginRight="10dp"
+            android:ems="10"
+            android:hint="Código de producto"
+            android:inputType="textPersonName" />
+
+        <RadioGroup
+            android:id="@+id/frm_inventario_rbgroup_opciones"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="195dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/frm_inventario_rbtn_codigo"
+                android:layout_width="119dp"
+                android:layout_height="59dp"
+                android:layout_marginLeft="22dp"
+                android:layout_weight="1"
+                android:checked="true"
+                android:scaleX="1.3"
+                android:scaleY="1.3"
+                android:text="Código" />
+
+            <RadioButton
+                android:id="@+id/frm_inventario_rbtn_lectura"
+                android:layout_width="17dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:checked="false"
+                android:scaleX="1.3"
+                android:scaleY="1.3"
+                android:text="Barras" />
+        </RadioGroup>
+
+    </android.support.v7.widget.CardView>
 
 </android.widget.RelativeLayout>

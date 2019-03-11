@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
+import java.nio.DoubleBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,18 +15,18 @@ public class Inventario {
     private String fecha;
     private String bodega;
     private String producto;
-    private Integer conteo1;
+    private Double conteo1;
     private String usuario1;
-    private Integer conteo2;
+    private Double conteo2;
     private String usuario2;
-    private Integer conteo3;
+    private Double conteo3;
     private String usuario3;
 
     public Inventario() {
 
     }
 
-    public Inventario(String fecha, String bodega, String producto, Integer conteo1, String usuario1, Integer conteo2, String usuario2, Integer conteo3, String usuario3) {
+    public Inventario(String fecha, String bodega, String producto, Double conteo1, String usuario1, Double conteo2, String usuario2, Double conteo3, String usuario3) {
         this.fecha = fecha;
         this.bodega = bodega;
         this.producto = producto;
@@ -37,7 +38,7 @@ public class Inventario {
         this.usuario3 = usuario3;
     }
 
-    public Inventario(int numConteo, Integer conteo, String usuario) {
+    public Inventario(int numConteo, Double conteo, String usuario) {
         if (numConteo == 1) {
             this.conteo1 = conteo;
             this.usuario1 = usuario;
@@ -99,11 +100,11 @@ public class Inventario {
             return new Inventario(rawInventario[0].toString(),
                     rawInventario[1].toString(),
                     rawInventario[2].toString(),
-                    Integer.parseInt(rawInventario[3].toString()),
+                    Double.parseDouble(rawInventario[3].toString()),
                     rawInventario[4].toString(),
-                    rawInventario[5] != null ? Integer.parseInt(rawInventario[5].toString()) : null,
+                    rawInventario[5] != null ? Double.parseDouble(rawInventario[5].toString()) : null,
                     rawInventario[6] != null ? rawInventario[6].toString() : null,
-                    rawInventario[7] != null ? Integer.parseInt(rawInventario[7].toString()) : null,
+                    rawInventario[7] != null ? Double.parseDouble(rawInventario[7].toString()) : null,
                     rawInventario[8] != null ? rawInventario[8].toString() : null);
         }
         return null;
@@ -171,11 +172,11 @@ public class Inventario {
                 inventarios.add(new Inventario(rawInventario[i][0].toString(),
                         rawInventario[i][1].toString(),
                         rawInventario[i][2].toString(),
-                        rawInventario[i][3] != null ? Integer.parseInt(rawInventario[i][3].toString()) : null,
+                        rawInventario[i][3] != null ? Double.parseDouble(rawInventario[i][3].toString()) : null,
                         rawInventario[i][4] != null ? rawInventario[i][4].toString() : null,
-                        rawInventario[i][5] != null ? Integer.parseInt(rawInventario[i][5].toString()) : null,
+                        rawInventario[i][5] != null ? Double.parseDouble(rawInventario[i][5].toString()) : null,
                         rawInventario[i][6] != null ? rawInventario[i][6].toString() : null,
-                        rawInventario[i][7] != null ? Integer.parseInt(rawInventario[i][7].toString()) : null,
+                        rawInventario[i][7] != null ? Double.parseDouble(rawInventario[i][7].toString()) : null,
                         rawInventario[i][8] != null ? rawInventario[i][8].toString() : null));
             }
             return inventarios;
@@ -211,11 +212,11 @@ public class Inventario {
         this.producto = producto;
     }
 
-    public Integer getConteo1() {
+    public Double getConteo1() {
         return conteo1;
     }
 
-    public void setConteo1(Integer conteo1) {
+    public void setConteo1(Double conteo1) {
         this.conteo1 = conteo1;
     }
 
@@ -227,11 +228,11 @@ public class Inventario {
         this.usuario1 = usuario1;
     }
 
-    public Integer getConteo2() {
+    public Double getConteo2() {
         return conteo2;
     }
 
-    public void setConteo2(Integer conteo2) {
+    public void setConteo2(Double conteo2) {
         this.conteo2 = conteo2;
     }
 
@@ -243,11 +244,11 @@ public class Inventario {
         this.usuario2 = usuario2;
     }
 
-    public Integer getConteo3() {
+    public Double getConteo3() {
         return conteo3;
     }
 
-    public void setConteo3(Integer conteo3) {
+    public void setConteo3(Double conteo3) {
         this.conteo3 = conteo3;
     }
 
