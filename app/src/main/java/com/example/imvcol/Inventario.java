@@ -151,8 +151,9 @@ public class Inventario {
                     "THEN (p.cantidad<>i.conteo1 OR i.conteo1 IS NULL) " +
                     "WHEN(i.conteo2>=0 AND i.conteo3 IS NULL) " +
                     "THEN (p.cantidad<>i.conteo2 OR i.conteo2 IS NULL) " +
-                    "ELSE (p.cantidad<>i.conteo3 OR i.conteo3 IS NULL) END)";
+                    "ELSE (p.cantidad<>i.conteo3 OR i.conteo3 IS NULL) END) ";
         }
+        query += "ORDER BY p.descripcion ASC";
 
         SQLiteQuery sq = new SQLiteQuery(query);
         Object[][] rawInventario = sq.getRecords(db);

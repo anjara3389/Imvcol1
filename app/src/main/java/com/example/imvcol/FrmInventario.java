@@ -286,7 +286,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         if (wholeFaltantes == null) {
             wholeFaltantes = new Object[1][2];
             wholeFaltantes[0][0] = "-1";
-            wholeFaltantes[0][1] = "No hay faltantes";
+            wholeFaltantes[0][1] = "No hay productos";
         }
         //Object[][] falta = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
         // wholeFaltantes = new Object[falta != null ? falta.length : 0][2];
