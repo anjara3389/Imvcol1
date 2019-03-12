@@ -14,16 +14,71 @@ public class BaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "invfiscol";
 
-    public static final int VERSION = 14;
-    String bodega = "CREATE TABLE bodega(bodega TEXT,descripcion TEXT)";
-    String grupo = "CREATE TABLE grupo(grupo TEXT,descripcion TEXT)";
-    String clase = "CREATE TABLE clase(clase TEXT,descripcion TEXT)";
-    String usuario = "CREATE TABLE usuario(usuario TEXT,clave TEXT,curr_bodega TEXT,curr_grupo TEXT,curr_subgr TEXT,curr_subgr2 TEXT,curr_subgr3 TEXT,curr_clase TEXT,curr_conteo TEXT,modo INT,datos_enviados INT)";
-    String subgrupo = "CREATE TABLE subgrupo(subgrupo TEXT, descripcion TEXT,grupo TEXT)";
-    String subgrupo2 = "CREATE TABLE subgrupo2(subgrupo2 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT)";
-    String subgrupo3 = "CREATE TABLE subgrupo3(subgrupo3 TEXT, descripcion TEXT,grupo TEXT,subgrupo TEXT,subgrupo2 TEXT)";
-    String producto = "CREATE TABLE producto(producto TEXT,descripcion TEXT, cantidad REAL,barras TEXT,grupo TEXT,subgrupo TEXT,subgr2 TEXT,subgr3 TEXT,clase TEXT,inventareado INT)";
-    String inventario = "CREATE TABLE inventario(fecha TEXT,bodega TEXT,producto TEXT,conteo1 REAL,usuario1 TEXT,conteo2 REAL,usuario2,conteo3 REAL,usuario3)";
+    public static final int VERSION = 15;
+    String bodega = "CREATE TABLE bodega(" +
+            "bodega TEXT," +
+            "descripcion TEXT)";
+    String grupo = "CREATE TABLE grupo(" +
+            "grupo TEXT," +
+            "descripcion TEXT)";
+    String clase = "CREATE TABLE clase(" +
+            "clase TEXT," +
+            "descripcion TEXT)";
+    String usuario = "CREATE TABLE usuario(" +
+            "usuario TEXT," +
+            "clave TEXT," +
+            "curr_bodega TEXT," +
+            "curr_grupo TEXT," +
+            "curr_subgr TEXT," +
+            "curr_subgr2 TEXT," +
+            "curr_subgr3 TEXT," +
+            "curr_clase TEXT," +
+            "curr_conteo TEXT," +
+            "modo INT," +
+            "datos_enviados INT," +
+            "nProductos INT," +
+            "nBodegas INT," +
+            "nGrupos INT," +
+            "nSubgrupos INT," +
+            "nSubgrupos2 INT," +
+            "nSubgrupos3 INT," +
+            "nClases INT)";
+    String subgrupo = "CREATE TABLE subgrupo(" +
+            "subgrupo TEXT," +
+            "descripcion TEXT," +
+            "grupo TEXT)";
+    String subgrupo2 = "CREATE TABLE subgrupo2(" +
+            "subgrupo2 TEXT," +
+            "descripcion TEXT," +
+            "grupo TEXT," +
+            "subgrupo TEXT)";
+    String subgrupo3 = "CREATE TABLE subgrupo3(" +
+            "subgrupo3 TEXT," +
+            " descripcion TEXT," +
+            "grupo TEXT," +
+            "subgrupo TEXT," +
+            "subgrupo2 TEXT)";
+    String producto = "CREATE TABLE producto(" +
+            "producto TEXT," +
+            "descripcion TEXT," +
+            "cantidad REAL," +
+            "barras TEXT," +
+            "grupo TEXT," +
+            "subgrupo TEXT," +
+            "subgr2 TEXT," +
+            "subgr3 TEXT," +
+            "clase TEXT," +
+            "inventareado INT)";
+    String inventario = "CREATE TABLE inventario(" +
+            "fecha TEXT," +
+            "bodega TEXT," +
+            "producto TEXT," +
+            "conteo1 REAL," +
+            "usuario1 TEXT," +
+            "conteo2 REAL," +
+            "usuario2," +
+            "conteo3 REAL," +
+            "usuario3)";
 
 
     private BaseHelper(Context context) {

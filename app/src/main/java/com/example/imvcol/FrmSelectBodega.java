@@ -239,6 +239,17 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             };
             remote.setContext(FrmSelectBodega.this);
             ArrayList queryDatos = new ArrayList();
+            queryDatos.add("SELECT COUNT(*) AS COUNT " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
+                    "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
+                    "WHERE s.stock<>0 " +
+                    "AND s.bodega='" + currUser.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
+                    "AND F.fisico=0");
 
             String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
                     "FROM referencias_fis F " +
@@ -258,10 +269,15 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         }
     }
 
-    private void fillProductsOnDatabase(ArrayList rawProductos) throws JSONException {
+    private void fillProductsOnDatabase(ArrayList rawResults) throws JSONException {
         SQLiteDatabase db = BaseHelper.getWritable(this);
-        System.out.println("CARGANDOOOOO" + rawProductos.get(0));
+        //System.out.println("CARGANDOOOOO" + rawResults.get(0));
         new Producto().delete(db);
+
+        ArrayList rawCountProducts = (ArrayList) rawResults.get(0);
+        currUser.setnProductos(Integer.parseInt(rawCountProducts.get(0).toString()));
+
+        ArrayList rawProductos = (ArrayList) rawResults.get(1);
 
         for (int i = 0; i < rawProductos.size(); i++) {
             JSONObject rawProducto = ((JSONObject) rawProductos.get(i));

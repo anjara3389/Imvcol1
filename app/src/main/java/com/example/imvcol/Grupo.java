@@ -46,6 +46,10 @@ public class Grupo {
         Grupo empty = new Grupo("-1", "Seleccione un grupo");
         return empty.insert(db);
     }
+    public int count(SQLiteDatabase db) throws Exception {
+        SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM grupo");
+        return sq.getInteger(db);
+    }
 
 
 }

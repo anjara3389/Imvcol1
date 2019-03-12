@@ -17,6 +17,13 @@ public class Usuario {
     private int currConteo;
     private Integer modo;
     private Boolean datosEnviados;
+    private Integer nProductos;
+    private Integer nBodegas;
+    private Integer nGrupos;
+    private Integer nSubgrupos;
+    private Integer nSubgrupos2;
+    private Integer nSubgrupos3;
+    private Integer nClases;
 
     public final static int MODO_LISTA = 0;
     public final static int MODO_BARRAS = 1;
@@ -25,7 +32,24 @@ public class Usuario {
 
     }
 
-    public Usuario(String usuario, String clave, String currBodega, String currGrupo, String currSubgr, String currSubgr2, String currSubgr3, String currClase, int currConteo, Integer modo, Boolean datosEnviados) {
+    public Usuario(String usuario,
+                   String clave,
+                   String currBodega,
+                   String currGrupo,
+                   String currSubgr,
+                   String currSubgr2,
+                   String currSubgr3,
+                   String currClase,
+                   Integer currConteo,
+                   Integer modo,
+                   Boolean datosEnviados,
+                   Integer nProductos,
+                   Integer nBodegas,
+                   Integer nGrupos,
+                   Integer nSubgrupos,
+                   Integer nSubgrupos2,
+                   Integer nSubgrupos3,
+                   Integer nClases) {
         this.usuario = usuario;
         this.clave = clave;
         this.currBodega = currBodega;
@@ -37,6 +61,13 @@ public class Usuario {
         this.currConteo = currConteo;
         this.modo = modo;
         this.datosEnviados = datosEnviados;
+        this.nProductos = nProductos;
+        this.nBodegas = nBodegas;
+        this.nGrupos = nGrupos;
+        this.nSubgrupos = nSubgrupos;
+        this.nSubgrupos2 = nSubgrupos2;
+        this.nSubgrupos3 = nSubgrupos3;
+        this.nClases = nClases;
     }
 
     public ContentValues getValues() {
@@ -52,6 +83,12 @@ public class Usuario {
         c.put("curr_conteo", currConteo);
         c.put("modo", modo);
         c.put("datos_enviados", datosEnviados);
+        c.put("nBodegas", nBodegas);
+        c.put("nGrupos", nGrupos);
+        c.put("nSubgrupos", nSubgrupos);
+        c.put("nSubgrupos2", nSubgrupos2);
+        c.put("nSubgrupos3", nSubgrupos3);
+        c.put("nClases", nClases);
         return c;
     }
 
@@ -66,6 +103,12 @@ public class Usuario {
         c.put("curr_conteo", currConteo);
         c.put("modo", modo);
         c.put("datos_enviados", datosEnviados);
+        c.put("nBodegas", nBodegas);
+        c.put("nGrupos", nGrupos);
+        c.put("nSubgrupos", nSubgrupos);
+        c.put("nSubgrupos2", nSubgrupos2);
+        c.put("nSubgrupos3", nSubgrupos3);
+        c.put("nClases", nClases);
         return c;
     }
 
@@ -103,7 +146,14 @@ public class Usuario {
                     rawUsuario[7] != null ? rawUsuario[7].toString() : null,
                     rawUsuario[8] != null ? Integer.parseInt(rawUsuario[8].toString()) : null,
                     rawUsuario[9] != null ? Integer.parseInt(rawUsuario[9].toString()) : null,
-                    rawUsuario[10] != null ? (Integer.parseInt(rawUsuario[10].toString()) == 0 ? false : true) : null);
+                    rawUsuario[10] != null ? (Integer.parseInt(rawUsuario[10].toString()) == 0 ? false : true) : null,
+                    rawUsuario[11] != null ? Integer.parseInt(rawUsuario[11].toString()) : null,
+                    rawUsuario[12] != null ? Integer.parseInt(rawUsuario[12].toString()) : null,
+                    rawUsuario[13] != null ? Integer.parseInt(rawUsuario[13].toString()) : null,
+                    rawUsuario[14] != null ? Integer.parseInt(rawUsuario[14].toString()) : null,
+                    rawUsuario[15] != null ? Integer.parseInt(rawUsuario[15].toString()) : null,
+                    rawUsuario[16] != null ? Integer.parseInt(rawUsuario[16].toString()) : null,
+                    rawUsuario[17] != null ? Integer.parseInt(rawUsuario[17].toString()) : null);
         } else {
             return null;
         }
@@ -195,5 +245,61 @@ public class Usuario {
 
     public void setDatosEnviados(boolean datosEnviados) {
         this.datosEnviados = datosEnviados;
+    }
+
+    public Integer getnProductos() {
+        return nProductos;
+    }
+
+    public void setnProductos(Integer nProductos) {
+        this.nProductos = nProductos;
+    }
+
+    public Integer getnBodegas() {
+        return nBodegas;
+    }
+
+    public void setnBodegas(Integer nBodegas) {
+        this.nBodegas = nBodegas;
+    }
+
+    public Integer getnGrupos() {
+        return nGrupos;
+    }
+
+    public void setnGrupos(Integer nGrupos) {
+        this.nGrupos = nGrupos;
+    }
+
+    public Integer getnSubgrupos() {
+        return nSubgrupos;
+    }
+
+    public void setnSubgrupos(Integer nSubgrupos) {
+        this.nSubgrupos = nSubgrupos;
+    }
+
+    public Integer getnSubgrupos2() {
+        return nSubgrupos2;
+    }
+
+    public void setnSubgrupos2(Integer nSubgrupos2) {
+        this.nSubgrupos2 = nSubgrupos2;
+    }
+
+    public Integer getnSubgrupos3() {
+        return nSubgrupos3;
+    }
+
+    public void setnSubgrupos3(Integer nSubgrupos3) {
+        this.nSubgrupos3 = nSubgrupos3;
+    }
+
+    public Integer getnClases() {
+        return nClases;
+    }
+
+    public void setnClases(Integer nClases) {
+        this.nClases = nClases;
     }
 }
