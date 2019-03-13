@@ -24,65 +24,69 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
 
         btnContinuar = findViewById(R.id.frm_continuar_sesion_btn_continuar);
         btnFinalizarInventario = findViewById(R.id.frm_continuar_sesion_btn_finalizar_inventario);
-        final SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
         try {
+            final SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
             usuario = new Usuario().selectUsuario(db);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-        btnContinuar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
-                    if (usuario.getCurrBodega() != null && new Producto().countProductos(db) == usuario.getnProductos()) {
-                        if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null && !usuario.getDatosEnviados()) {
-                            Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
-                            //i.putExtra("diferencia", true);
-                            startActivityForResult(i, 1);
-                            finish();
+
+            btnContinuar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
+                        System.out.println("GETN XXXXXXXXXXXXXXXXXX" + usuario.getnProductos());
+                        System.out.println("GETN XXXXXXXXXXXXXXXXXX1" + usuario.getnProductos() == null);
+                        System.out.println("GETNPRODUCTOSCOUNT" + new Producto().countProductos(db));
+                        if (usuario.getCurrBodega() != null
+                                && usuario.getnProductos() != null
+                                && new Producto().countProductos(db) == usuario.getnProductos()) {
+                            if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null && !usuario.getDatosEnviados()) {
+                                Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
+                                startActivityForResult(i, 1);
+                                finish();
+                            } else {
+                                Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
+                                startActivityForResult(i, 1);
+                                finish();
+                            }
                         } else {
-                            Intent i = new Intent(FrmContinuarSesion.this, FrmOpciones.class);
+                            Intent i = new Intent(FrmContinuarSesion.this, FrmSelectBodega.class);
                             //i.putExtra("diferencia", true);
                             startActivityForResult(i, 1);
                             finish();
                         }
-                    } else {
-                        Intent i = new Intent(FrmContinuarSesion.this, FrmSelectBodega.class);
-                        //i.putExtra("diferencia", true);
-                        startActivityForResult(i, 1);
-                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
+
                 }
 
-            }
+            });
+            btnFinalizarInventario.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
+                        if (usuario.getDatosEnviados() || new Inventario().countInventarios(db) == 0) {
+                            YesNoDialogFragment dial2 = new YesNoDialogFragment();
+                            dial2.setInfo(FrmContinuarSesion.this, FrmContinuarSesion.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
+                            dial2.show(getSupportFragmentManager(), "MyDialog");
+                        } else {
+                            throw new Exception("No se puede finalizar el inventario sin enviar los datos existentes.");
+                        }
+                        db.close();
 
-        });
-        btnFinalizarInventario.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
-                    if (usuario.getDatosEnviados() || new Inventario().countInventarios(db) == 0) {
-                        YesNoDialogFragment dial2 = new YesNoDialogFragment();
-                        dial2.setInfo(FrmContinuarSesion.this, FrmContinuarSesion.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
-                        dial2.show(getSupportFragmentManager(), "MyDialog");
-                    } else {
-                        throw new Exception("No se puede finalizar el inventario sin enviar los datos existentes.");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                    db.close();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

@@ -83,6 +83,7 @@ public class Usuario {
         c.put("curr_conteo", currConteo);
         c.put("modo", modo);
         c.put("datos_enviados", datosEnviados);
+        c.put("nProductos", nProductos);
         c.put("nBodegas", nBodegas);
         c.put("nGrupos", nGrupos);
         c.put("nSubgrupos", nSubgrupos);
@@ -103,6 +104,7 @@ public class Usuario {
         c.put("curr_conteo", currConteo);
         c.put("modo", modo);
         c.put("datos_enviados", datosEnviados);
+        c.put("nProductos", nProductos);
         c.put("nBodegas", nBodegas);
         c.put("nGrupos", nGrupos);
         c.put("nSubgrupos", nSubgrupos);
@@ -134,7 +136,6 @@ public class Usuario {
                 "FROM usuario");
 
         Object[] rawUsuario = sq.getRecord(db);
-        System.out.print("///////USUARIO1" + rawUsuario);
         if (rawUsuario != null && rawUsuario.length > 0) {
             return new Usuario(rawUsuario[0].toString(),
                     rawUsuario[1].toString(),

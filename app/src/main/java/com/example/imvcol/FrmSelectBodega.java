@@ -224,13 +224,13 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
-                    System.out.println("productos1" + resultsDatos.get(0));
-                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmSelectBodega.this);
-                    if (resultsDatos.get(0).equals("[]")) {
+                    System.out.println("productos1" + resultsDatos);
+                    ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), FrmSelectBodega.this);
+                    if (rawProductos.equals("[]")) {
                         dialogUtils.dissmissDialog();
                         Toast.makeText(FrmSelectBodega.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
-                        fillProductsOnDatabase(rawProductos);
+                        fillProductsOnDatabase(resultsDatos);
                         Intent i = new Intent(FrmSelectBodega.this, FrmOpciones.class);
                         startActivityForResult(i, 1);
                         finish();
@@ -274,13 +274,19 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         //System.out.println("CARGANDOOOOO" + rawResults.get(0));
         new Producto().delete(db);
 
-        ArrayList rawCountProducts = (ArrayList) rawResults.get(0);
-        currUser.setnProductos(Integer.parseInt(rawCountProducts.get(0).toString()));
+        ArrayList rawArrCount = ArrayUtils.convertToArrayList(new JSONArray((String) rawResults.get(0)), this);
+        ArrayList rawArrProd = ArrayUtils.convertToArrayList(new JSONArray((String) rawResults.get(1)), this);
 
-        ArrayList rawProductos = (ArrayList) rawResults.get(1);
+        int count = ((JSONObject) rawArrCount.get(0)).getInt("COUNT");
+        System.out.println("ESTE ES EL QUE SE GRABA COMO COUNT" + count);
 
-        for (int i = 0; i < rawProductos.size(); i++) {
-            JSONObject rawProducto = ((JSONObject) rawProductos.get(i));
+        currUser.setnProductos(count);
+        currUser.updateCurrent(db);
+
+        //ArrayList rawProductos = (ArrayList) rawResults.get(1);
+
+        for (int i = 0; i < rawArrProd.size(); i++) {
+            JSONObject rawProducto = ((JSONObject) rawArrProd.get(i));
             Producto producto = new Producto(rawProducto.getString("codigo"),
                     rawProducto.getString("descripcion"),
                     rawProducto.getString("stock"),
