@@ -8,38 +8,17 @@
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="400dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginLeft="75dp"
         app:srcCompat="@drawable/colacteos" />
-
-    <TextView
-        android:id="@+id/frm_login_lbl_usuario"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="190dp"
-        android:text="Usuario:"
-        tools:layout_editor_absoluteX="47dp"
-        tools:layout_editor_absoluteY="204dp" />
-
-    <TextView
-        android:id="@+id/frm_login_lbl_contrasenia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="300dp"
-        android:text="Contraseña:"
-        tools:layout_editor_absoluteX="47dp"
-        tools:layout_editor_absoluteY="338dp" />
 
     <EditText
         android:id="@+id/frm_login_txt_usuario"
         android:layout_width="351dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="210dp"
+        android:layout_marginTop="240dp"
         android:layout_marginRight="20dp"
         android:ems="10"
         android:hint="Usuario"
@@ -60,12 +39,23 @@
 
     <Button
         android:id="@+id/frm_login_btn_ingresar"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="135dp"
-        android:layout_marginTop="400dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="420dp"
+        android:layout_marginRight="20dp"
+        android:background="#01579b"
         android:text="Ingresar"
+        android:textColor="@color/cardview_light_background"
         tools:layout_editor_absoluteX="169dp"
         tools:layout_editor_absoluteY="500dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="180dp"
+        android:text="INVFISCOL  v 1.2" />
 
 </android.widget.RelativeLayout>

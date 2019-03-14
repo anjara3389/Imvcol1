@@ -6,92 +6,111 @@
     android:layout_height="match_parent"
     tools:context=".FrmSelectBodega">
 
-    <TextView
-        android:id="@+id/frm_select_bodega_lbl_tipo_bodega"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginEnd="10dp"
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true">
 
-        android:text="Tipo Bodega*"
-        tools:layout_editor_absoluteX="29dp"
-        tools:layout_editor_absoluteY="47dp"
-        tools:text="Tipo Bodega*" />
+        <TextView
+            android:id="@+id/frm_select_bodega_lbl_tipo_bodega"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginEnd="10dp"
 
-    <Spinner
-        android:id="@+id/frm_select_bodega_spn_tipo_bodega"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="170dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp"
-        android:paddingStart="10dp" />
+            android:text="Tipo Bodega:"
+            android:textColor="#01579b"
+            tools:layout_editor_absoluteX="29dp"
+            tools:layout_editor_absoluteY="47dp"
+            tools:text="Tipo Bodega:  " />
 
-    <TextView
-        android:id="@+id/frm_select_bodega_lbl_bodega"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="220dp"
-        android:layout_marginEnd="10dp"
+        <TextView
+            android:id="@+id/frm_select_bodega_lbl_bodega"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="140dp"
+            android:layout_marginEnd="10dp"
 
-        android:text="Bodega*"
-        tools:layout_editor_absoluteX="29dp"
-        tools:layout_editor_absoluteY="47dp"
-        tools:text="Bodega*" />
+            android:text="Bodega:"
+            android:textColor="#01579b"
+            tools:layout_editor_absoluteX="29dp"
+            tools:layout_editor_absoluteY="47dp"
+            tools:text="Bodega:" />
 
-    <Spinner
-        android:id="@+id/frm_select_bodega_spn_bodega"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="240dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp"
-        android:paddingStart="10dp" />
+        <Spinner
+            android:id="@+id/frm_select_bodega_spn_bodega"
+            style="@style/mySpinnerItemStyle"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="160dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#01579b"
+            android:padding="2dp"
+            android:paddingStart="10dp" />
 
-    <TextView
-        android:id="@+id/frm_select_bodega_lbl_modo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="290dp"
-        android:layout_marginEnd="10dp"
+        <TextView
+            android:id="@+id/frm_select_bodega_lbl_modo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="210dp"
+            android:layout_marginEnd="10dp"
 
-        android:text="Modo de Captura*"
-        tools:layout_editor_absoluteX="29dp"
-        tools:layout_editor_absoluteY="47dp"
-        tools:text="Modo de Captura*" />
+            android:text="Modo de Captura:"
+            android:textColor="#01579b"
+            tools:layout_editor_absoluteX="29dp"
+            tools:layout_editor_absoluteY="47dp"
+            tools:text="Modo de Captura:  " />
 
-    <Spinner
-        android:id="@+id/frm_select_bodega_spn_modo"
-        android:layout_width="330dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="310dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp"
-        android:paddingStart="10dp" />
+        <Spinner
+            android:id="@+id/frm_select_bodega_spn_tipo_bodega"
+            style="@style/mySpinnerItemStyle"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="90dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#01579b"
+            android:padding="2dp"
+            android:paddingStart="10dp" />
 
-    <Button
-        android:id="@+id/frm_select_bodega_btn_siguiente"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="370dp"
-        android:text="Siguiente" />
+        <Spinner
+            android:id="@+id/frm_select_bodega_spn_modo"
+            style="@style/mySpinnerItemStyle"
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="230dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#01579b"
+            android:padding="2dp"
+            android:paddingStart="10dp" />
+
+        <Button
+            android:id="@+id/frm_select_bodega_btn_siguiente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="135dp"
+            android:layout_marginTop="300dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="@android:color/background_light"
+            android:text="Siguiente"
+            android:textColor="#01579b" />
+    </android.support.v7.widget.CardView>
+
 </RelativeLayout>

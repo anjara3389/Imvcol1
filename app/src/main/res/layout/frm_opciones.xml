@@ -15,7 +15,8 @@
         android:layout_marginTop="70dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Grupo *" />
+        android:text="Grupo:  *"
+        android:textColor="#01579b" />
 
     <TextView
         android:id="@+id/frm_opciones_lbl_subgrupo"
@@ -26,7 +27,8 @@
         android:layout_marginTop="130dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text=" Subgrupo *" />
+        android:text=" Subgrupo:  *"
+        android:textColor="#01579b" />
 
     <TextView
         android:id="@+id/frm_opciones_lbl_subgrupo_2"
@@ -37,7 +39,8 @@
         android:layout_marginTop="190dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Subgrupo 2" />
+        android:text="Subgrupo 2: "
+        android:textColor="#01579b" />
 
     <TextView
         android:id="@+id/frm_opciones_lbl_subgrupo_3"
@@ -49,9 +52,10 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:text="Subgrupo 3"
+        android:textColor="#01579b"
         tools:layout_editor_absoluteX="29dp"
         tools:layout_editor_absoluteY="47dp"
-        tools:text="Subgrupo 3" />
+        tools:text="Subgrupo 3:" />
 
     <TextView
         android:id="@+id/frm_opciones_lbl_clase_"
@@ -63,9 +67,10 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:text="Clase"
+        android:textColor="#01579b"
         tools:layout_editor_absoluteX="29dp"
         tools:layout_editor_absoluteY="47dp"
-        tools:text="Clase" />
+        tools:text="Clase:" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_grupo"
@@ -75,10 +80,10 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="90dp"
         android:layout_marginEnd="10dp"
+        android:background="#01579b"
+        android:padding="2dp"
         android:paddingStart="10dp"
-        android:paddingLeft="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp" />
+        android:paddingLeft="10dp" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_subgrupo"
@@ -89,10 +94,10 @@
         android:layout_marginTop="150dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:background="#01579b"
+        android:padding="2dp"
         android:paddingStart="10dp"
-        android:paddingLeft="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp" />
+        android:paddingLeft="10dp" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_subgrupo_2"
@@ -103,10 +108,10 @@
         android:layout_marginTop="210dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:background="#01579b"
+        android:padding="2dp"
         android:paddingStart="10dp"
-        android:paddingLeft="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp" />
+        android:paddingLeft="10dp" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_subgrupo_3"
@@ -117,10 +122,10 @@
         android:layout_marginTop="270dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:background="#01579b"
+        android:padding="2dp"
         android:paddingStart="10dp"
-        android:paddingLeft="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp" />
+        android:paddingLeft="10dp" />
 
     <Spinner
         android:id="@+id/frm_opciones_spn_clase"
@@ -128,13 +133,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="340dp"
+        android:layout_marginTop="330dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:background="#01579b"
+        android:padding="2dp"
         android:paddingStart="10dp"
-        android:paddingLeft="10dp"
-        android:background="@android:color/darker_gray"
-        android:padding="0dp" />
+        android:paddingLeft="10dp" />
 
     <Button
         android:id="@+id/frm_opciones_btn_aceptar"
@@ -143,5 +148,7 @@
         android:layout_marginLeft="140dp"
         android:layout_marginTop="390dp"
 
-        android:text="Aceptar" />
+        android:background="@android:color/background_light"
+        android:text="Aceptar"
+        android:textColor="#01579b" />
 </android.widget.RelativeLayout>

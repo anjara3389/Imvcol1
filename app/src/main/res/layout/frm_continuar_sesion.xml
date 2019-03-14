@@ -6,31 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".FrmContinuarSesion">
 
-    <Button
-        android:id="@+id/frm_continuar_sesion_btn_finalizar_inventario"
-        android:layout_width="282dp"
-        android:layout_height="36dp"
-        android:layout_marginLeft="36dp"
-        android:layout_marginTop="290dp"
-        android:text="Finalizar inventario" />
-
-    <Button
-        android:id="@+id/frm_continuar_sesion_btn_continuar"
-        android:layout_width="282dp"
-        android:layout_height="36dp"
-        android:layout_marginLeft="36dp"
-        android:layout_marginTop="250dp"
-        android:text="Continuar" />
-
-    <TextView
-        android:id="@+id/frm_continuar_sesion_texto2"
+    <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="150dp"
-        android:text="Usted ya tiene una sesión iniciada. "
-        android:textSize="18sp"
-        tools:layout_editor_absoluteX="120dp"
-        tools:layout_editor_absoluteY="257dp" />
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="160dp">
+
+        <Button
+            android:id="@+id/frm_continuar_sesion_btn_finalizar_inventario"
+            android:layout_width="282dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="142dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@android:color/background_light"
+            android:text="Finalizar inventario"
+            android:textColor="#01579b" />
+
+        <Button
+            android:id="@+id/frm_continuar_sesion_btn_continuar"
+            android:layout_width="282dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="90dp"
+            android:background="#01579b"
+            android:text="Continuar"
+            android:textColor="@color/cardview_light_background" />
+
+        <TextView
+            android:id="@+id/frm_continuar_sesion_texto2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:text="Usted ya tiene una sesión iniciada. "
+            android:textColor="#01579b"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="120dp"
+            tools:layout_editor_absoluteY="257dp" />
+    </android.support.v7.widget.CardView>
 
 </RelativeLayout>

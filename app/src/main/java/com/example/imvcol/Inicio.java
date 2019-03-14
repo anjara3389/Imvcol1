@@ -30,6 +30,12 @@ public class Inicio extends AppCompatActivity {
                 System.out.println("XXXXXXXXXXX CLASES2" + new Clase().countClases(db));
             }*/
             if (usuario != null
+                    && usuario.getnBodegas() != null
+                    && usuario.getnGrupos() != null
+                    && usuario.getnSubgrupos() != null
+                    && usuario.getnSubgrupos2() != null
+                    && usuario.getnSubgrupos3() != null
+                    && usuario.getnClases() != null
                     && usuario.getUsuario() != null
                     && usuario.getClave() != null
                     && usuario.getnBodegas() + 1 == new Bodega().countBodegas(db)

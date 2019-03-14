@@ -173,7 +173,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
-        setTitle("INVFISCOL 1.1");
+        setTitle("INVFISCOL 1.2");
         return true;
     }
 
@@ -381,7 +381,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else if (cantidadFisicos > 0) {
                         System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
-                        Toast.makeText(v.getContext(), "No se pueden cargar los productos correspondientes a los valores seleccionados ya que hay productos que ya han sido tomados para inventario por otra persona", Toast.LENGTH_LONG).show();
+                        Toast.makeText(v.getContext(), "No se pueden cargar las selecciones. Hay productos que ya han sido tomados para inventario por otra persona.", Toast.LENGTH_LONG).show();
                         dialogUtils.dissmissDialog();
                     } else {
                         updateWebserviceFisicos();
