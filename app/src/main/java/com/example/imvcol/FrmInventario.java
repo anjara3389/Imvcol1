@@ -106,6 +106,39 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     return false;
                 }
             });
+            producto.setOnKeyListener(new View.OnKeyListener() {
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    // If the event is a key-down event on the "enter" button
+                    System.out.println("EVEEEEENT" + keyCode);
+                    if (keyCode == KeyEvent.KEYCODE_ENTER){
+                        btnCargar.performClick();
+                        return false;
+                    }
+                    return false;
+                }
+            });
+
+            producto.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    System.out.println("EVEEEEENT" + event);
+                    System.out.println("ACTIIIIION" + actionId);
+                    if (actionId == 5) {
+                        btnCargar.performClick();
+                    }
+                    return false;
+                }
+            });
+            numero.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == 5) {
+                        btnCargar.performClick();
+                    }
+                    return false;
+                }
+            });
+
 
             disableEnableCantidad(false);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -141,8 +174,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     if (producto.getText().toString() != "" && producto.getText().length() != 0) {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                         productos = new Producto().selectProductsByDescripcion(db, producto.getText().toString(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
-                        if (productos.length == 0) {
-                            throw new Exception("No se encuentran coincidencias");
+                        if (productos == null || productos.length == 0) {
+                            throw new Exception("El producto no exíste dentro del grupo seleccionado");
                         } else {
                             final ArrayList<String> nombres = new ArrayList();
 
