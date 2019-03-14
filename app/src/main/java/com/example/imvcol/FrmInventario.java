@@ -110,7 +110,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     // If the event is a key-down event on the "enter" button
                     System.out.println("EVEEEEENT" + keyCode);
-                    if (keyCode == KeyEvent.KEYCODE_ENTER){
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
                         btnCargar.performClick();
                         return false;
                     }
@@ -783,14 +783,16 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             }
             if (code == LIBERAR_SELECCION && ans) {
                 try {
-                    dialogUtils = new DialogUtils(this, "Cargando");
-                    dialogUtils.showDialog(this.getWindow());
                     SQLiteDatabase db = BaseHelper.getReadable(this);
                     if (new Inventario().countInventarios(db) == 0) {
+                        dialogUtils = new DialogUtils(this, "Cargando");
+                        dialogUtils.showDialog(this.getWindow());
+
                         freeWebserviceFisicos();
                     } else {
                         throw new Exception("No se puede liberar la selección debido a que ya tiene productos inventariados.");
                     }
+                    BaseHelper.tryClose(db);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
