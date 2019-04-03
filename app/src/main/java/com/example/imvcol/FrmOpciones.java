@@ -85,6 +85,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
             db = BaseHelper.getReadable(FrmOpciones.this);
             wholeGrupos = new Grupo().selectGrupos(db);
+
             wholeSubgrupos = new Subgrupo().selectSubgrupos(db);
             if (usuario.getModo() == usuario.MODO_LISTA) {
                 wholeSubgrupos2 = new Subgrupo2().selectSubgrupos2(db);

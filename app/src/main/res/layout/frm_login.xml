@@ -8,14 +8,14 @@
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="200dp"
-        android:layout_marginLeft="75dp"
+        android:layout_marginLeft="0dp"
         app:srcCompat="@drawable/colacteos" />
 
     <EditText
         android:id="@+id/frm_login_txt_usuario"
-        android:layout_width="351dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="240dp"
@@ -28,7 +28,7 @@
 
     <EditText
         android:id="@+id/frm_login_txt_contrasenia"
-        android:layout_width="347dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="320dp"
@@ -54,7 +54,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="130dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="180dp"
         android:text="INVFISCOL  v 1.2" />
 

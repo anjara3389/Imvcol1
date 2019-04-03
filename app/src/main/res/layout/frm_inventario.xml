@@ -17,39 +17,48 @@
     <android.support.v7.widget.CardView
         android:id="@+id/frm_inventario_card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true"
         app:cardUseCompatPadding="true">
 
-        <Button
-            android:id="@+id/frm_inventario_btn_aceptar"
+        <android.widget.RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="55dp"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="425dp"
-            android:layout_marginBottom="5dp"
-            android:background="#01579b"
-            android:text=" Aceptar "
-            android:textColor="@color/cardview_light_background" />
+            android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/frm_inventario_btn_cancelar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="190dp"
-            android:layout_marginTop="425dp"
-            android:layout_marginBottom="5dp"
-            android:background="@android:color/background_light"
-            android:text="Cancelar"
-            android:textColor="#01579b" />
+            <Button
+                android:id="@+id/frm_inventario_btn_aceptar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:background="#01579b"
+                android:text=" Aceptar "
+                android:textColor="@color/cardview_light_background" />
+
+            <Button
+                android:id="@+id/frm_inventario_btn_cancelar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="140dp"
+                android:layout_marginBottom="30dp"
+                android:background="@android:color/background_light"
+                android:text="Cancelar"
+                android:textColor="#01579b" />
+        </android.widget.RelativeLayout>
 
         <EditText
             android:id="@+id/frm_inventario_txt_cantidad"
-            android:layout_width="326dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="370dp"
@@ -77,11 +86,15 @@
 
         <Button
             android:id="@+id/frm_inventario_btn_cargar"
-            android:layout_width="193dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="50dp"
             android:layout_marginTop="280dp"
+            android:layout_marginRight="50dp"
             android:layout_marginBottom="20dp"
+            android:gravity="center"
+
             android:text=" Cargar " />
 
         <TextView
@@ -119,9 +132,11 @@
             android:id="@+id/frm_inventario_rbgroup_opciones"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="30dp"
             android:layout_marginTop="195dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <RadioButton
