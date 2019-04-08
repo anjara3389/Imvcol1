@@ -36,6 +36,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import org.bouncycastle.asn1.esf.ESFAttributes;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -241,39 +242,40 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         currentInventario = new Inventario().selectInventario(db, selectedProduct[0].toString());
                         //cantidad.getText().toString()
                         Double total = null;
-                        Cursor c = db.rawQuery("SELECT " + cantidad.getText().toString(), null);
-
-                        if (c.moveToFirst()) {
-                            total = c.getDouble(0);
-                        } else {
-                            throw new Exception("Hay un error en la operación de la cantidad");
+                        try {
+                            Cursor c = db.rawQuery("SELECT " + cantidad.getText().toString(), null);
+                            if (c.moveToFirst()) {
+                                total = c.getDouble(0);
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(FrmInventario.this, "Error: Hay un error en la operación introducida en cantidad.", Toast.LENGTH_LONG).show();
                         }
-
-
-                        if (currentInventario == null) {
-                            Inventario inventario = new Inventario(new Date().toString(),
-                                    usuario.getCurrBodega(),
-                                    selectedProduct[0].toString(),
-                                    total,
-                                    usuario.getUsuario(),
-                                    null,
-                                    null,
-                                    null,
-                                    null);
-                            inventario.insert(db);
-                            Toast.makeText(FrmInventario.this, "Registro insertado", Toast.LENGTH_LONG).show();
-                            limpiar();
-                        } else {
-                            if ((usuario.getCurrConteo() == 1 && currentInventario.getConteo1() != null) ||
-                                    (usuario.getCurrConteo() == 2 && currentInventario.getConteo2() != null) ||
-                                    (usuario.getCurrConteo() == 3 && currentInventario.getConteo3() != null)) {
-                                YesNoDialogFragment dial = new YesNoDialogFragment();
-                                dial.setInfo(FrmInventario.this, FrmInventario.this, "Sumar cantidad", "Producto contabilizado anteriormente, ¿Desea sumar la cantidad introducida?", SUMAR_CANTIDAD);
-                                dial.show(getSupportFragmentManager(), "MyDialog");
-                            } else {
-                                updateCantidad(total);
-                                limpiar();
+                        if (total != null) {
+                            if (currentInventario == null) {
+                                Inventario inventario = new Inventario(new Date().toString(),
+                                        usuario.getCurrBodega(),
+                                        selectedProduct[0].toString(),
+                                        total,
+                                        usuario.getUsuario(),
+                                        null,
+                                        null,
+                                        null,
+                                        null);
+                                inventario.insert(db);
                                 Toast.makeText(FrmInventario.this, "Registro insertado", Toast.LENGTH_LONG).show();
+                                limpiar();
+                            } else {
+                                if ((usuario.getCurrConteo() == 1 && currentInventario.getConteo1() != null) ||
+                                        (usuario.getCurrConteo() == 2 && currentInventario.getConteo2() != null) ||
+                                        (usuario.getCurrConteo() == 3 && currentInventario.getConteo3() != null)) {
+                                    YesNoDialogFragment dial = new YesNoDialogFragment();
+                                    dial.setInfo(FrmInventario.this, FrmInventario.this, "Sumar cantidad", "Producto contabilizado anteriormente, ¿Desea sumar la cantidad introducida?", SUMAR_CANTIDAD);
+                                    dial.show(getSupportFragmentManager(), "MyDialog");
+                                } else {
+                                    updateCantidad(total);
+                                    limpiar();
+                                    Toast.makeText(FrmInventario.this, "Registro insertado", Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
                         db.close();
