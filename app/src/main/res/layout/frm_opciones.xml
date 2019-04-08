@@ -7,6 +7,15 @@
     tools:context=".FrmOpciones">
 
     <TextView
+        android:id="@+id/frm_opciones_lbl_porcentaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="480dp"
+        android:text=" Porcentaje inventario: 0%"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/frm_opciones_lbl_grupo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -147,8 +156,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="390dp"
-        android:gravity="center"
         android:background="@android:color/background_light"
+        android:gravity="center"
         android:text="Aceptar"
         android:textColor="#01579b" />
 </android.widget.RelativeLayout>

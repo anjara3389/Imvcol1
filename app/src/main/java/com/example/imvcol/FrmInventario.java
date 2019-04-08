@@ -241,15 +241,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                         currentInventario = new Inventario().selectInventario(db, selectedProduct[0].toString());
                         //cantidad.getText().toString()
-                        Double total = null;
-                        try {
-                            Cursor c = db.rawQuery("SELECT " + cantidad.getText().toString(), null);
-                            if (c.moveToFirst()) {
-                                total = c.getDouble(0);
-                            }
-                        } catch (Exception e) {
-                            Toast.makeText(FrmInventario.this, "Error: Hay un error en la operación introducida en cantidad.", Toast.LENGTH_LONG).show();
-                        }
+                        Double total = operarEnLaCantidad(db);
+
                         if (total != null) {
                             if (currentInventario == null) {
                                 Inventario inventario = new Inventario(new Date().toString(),
@@ -292,6 +285,18 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 limpiar();
             }
         });
+    }
+
+    private Double operarEnLaCantidad(SQLiteDatabase db) {
+        try {
+            Cursor c = db.rawQuery("SELECT " + cantidad.getText().toString(), null);
+            if (c.moveToFirst()) {
+                return c.getDouble(0);
+            }
+        } catch (Exception e) {
+            Toast.makeText(FrmInventario.this, "Error: Hay un error en la operación introducida en cantidad.", Toast.LENGTH_LONG).show();
+        }
+        return null;
     }
 
     private void selectProductoWithNumber(int code) throws Exception {
@@ -698,7 +703,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     public void onFinishDialog(boolean ans, int code) {
         if (ans == true) {
             if (code == SUMAR_CANTIDAD && ans) {
-                updateCantidad(Double.parseDouble(cantidad.getText().toString()));
+                SQLiteDatabase db = BaseHelper.getReadable(this);
+                updateCantidad(operarEnLaCantidad(db));
+                BaseHelper.tryClose(db);
             }
             if (code == CAMBIAR_CONTEO && ans) {
                 try {

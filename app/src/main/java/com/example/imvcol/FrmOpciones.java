@@ -41,6 +41,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     private TextView lblSubgrupo2;
     private TextView lblSubgrupo3;
     private TextView lblClase;
+    private TextView lblPorcentaje;
     private Object[][] wholeGrupos, wholeSubgrupos, wholeSubgrupos3, wholeSubgrupos2, wholeClases;
     private ArrayList rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
     private Usuario usuario;
@@ -70,6 +71,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             lblClase = findViewById(R.id.frm_opciones_lbl_clase_);
             lblSubgrupo2 = findViewById(R.id.frm_opciones_lbl_subgrupo_2);
             lblSubgrupo3 = findViewById(R.id.frm_opciones_lbl_subgrupo_3);
+            lblPorcentaje = findViewById(R.id.frm_opciones_lbl_porcentaje);
 
             if (usuario.getModo() == usuario.MODO_BARRAS) {
                 spnSubgrupo2.setVisibility(View.GONE);
@@ -106,6 +108,12 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             mapGrupos = (HashMap<Integer, String>) rawGrupos.get(1);
 
             continuarSeleccion();
+
+            System.out.println("DATOS ENVIADOSSSSS" + usuario.getDatosEnviados());
+
+
+            getPorcentajeOnWebService();
+
 
             btnAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -538,6 +546,60 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);
         remote.execute();
+    }
+
+    private void getPorcentajeOnWebService() throws Exception {
+        if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultsDatos = (ArrayList) object;
+                    if (resultsDatos.get(0).equals("[]")) {
+                        dialogUtils.dissmissDialog();
+                        BaseHelper.tryClose(db);
+                        Toast.makeText(FrmOpciones.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
+                    } else {
+                        JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this).get(0);
+
+                        int cantRealizados = Integer.parseInt(rawResult.getString("computed"));
+                        int cantTotal = new Producto().countProductos(db);
+                        int porcentaje = (cantRealizados * 100) / cantTotal;
+
+                        System.out.println("DATOS ENVIADOSSSSS///" + cantRealizados);
+                        System.out.println("DATOS ENVIADOSSSSS///" + cantTotal);
+                        System.out.println("DATOS ENVIADOSSSSS///" + porcentaje);
+
+                        lblPorcentaje.setText("Porcentaje inventario: " + porcentaje + "%");
+                    }
+                }
+            };
+            remote.setContext(FrmOpciones.this);
+
+            ArrayList queryDatos = new ArrayList();
+
+            String query = "SELECT COUNT(*) " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
+                    "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
+                    "WHERE s.stock<>0 " +
+                    "AND s.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
+                    "AND F.fisico=1 " +
+                    "AND F.usu_toma_1 IS NOT NULL  ";
+
+
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
     }
 
 
