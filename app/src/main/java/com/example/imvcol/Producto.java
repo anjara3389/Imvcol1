@@ -65,7 +65,7 @@ public class Producto {
                 "WHERE ";
 
         if (option == 0) {
-            query += "producto='" + numero + "' ";
+            query += "producto=UPPER('" + numero + "') ";
         } else {
             query += "barras='" + numero + "' ";
         }

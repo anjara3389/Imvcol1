@@ -427,12 +427,12 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 break;
             case R.id.action_finalizar_conteo:
                 try {
-                    if (usuario.getCurrConteo() == 1) {
+                    if (usuario.getCurrConteo() != 3) {
                         SQLiteDatabase db = BaseHelper.getWritable(this);
-                        Object[][] inventarios = new Inventario().selectInventariosTotales(db, false, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+                        Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                         boolean answ = true;
                         for (int f = 0; f < inventarios.length; f++) {
-                            if (inventarios[f][3] == null) {
+                            if ((usuario.getCurrConteo() == 1&&inventarios[f][3] == null)||(usuario.getCurrConteo() == 2&&inventarios[f][4] == null)) {
                                 answ = false;
                             }
                         }

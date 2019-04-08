@@ -74,8 +74,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         Toast.makeText(FrmSelectBodega.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
                     } else {
                         try {
-                            /*dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
-                            dialogUtils.showDialog(getWindow());*/
+                            dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
+                            dialogUtils.showDialog(getWindow());
                             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                             currUser = new Usuario().selectUsuario(db);
                             currUser.setCurrBodega(mapBodega.get(spnBodega.getSelectedItemPosition()));
