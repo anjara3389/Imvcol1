@@ -37,7 +37,6 @@ public class SQLiteQuery {
                     } else if (c.getType(i) == Cursor.FIELD_TYPE_STRING) {
                         Pattern pat = Pattern.compile("[\\\\d]{4}-[\\\\d]{2}-[\\\\d]{2} [\\\\d]{2}:[\\\\d]{2}:[\\\\d]{2}");
                         if (pat.matcher(c.getString(i)).matches()) { //si es fecha
-
                             Date date = dateTimeFormat.parse(c.getString(i));
                             data[c.getPosition()][i] = date;
                         } else {

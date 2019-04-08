@@ -3,6 +3,8 @@ package com.example.imvcol;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
@@ -237,33 +239,16 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     } else {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                         currentInventario = new Inventario().selectInventario(db, selectedProduct[0].toString());
+                        //cantidad.getText().toString()
+                        Double total = null;
+                        Cursor c = db.rawQuery("SELECT " + cantidad.getText().toString(), null);
 
-                        String rawCantidad = cantidad.getText().toString()
-                                .replaceAll("\\+", "+")
-                                .replaceAll("\\*", "*")
-                                .replaceAll("\\(", "(").replaceAll("\\(", "")
-                                .replaceAll("\\)", ")").replaceAll("\\)", "");
-
-                        String[] sumParts = rawCantidad.replace(" ", "").split("\\+");
-                        Double total = 0.0;
-                        if (sumParts.length > 1) {
-                            for (int i = 0; i < sumParts.length; i++) {
-                                Double totalMul = 1.0;
-                                String[] multParts = sumParts[i].split("\\*");
-                                for (int j = 0; j < multParts.length; j++) {
-                                    totalMul = totalMul * Double.parseDouble(multParts[j]);
-                                }
-                                sumParts[i] = totalMul.toString();
-                                total += Double.parseDouble(sumParts[i]);
-                            }
+                        if (c.moveToFirst()) {
+                            total = c.getDouble(0);
                         } else {
-                            Double totalMul = 1.0;
-                            String[] multParts = rawCantidad.replace(" ", "").split("\\*");
-                            for (int j = 0; j < multParts.length; j++) {
-                                totalMul = totalMul * Double.parseDouble(multParts[j]);
-                            }
-                            total = totalMul;
+                            throw new Exception("Hay un error en la operación de la cantidad");
                         }
+
 
                         if (currentInventario == null) {
                             Inventario inventario = new Inventario(new Date().toString(),
@@ -432,7 +417,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
                         boolean answ = true;
                         for (int f = 0; f < inventarios.length; f++) {
-                            if ((usuario.getCurrConteo() == 1&&inventarios[f][3] == null)||(usuario.getCurrConteo() == 2&&inventarios[f][4] == null)) {
+                            if ((usuario.getCurrConteo() == 1 && inventarios[f][3] == null) || (usuario.getCurrConteo() == 2 && inventarios[f][4] == null)) {
                                 answ = false;
                             }
                         }
