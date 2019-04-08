@@ -400,7 +400,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_action_bar, menu);
         //menu.findItem(R.id.)
-        setTitle("INVFISCOL 1.2");
+        setTitle("INVFISCOL 2.0");
         return true;
     }
 
