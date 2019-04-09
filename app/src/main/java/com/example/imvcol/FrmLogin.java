@@ -134,13 +134,19 @@ public class FrmLogin extends AppCompatActivity {
             remote.setContext(v.getContext());
 
             ArrayList queryDatos = new ArrayList();
-            queryDatos.add("SELECT COUNT(*) AS COUNT FROM BODEGAS");
+            queryDatos.add("SELECT COUNT(*) AS COUNT " +
+                    "FROM BODEGAS "+
+                    "WHERE inactiva IS NULL OR " +
+                            "inactiva='N'");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_GRU");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_SUB");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_SUB2");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_SUB3");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM referencias_cla");
-            queryDatos.add("SELECT BODEGA, DESCRIPCION FROM BODEGAS");
+            queryDatos.add("SELECT BODEGA, DESCRIPCION " +
+                    "FROM BODEGAS " +
+                    "WHERE inactiva IS NULL OR " +
+                    "inactiva='N'");
             queryDatos.add("SELECT * FROM REFERENCIAS_GRU");
             queryDatos.add("SELECT * FROM REFERENCIAS_SUB");
             queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");

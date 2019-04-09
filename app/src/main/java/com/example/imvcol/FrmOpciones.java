@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -182,7 +183,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
-        setTitle("INVFISCOL 2.0");
+        setTitle("INVFISCOL 2.1");
         return true;
     }
 
@@ -565,15 +566,18 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     } else {
                         JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this).get(0);
 
-                        int cantRealizados = Integer.parseInt(rawResult.getString("computed"));
-                        int cantTotal = new Producto().countProductos(db);
-                        int porcentaje = (cantRealizados * 100) / cantTotal;
+                        double cantRealizados = Double.parseDouble(rawResult.getString("computed"));
+                        double cantTotal = new Producto().countProductos(db);
+                        double porcentaje = (cantRealizados * 100) / cantTotal;
+
+                        DecimalFormat df = new DecimalFormat("#.0");
+                        String porcentStr=df.format(porcentaje);
 
                         System.out.println("DATOS ENVIADOSSSSS///" + cantRealizados);
                         System.out.println("DATOS ENVIADOSSSSS///" + cantTotal);
                         System.out.println("DATOS ENVIADOSSSSS///" + porcentaje);
 
-                        lblPorcentaje.setText("Porcentaje inventario: " + porcentaje + "%");
+                        lblPorcentaje.setText("Porcentaje inventario: " + porcentStr + "%");
                     }
                 }
             };
