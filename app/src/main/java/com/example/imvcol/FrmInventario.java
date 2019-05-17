@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.database.SQLException;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
@@ -61,6 +61,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     private static final int FINALIZAR_INVENTARIO = 3;
     private static final int LIBERAR_SELECCION = 4;
     private static final int ENVIAR_DATOS = 5;
+    private static final int LIBERAR_SELECCION_CONTRASENIA = 6;
     private Usuario usuario;
     private Inventario currentInventario;
     private DialogUtils dialogUtils;
@@ -502,6 +503,11 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 dia.setInfo(FrmInventario.this, FrmInventario.this, "Liberar selección", "¿Está seguro de liberar selección?", LIBERAR_SELECCION);
                 dia.show(getSupportFragmentManager(), "MyDialog");
                 break;
+            case R.id.action_liberar_con_contrasenia:
+                YesNoDialogFragment dia3 = new YesNoDialogFragment();
+                dia3.setInfo(FrmInventario.this, FrmInventario.this, "Liberar selección", "¿Está seguro de liberar selección?, perderá todos sus datos", LIBERAR_SELECCION_CONTRASENIA);
+                dia3.show(getSupportFragmentManager(), "MyDialog");
+                break;
             default:
                 break;
         }
@@ -782,6 +788,16 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         throw new Exception("No se puede liberar la selección debido a que ya tiene productos inventariados.");
                     }
                     BaseHelper.tryClose(db);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+            if (code == LIBERAR_SELECCION_CONTRASENIA && ans) {
+                try {
+                    Intent i = new Intent(FrmInventario.this, FrmLiberarSeleccion.class);
+                    startActivityForResult(i, 1);
+                    dialogUtils.dissmissDialog();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();

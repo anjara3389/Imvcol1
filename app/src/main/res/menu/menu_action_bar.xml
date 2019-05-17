@@ -20,4 +20,7 @@
     <item
         android:id="@+id/action_liberar_seleccion"
         android:title="Liberar selección"></item>
+    <item
+        android:id="@+id/action_liberar_con_contrasenia"
+        android:title="Liberar con contraseña"></item>
 </menu>
