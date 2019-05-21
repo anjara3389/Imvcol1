@@ -63,7 +63,11 @@ public class FrmLogin extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Verifica el usuario a travéz del wserver en la base de datos DMS
+     * @param v vista
+     * @throws Exception
+     */
     private void checkUserOnWebService(final View v) throws Exception {
         if (!NetUtils.isOnlineNet(FrmLogin.this)) {
             dialogUtils.dissmissDialog();
@@ -114,6 +118,12 @@ public class FrmLogin extends AppCompatActivity {
         }
     }
 
+    /**
+     * Trae bodegas,grupos, sub1,sub2,sub3,clases y la cantidad de cada uno de ellos desde base de datos DMS.
+     * @param v View
+     * @param db Base de datos
+     * @throws Exception
+     */
     private void getDataFromWebservice(final View v, final SQLiteDatabase db) throws Exception {
         if (!NetUtils.isOnlineNet(FrmLogin.this)) {
             dialogUtils.dissmissDialog();
@@ -124,7 +134,11 @@ public class FrmLogin extends AppCompatActivity {
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
                     dialogUtils.dissmissDialog();
-                    if (resultsDatos.get(0) == null || resultsDatos.get(1) == null || resultsDatos.get(2) == null || resultsDatos.get(3) == null || resultsDatos.get(4) == null) {
+                    if (resultsDatos.get(0) == null ||
+                            resultsDatos.get(1) == null ||
+                            resultsDatos.get(2) == null ||
+                            resultsDatos.get(3) == null ||
+                            resultsDatos.get(4) == null) {
                         throw new Exception("No se han podido cargar los datos, intente nuevamente");
                     } else {
                         fillDatabase(db, resultsDatos);
@@ -135,15 +149,15 @@ public class FrmLogin extends AppCompatActivity {
 
             ArrayList queryDatos = new ArrayList();
             queryDatos.add("SELECT COUNT(*) AS COUNT " +
-                    "FROM BODEGAS "+
+                    "FROM BODEGAS " +
                     "WHERE inactiva IS NULL OR " +
-                            "inactiva='N'");
+                    "inactiva='N'");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_GRU");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_SUB");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_SUB2");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM REFERENCIAS_SUB3");
             queryDatos.add("SELECT COUNT(*) AS COUNT FROM referencias_cla");
-            queryDatos.add("SELECT BODEGA, DESCRIPCION " +
+            queryDatos.add("SELECT BODEGA, DESCRIPCION, MENSAJE " +
                     "FROM BODEGAS " +
                     "WHERE inactiva IS NULL OR " +
                     "inactiva='N'");
@@ -158,6 +172,12 @@ public class FrmLogin extends AppCompatActivity {
         }
     }
 
+    /**
+     * Llena base de datos local con datos obtenidos en getDataFromWebservice
+     * @param db base de datos
+     * @param resultsDatos datos obtenidos
+     * @throws JSONException
+     */
     private void fillDatabase(SQLiteDatabase db, ArrayList resultsDatos) throws JSONException {
         new Bodega().insertEmpty(db);
         new Grupo().insertEmpty(db);
@@ -188,22 +208,35 @@ public class FrmLogin extends AppCompatActivity {
                 for (int j = 0; j < raw.size(); j++) {
                     JSONObject rawJson = ((JSONObject) raw.get(j));
                     if (i == 6) {
-                        Bodega bodega = new Bodega(rawJson.getString("BODEGA"), rawJson.getString("DESCRIPCION"));
+                        Bodega bodega = new Bodega(rawJson.getString("BODEGA"),
+                                rawJson.getString("DESCRIPCION"),
+                                rawJson.getString("MENSAJE"));
                         bodega.insert(db);
                     } else if (i == 7) {
-                        Grupo grupo = new Grupo(rawJson.getString("grupo"), rawJson.getString("descripcion"));
+                        Grupo grupo = new Grupo(rawJson.getString("grupo"),
+                                rawJson.getString("descripcion"));
                         grupo.insert(db);
                     } else if (i == 8) {
-                        Subgrupo subgrupo = new Subgrupo(rawJson.getString("subgrupo"), rawJson.getString("grupo"), rawJson.getString("descripcion"));
+                        Subgrupo subgrupo = new Subgrupo(rawJson.getString("subgrupo"),
+                                rawJson.getString("grupo"),
+                                rawJson.getString("descripcion"));
                         subgrupo.insert(db);
                     } else if (i == 9) {
-                        Subgrupo2 subgrupo2 = new Subgrupo2(rawJson.getString("subgrupo2"), rawJson.getString("grupo"), rawJson.getString("subgrupo"), rawJson.getString("descripcion"));
+                        Subgrupo2 subgrupo2 = new Subgrupo2(rawJson.getString("subgrupo2"),
+                                rawJson.getString("grupo"),
+                                rawJson.getString("subgrupo"),
+                                rawJson.getString("descripcion"));
                         subgrupo2.insert(db);
                     } else if (i == 10) {
-                        Subgrupo3 subgrupo3 = new Subgrupo3(rawJson.getString("subgrupo3"), rawJson.getString("grupo"), rawJson.getString("subgrupo"), rawJson.getString("subgrupo2"), rawJson.getString("descripcion"));
+                        Subgrupo3 subgrupo3 = new Subgrupo3(rawJson.getString("subgrupo3"),
+                                rawJson.getString("grupo"),
+                                rawJson.getString("subgrupo"),
+                                rawJson.getString("subgrupo2"),
+                                rawJson.getString("descripcion"));
                         subgrupo3.insert(db);
                     } else if (i == 11) {
-                        Clase clase = new Clase(rawJson.getString("clase"), rawJson.getString("descripcion"));
+                        Clase clase = new Clase(rawJson.getString("clase"),
+                                rawJson.getString("descripcion"));
                         clase.insert(db);
                     }
                 }

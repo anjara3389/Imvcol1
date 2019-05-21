@@ -10,12 +10,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,16 +29,6 @@ import android.widget.Toast;
 import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -61,8 +51,22 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import static java.lang.Math.acos;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
     DialogUtils dialogUtils;
@@ -72,6 +76,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
     private Object[][] wholeBodegas;
     private ArrayList rawBodegas;
     private Usuario currUser;
+    private String[] dataSpnTipoBodega;
     private static final int FINALIZAR_INVENTARIO = 3;
 
     // Time de ultima actualización de localización
@@ -101,6 +106,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     private String location;
 
+    static double PI_RAD = Math.PI / 180.0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,9 +116,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         try {
             //GPS
             ButterKnife.bind(this);
-            // inicializa las librerías necesarias
-            init();
-            // reestablece los valores de instancia guardada
+            // inicializa las librerías necesarias para gps
+            initGPS();
+            // reestablece los valores de instancia guardada del gps
             restoreValuesFromBundle(savedInstanceState);
 
             startLocation();
@@ -184,8 +191,11 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     }
 
+    /**
+     * LLena spinner de tipo de bodega y de modo hardcoded
+     */
     private void prepareSpinners() {
-        String[] dataSpnTipoBodega = new String[4];
+        dataSpnTipoBodega = new String[4];
         dataSpnTipoBodega[0] = "Agros";
         dataSpnTipoBodega[1] = "Puntos";
         dataSpnTipoBodega[2] = "Plantas";
@@ -202,6 +212,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         spnModo.setAdapter(adapterModo);
     }
 
+    /**
+     * Filtra el spinner de bodegas según la selección de tipo de bodega
+     */
     private void filterBodegasSpinner() {
         ArrayList selectedBodegas = new ArrayList();
 
@@ -217,6 +230,12 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         spnBodega.setAdapter(adapterBodegas);
     }
 
+    /**
+     * Según el tipo de bodega seleccionado, valida si una bodega es de ese tipo de bodega.
+     *
+     * @param bodega bodega a validar
+     * @return true si la bodega es del tipo seleccionado, false si no
+     */
     private boolean validarTipoBodega(String bodega) {
         int bodegaInt = Integer.parseInt(bodega);
         if ((spnTipoBodega.getSelectedItemPosition() == 0 && bodegaInt > 1500 && bodegaInt < 1600) ||
@@ -228,6 +247,29 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             return true;
         }
         return false;
+    }
+
+    /**
+     * Da la posición en el spinner a la que corresponde el tipo de bodega de la bodega dada.
+     *
+     * @param bodega la bodega dada
+     * @return la posición en el spinner de tipo bodega
+     */
+    private int getPositionSpinnerTipoBodega(String bodega) {
+        int bodegaInt = Integer.parseInt(bodega);
+        if (bodegaInt > 1500 && bodegaInt < 1600) {
+            return 0;
+        }
+        if (bodegaInt > 1200 && bodegaInt < 1300) {
+            return 1;
+        }
+        if (bodegaInt >= 100 && bodegaInt < 400) {
+            return 2;
+        }
+        if ((bodegaInt >= 500 && bodegaInt < 1000) || (bodegaInt >= 1900 && bodegaInt < 1920)) {
+            return 3;
+        }
+        return 0;
     }
 
 
@@ -379,7 +421,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     //GPS
 
-    private void init() {
+    private void initGPS() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mSettingsClient = LocationServices.getSettingsClient(this);
 
@@ -430,19 +472,68 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
 
     /**
-     * Actualiza la interfaz mostrando los datos de locaciòn
-     * and toggling the buttons
+     * Actualiza el spinner de la bodega según los datos de localización GPS
      */
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
+            //this.location = mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude();
+            //Toast.makeText(this, this.location, Toast.LENGTH_LONG).show();
 
-            this.location = mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude();
-            Toast.makeText(this,  this.location , Toast.LENGTH_LONG).show();
+            //System.out.println("RAW BODEGAAAAAAS" + rawBodegas);
+            for (int i = 0; i < wholeBodegas.length; i++) {
+                System.out.println("///1//////" + wholeBodegas[i][2].toString());
+
+                if (wholeBodegas[i][2] != null && !wholeBodegas[i][2].equals("null") && !wholeBodegas[i][2].equals("NN,NN")) {
+                    String[] latlongBodega = wholeBodegas[i][2].toString().split(",");
+                    System.out.println("///1A//////" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
+                    Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "M");
+                    // if (wholeBodegas[i][2].toString().equals(this.location)) {
+                    //si la distancia es menor de 20 metros
+                    System.out.println("///2///" + distPuntos);
+                    if (distPuntos < 20) {
+                        spnTipoBodega.setSelection(this.getPositionSpinnerTipoBodega(wholeBodegas[i][0].toString()));
+                        Handler handler = new Handler();
+                        final int m = i;
+
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                for (int j = 0; j < rawBodegas.size(); j++) {
+                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + rawBodegas.get(j));
+                                    if (wholeBodegas[m][0].equals(rawBodegas.get(j))) {
+                                        spnBodega.setSelection(Integer.parseInt(rawBodegas.get(j).toString()));
+                                    }
+                                }
+                            }
+                        }, 1000);
 
 
+                    }
+                }
 
-            // location last updated time
-            // txtUpdatedOn.setText("Last updated on: " + mLastUpdateTime);
+
+                // location last updated time
+                // txtUpdatedOn.setText("Last updated on: " + mLastUpdateTime);
+            }
+        }
+    }
+
+
+    private static double getDistanceBetweenTwoPoints(double lat1, double lon1, double lat2, double lon2, String unit) {
+        if ((lat1 == lat2) && (lon1 == lon2)) {
+            return 0;
+        } else {
+            double theta = lon1 - lon2;
+            double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
+            dist = Math.acos(dist);
+            dist = Math.toDegrees(dist);
+            dist = dist * 60 * 1.1515;
+            if (unit == "K") {
+                dist = dist * 1.609344;
+            } else if (unit == "N") {
+                dist = dist * 0.8684;
+            }
+            return (dist);
         }
     }
 

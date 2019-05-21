@@ -14,10 +14,11 @@ public class BaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "invfiscol";
 
-    public static final int VERSION = 15;
+    public static final int VERSION = 16;
     String bodega = "CREATE TABLE bodega(" +
             "bodega TEXT," +
-            "descripcion TEXT)";
+            "descripcion TEXT," +
+            "localizacion TEXT)";
     String grupo = "CREATE TABLE grupo(" +
             "grupo TEXT," +
             "descripcion TEXT)";
