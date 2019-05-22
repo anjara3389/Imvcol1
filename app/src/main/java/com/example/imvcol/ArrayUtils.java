@@ -23,6 +23,7 @@ public class ArrayUtils {
             return list;
         } catch (JSONException e) {
             Toast.makeText(ctx, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
 
         return null;

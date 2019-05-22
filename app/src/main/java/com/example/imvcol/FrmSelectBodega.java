@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;
@@ -51,15 +53,10 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
-import static java.lang.Math.acos;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,6 +67,8 @@ import butterknife.ButterKnife;
 
 public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
     DialogUtils dialogUtils;
+    private TextView txtMensaje;
+    private TextView txtFechaGPS;
     private Spinner spnBodega;
     private Spinner spnModo;
     private Spinner spnTipoBodega;
@@ -82,15 +81,6 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     // Time de ultima actualización de localización
     private String mLastUpdateTime;
-
-    // Intervalo de actualización de localización - 10sec
-    //private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-
-    // El más rápido intervalo de localización - 5 sec
-    // location updates will be received if another app is requesting the locations
-    // than your app can handle
-    //private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
-
     private static final int REQUEST_CHECK_SETTINGS = 100;
 
     //https://www.androidhive.info/2012/07/android-gps-location-manager-tutorial/
@@ -102,12 +92,10 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
 
+    private TextView txtTipoBodega;
+
     // bandera booleana para cambiar la UI
     private Boolean mRequestingLocationUpdates;
-
-    private String location;
-
-    static double PI_RAD = Math.PI / 180.0;
 
 
     @Override
@@ -119,15 +107,24 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             ButterKnife.bind(this);
             // inicializa las librerías necesarias para gps
             initGPS();
-            // reestablece los valores de instancia guardada del gps
-            restoreValuesFromBundle(savedInstanceState);
 
-            startLocation();
 
-            Button btnSiguiente = findViewById(R.id.frm_select_bodega_btn_siguiente);
+            txtMensaje = findViewById(R.id.frm_select_bodega_txt_mensaje_gps);
+            txtFechaGPS = findViewById(R.id.frm_select_bodega_txt_hora_gps);
             spnBodega = findViewById(R.id.frm_select_bodega_spn_bodega);
+
             spnModo = findViewById(R.id.frm_select_bodega_spn_modo);
             spnTipoBodega = findViewById(R.id.frm_select_bodega_spn_tipo_bodega);
+            txtTipoBodega = findViewById(R.id.frm_select_bodega_lbl_tipo_bodega);
+
+            spnBodega.setEnabled(false);
+
+
+            spnTipoBodega.setVisibility(View.GONE);
+            txtTipoBodega.setVisibility(View.GONE);
+
+            Button btnSiguiente = findViewById(R.id.frm_select_bodega_btn_siguiente);
+
 
             SQLiteDatabase db = BaseHelper.getReadable(this);
             wholeBodegas = new Bodega().selectBodegas(db);
@@ -135,6 +132,14 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             if (wholeBodegas != null) {
                 prepareSpinners();
             }
+            filterBodegasSpinner();
+            // reestablece los valores de instancia guardada del gps
+
+            //restoreValuesFromBundle(savedInstanceState);
+
+            startLocation();
+
+            /*
 
             spnTipoBodega.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -146,7 +151,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 public void onNothingSelected(AdapterView<?> parent) {
 
                 }
-            });
+            });*/
 
             btnSiguiente.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -196,14 +201,14 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
      * LLena spinner de tipo de bodega y de modo hardcoded
      */
     private void prepareSpinners() {
-        dataSpnTipoBodega = new String[4];
+        /*dataSpnTipoBodega = new String[4];
         dataSpnTipoBodega[0] = "Agros";
         dataSpnTipoBodega[1] = "Puntos";
         dataSpnTipoBodega[2] = "Plantas";
         dataSpnTipoBodega[3] = "Regionales";
         ArrayAdapter<String> adapterTipoBodega = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnTipoBodega);
         adapterTipoBodega.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnTipoBodega.setAdapter(adapterTipoBodega);
+        spnTipoBodega.setAdapter(adapterTipoBodega);*/
 
         String[] dataSpnModo = new String[2];
         dataSpnModo[0] = "Listado";
@@ -217,14 +222,15 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
      * Filtra el spinner de bodegas según la selección de tipo de bodega
      */
     private void filterBodegasSpinner() {
-        ArrayList selectedBodegas = new ArrayList();
+        /*ArrayList selectedBodegas = new ArrayList();
 
         for (int i = 0; i < wholeBodegas.length; i++) {
             if (validarTipoBodega(wholeBodegas[i][0].toString())) {
                 selectedBodegas.add(wholeBodegas[i]);
             }
-        }
-        rawBodegas = ArrayUtils.mapObjects(selectedBodegas);
+        }*/
+        rawBodegas = ArrayUtils.mapObjects(wholeBodegas);
+
         this.dataSpnBodegas = (String[]) rawBodegas.get(0);
         ArrayAdapter<String> adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
         adapterBodegas.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -237,7 +243,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
      * @param bodega bodega a validar
      * @return true si la bodega es del tipo seleccionado, false si no
      */
-    private boolean validarTipoBodega(String bodega) {
+    /*private boolean validarTipoBodega(String bodega) {
         int bodegaInt = Integer.parseInt(bodega);
         if ((spnTipoBodega.getSelectedItemPosition() == 0 && bodegaInt > 1500 && bodegaInt < 1600) ||
                 (spnTipoBodega.getSelectedItemPosition() == 1 && bodegaInt > 1200 && bodegaInt < 1300) ||
@@ -248,7 +254,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             return true;
         }
         return false;
-    }
+    }*/
 
     /**
      * Da la posición en el spinner a la que corresponde el tipo de bodega de la bodega dada.
@@ -432,7 +438,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 super.onLocationResult(locationResult);
                 // location is received
                 mCurrentLocation = locationResult.getLastLocation();
-                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+                mLastUpdateTime = DateFormat.getDateTimeInstance().format(new Date());
 
                 updateLocationUI();
             }
@@ -476,60 +482,65 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
      * Actualiza el spinner de la bodega según los datos de localización GPS
      */
     private void updateLocationUI() {
+        boolean exitoso = false;
         if (mCurrentLocation != null) {
-            //this.location = mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude();
-            //Toast.makeText(this, this.location, Toast.LENGTH_LONG).show();
-
-            System.out.println("/////////////RAW BODEGAAAAAAS" + dataSpnBodegas);
-
             for (int i = 0; i < wholeBodegas.length; i++) {
-                System.out.println("///1//////" + wholeBodegas[i][2].toString());
-
                 if (wholeBodegas[i][2] != null && !wholeBodegas[i][2].equals("null") && !wholeBodegas[i][2].equals("NN,NN")) {
                     String[] latlongBodega = wholeBodegas[i][2].toString().split(",");
-                    System.out.println("///1A//////" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
                     Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "M");
-                    // if (wholeBodegas[i][2].toString().equals(this.location)) {
-                    //si la distancia es menor de 20 metros
-                    System.out.println("///2///" + distPuntos);
-                    if (distPuntos < 20) {
-                        spnTipoBodega.setSelection(this.getPositionSpinnerTipoBodega(wholeBodegas[i][0].toString()));
+                    if (distPuntos < 100) {
+                        /*spnTipoBodega.setSelection(this.getPositionSpinnerTipoBodega(wholeBodegas[i][0].toString()));
                         Handler handler = new Handler();
-                        final int m = i;
-
+                        final int m = i;*/
+/*
                         handler.postDelayed(new Runnable() {
-                            public void run() {
-                                final HashMap<Integer, String> mapBodegas = (HashMap<Integer, String>) rawBodegas.get(1);
+                            public void run() {*/
+                        System.out.println(rawBodegas);
+                        final HashMap<Integer, String> mapBodegas = (HashMap<Integer, String>) rawBodegas.get(1);
 
-                                for (Map.Entry<Integer, String> bodegaEntry : mapBodegas.entrySet()) {
-                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + bodegaEntry.getValue());
-                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + bodegaEntry.getKey());
-                                    if (bodegaEntry.getValue().equals(wholeBodegas[m][0])) {
-                                        System.out.println("/////////////Entra////");
-                                       // spnGrupo.setSelection(bodegaEntry.getKey());
-                                        spnBodega.setSelection(bodegaEntry.getKey());
-                                    }
-                                }
-
-                               /* for (int j = 0; j < dataSpnBodegas.length; j++) {
-                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + dataSpnBodegas[j]);
-                                    if (wholeBodegas[m][0].equals(dataSpnBodegas[j])) {
-                                        spnBodega.setSelection(Integer.parseInt(dataSpnBodegas[j]));
-                                    }
-                                }*/
+                        for (Map.Entry<Integer, String> bodegaEntry : mapBodegas.entrySet()) {
+                            System.out.println("/////////////3 ////" + wholeBodegas[i][0].toString() + "  ..... " + bodegaEntry.getValue());
+                            System.out.println("/////////////3 ////" + wholeBodegas[i][0].toString() + "  ..... " + bodegaEntry.getKey());
+                            if (bodegaEntry.getValue().equals(wholeBodegas[i][0])) {
+                                exitoso = true;
+                                System.out.println("/////////////Entra////");
+                                spnBodega.setSelection(bodegaEntry.getKey());
                             }
-                        }, 1000);
-
-
+                        }
                     }
+                    /* }, 1000);*/
                 }
-
-
-                // location last updated time
-                // txtUpdatedOn.setText("Last updated on: " + mLastUpdateTime);
             }
         }
+
+        if (exitoso) {
+
+            txtMensaje.setTextColor(Color.GREEN);
+            txtMensaje.setText("La sincronización GPS se ha realizado con éxito.");
+            txtFechaGPS.setTextColor(Color.GREEN);
+            txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
+            //dialogUtils.dissmissDialog();
+            spnBodega.setEnabled(false);
+        } else {
+            localizacionGPSFallida();
+        }
+            /*
+            if (!txtMensaje.getText().equals("La sincronización GPS de las bodegas se ha realizado con éxito.")) {
+                txtMensaje.setTextColor(Color.RED);
+                //txtMensaje.setText("La sincronización GPS de las bodegas ha fallado");
+                txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
+                //dialogUtils.dissmissDialog();
+            }*/
     }
+
+    private void localizacionGPSFallida() {
+        txtMensaje.setTextColor(Color.RED);
+        txtMensaje.setText("La sincronización GPS ha fallado. Asegurese que el GPS esté encendido o seleccione de forma manual y CUIDADOSAMENTE su bodega ya que de ésto depende el éxito del proceso.");
+        txtFechaGPS.setTextColor(Color.RED);
+        txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
+        spnBodega.setEnabled(true);
+    }
+
 
 
     private static double getDistanceBetweenTwoPoints(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -572,8 +583,10 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                         System.out.println("Todas las configuraciones de localización han sido activadas");
+                        //dialogUtils = new DialogUtils(FrmSelectBodega.this, "Sincronización GPS");
+                        //dialogUtils.showDialog(getWindow());
 
-                        Toast.makeText(getApplicationContext(), "Inicia la actualización de la localización!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Inicia la actualización de la localización!", Toast.LENGTH_SHORT).show();
 
                         //noinspection MissingPermission
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -588,8 +601,10 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Toast.makeText(getApplicationContext(), "Error: Configuraciòn de la localización incorrecta.", Toast.LENGTH_SHORT).show();
-                                System.out.println("Configuraciòn de la localización incorrecta.");
+                                //dialogUtils.dissmissDialog();
+                                Toast.makeText(getApplicationContext(), "Error: Configuraciòn GPS incorrecta.", Toast.LENGTH_SHORT).show();
+                                System.out.println("Configuraciòn GPS incorrecta.");
+                                localizacionGPSFallida();
                                 try {
                                     // Muestra el dialogo llamando startResolutionForResult()
                                     // y verificando el resultado en onActivityResult().
@@ -598,11 +613,14 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                                 } catch (IntentSender.SendIntentException sie) {
                                     Toast.makeText(getApplicationContext(), "Error: PendingIntent incapaz de ejecutar la petición.", Toast.LENGTH_SHORT).show();
                                     System.out.println(("PendingIntent unable to execute request."));
+                                    localizacionGPSFallida();
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                String errorMessage = "La configuración de la localización es incorrecta. Por favor corregir en configuraciones.";
+                                String errorMessage = "Error: Configuración GPS incorrecta. Encienda el GPS en su dispositivo.";
                                 System.out.println(errorMessage);
+                                localizacionGPSFallida();
+                                // dialogUtils.dissmissDialog();
 
                                 Toast.makeText(FrmSelectBodega.this, "Error: " + errorMessage, Toast.LENGTH_LONG).show();
                         }
@@ -610,6 +628,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         updateLocationUI();
                     }
                 });
+
     }
 
     /**
@@ -652,6 +671,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(getApplicationContext(), "Acualizaciones de localización no disponibles!", Toast.LENGTH_SHORT).show();
+                        localizacionGPSFallida();
                     }
                 });
     }
@@ -691,11 +711,14 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         super.onResume();
 
         // Continúa con las actualizaciones de locaciòn dependiendo de los permisos autorizados.
-        if (mRequestingLocationUpdates && checkPermissions()) {
+       /* if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         }
 
-        updateLocationUI();
+        startLocationUpdates();*/
+        startLocation();
+
+        //updateLocationUI();
     }
 
     private boolean checkPermissions() {
