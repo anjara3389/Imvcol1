@@ -77,6 +77,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
     private ArrayList rawBodegas;
     private Usuario currUser;
     private String[] dataSpnTipoBodega;
+    private String[] dataSpnBodegas;
     private static final int FINALIZAR_INVENTARIO = 3;
 
     // Time de ultima actualización de localización
@@ -224,7 +225,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             }
         }
         rawBodegas = ArrayUtils.mapObjects(selectedBodegas);
-        String[] dataSpnBodegas = (String[]) rawBodegas.get(0);
+        this.dataSpnBodegas = (String[]) rawBodegas.get(0);
         ArrayAdapter<String> adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
         adapterBodegas.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnBodega.setAdapter(adapterBodegas);
@@ -479,7 +480,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             //this.location = mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude();
             //Toast.makeText(this, this.location, Toast.LENGTH_LONG).show();
 
-            //System.out.println("RAW BODEGAAAAAAS" + rawBodegas);
+            System.out.println("/////////////RAW BODEGAAAAAAS" + dataSpnBodegas);
+
             for (int i = 0; i < wholeBodegas.length; i++) {
                 System.out.println("///1//////" + wholeBodegas[i][2].toString());
 
@@ -497,13 +499,24 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
                         handler.postDelayed(new Runnable() {
                             public void run() {
+                                final HashMap<Integer, String> mapBodegas = (HashMap<Integer, String>) rawBodegas.get(1);
 
-                                for (int j = 0; j < rawBodegas.size(); j++) {
-                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + rawBodegas.get(j));
-                                    if (wholeBodegas[m][0].equals(rawBodegas.get(j))) {
-                                        spnBodega.setSelection(Integer.parseInt(rawBodegas.get(j).toString()));
+                                for (Map.Entry<Integer, String> bodegaEntry : mapBodegas.entrySet()) {
+                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + bodegaEntry.getValue());
+                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + bodegaEntry.getKey());
+                                    if (bodegaEntry.getValue().equals(wholeBodegas[m][0])) {
+                                        System.out.println("/////////////Entra////");
+                                       // spnGrupo.setSelection(bodegaEntry.getKey());
+                                        spnBodega.setSelection(bodegaEntry.getKey());
                                     }
                                 }
+
+                               /* for (int j = 0; j < dataSpnBodegas.length; j++) {
+                                    System.out.println("/////////////3 ////" + wholeBodegas[m][0].toString() + "  ..... " + dataSpnBodegas[j]);
+                                    if (wholeBodegas[m][0].equals(dataSpnBodegas[j])) {
+                                        spnBodega.setSelection(Integer.parseInt(dataSpnBodegas[j]));
+                                    }
+                                }*/
                             }
                         }, 1000);
 

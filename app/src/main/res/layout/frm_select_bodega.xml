@@ -104,14 +104,32 @@
             android:id="@+id/frm_select_bodega_btn_siguiente"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="300dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="380dp"
             android:layout_marginBottom="20dp"
             android:background="@android:color/background_light"
-            android:layout_gravity="center_horizontal"
-            android:layout_centerInParent="true"
             android:text="Siguiente"
             android:textColor="#01579b" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="270dp"
+            android:layout_marginRight="10dp"
+            android:text="Atención!. Por favor revise que la bodega seleccionada sea la correcta. De eso depende el buen funcionamiento del proceso. " />
+
+        <TextView
+            android:id="@+id/frm_select_bodega_txt_mensaje_gps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="340dp"
+            android:layout_marginRight="10dp"
+            android:text="*" />
     </android.support.v7.widget.CardView>
 
 </RelativeLayout>
