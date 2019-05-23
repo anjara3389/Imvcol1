@@ -45,7 +45,8 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
             aceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (contrasenia.getText().equals("INVENTARIOS48")) {
+                    System.out.println(contrasenia.getText());
+                    if (contrasenia.getText().toString().equals("inv48")) {
                         try {
                             dialogUtils = new DialogUtils(FrmLiberarSeleccion.this, "Cargando");
                             dialogUtils.showDialog(FrmLiberarSeleccion.this.getWindow());
@@ -75,7 +76,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
-        setTitle("INVFISCOL 2.1");
+        setTitle("INVFISCOL 3.0");
         return true;
     }
 
@@ -193,7 +194,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
 
             ArrayList queryDatos = new ArrayList();
 
-            String query = "SELECT fisico " +
+            String query = "SELECT fisico, " +
                     "toma_1, " +
                     "toma_2, " +
                     "toma_3, " +

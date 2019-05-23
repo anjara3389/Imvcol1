@@ -291,7 +291,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
         //menu.findItem(R.id.action_generar_reporte).setVisible(false);
-        setTitle("INVFISCOL 2.1");
+        setTitle("INVFISCOL 3.0");
         return true;
     }
 
@@ -487,8 +487,13 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             for (int i = 0; i < wholeBodegas.length; i++) {
                 if (wholeBodegas[i][2] != null && !wholeBodegas[i][2].equals("null") && !wholeBodegas[i][2].equals("NN,NN")) {
                     String[] latlongBodega = wholeBodegas[i][2].toString().split(",");
-                    Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "M");
+//1.2068505,-77.2626163
+                    //Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
+                    Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),  Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
+
+                    System.out.println("Dist Puntos: "+distPuntos);
                     if (distPuntos < 100) {
+
                         /*spnTipoBodega.setSelection(this.getPositionSpinnerTipoBodega(wholeBodegas[i][0].toString()));
                         Handler handler = new Handler();
                         final int m = i;*/
@@ -513,7 +518,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             }
         }
 
-        if (exitoso) {
+        if (exitoso==true) {
 
             txtMensaje.setTextColor(Color.GREEN);
             txtMensaje.setText("La sincronización GPS se ha realizado con éxito.");
@@ -539,6 +544,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         txtFechaGPS.setTextColor(Color.RED);
         txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
         spnBodega.setEnabled(true);
+        spnBodega.setSelection(0);
     }
 
 
@@ -552,8 +558,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             dist = Math.acos(dist);
             dist = Math.toDegrees(dist);
             dist = dist * 60 * 1.1515;
-            if (unit == "K") {
-                dist = dist * 1.609344;
+            if (unit == "K") {//metros
+                dist = dist * 1.609344*1000;
             } else if (unit == "N") {
                 dist = dist * 0.8684;
             }
