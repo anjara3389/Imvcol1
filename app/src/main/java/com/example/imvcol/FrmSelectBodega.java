@@ -106,6 +106,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             //GPS
             ButterKnife.bind(this);
             // inicializa las librerías necesarias para gps
+
             initGPS();
 
 
@@ -290,6 +291,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
+        menu.findItem(R.id.action_liberar_con_contrasenia).setVisible(false);
         //menu.findItem(R.id.action_generar_reporte).setVisible(false);
         setTitle("INVFISCOL 3.0");
         return true;
@@ -302,6 +304,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 YesNoDialogFragment dial2 = new YesNoDialogFragment();
                 dial2.setInfo(FrmSelectBodega.this, FrmSelectBodega.this, "Finalizar inventario", "¿Está seguro de finalizar el inventario? Los datos que no se hayan enviado se perderán. ", FINALIZAR_INVENTARIO);
                 dial2.show(getSupportFragmentManager(), "MyDialog");
+                break;
+            case R.id.action_habilitar_bodegas:
+                spnBodega.setEnabled(true);
                 break;
             default:
                 break;
@@ -489,10 +494,10 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     String[] latlongBodega = wholeBodegas[i][2].toString().split(",");
 //1.2068505,-77.2626163
                     //Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
-                    Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(),  Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
-
-                    System.out.println("Dist Puntos: "+distPuntos);
-                    if (distPuntos < 100) {
+                    Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
+                    System.out.println(rawBodegas);
+                    System.out.println(wholeBodegas[i][2].toString() + wholeBodegas[i][1].toString() + "Dist Puntos: " + distPuntos);
+                    if (distPuntos < 200) {
 
                         /*spnTipoBodega.setSelection(this.getPositionSpinnerTipoBodega(wholeBodegas[i][0].toString()));
                         Handler handler = new Handler();
@@ -500,7 +505,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 /*
                         handler.postDelayed(new Runnable() {
                             public void run() {*/
-                        System.out.println(rawBodegas);
+
                         final HashMap<Integer, String> mapBodegas = (HashMap<Integer, String>) rawBodegas.get(1);
 
                         for (Map.Entry<Integer, String> bodegaEntry : mapBodegas.entrySet()) {
@@ -518,14 +523,14 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             }
         }
 
-        if (exitoso==true) {
+        if (exitoso == true) {
 
             txtMensaje.setTextColor(Color.GREEN);
             txtMensaje.setText("La sincronización GPS se ha realizado con éxito.");
             txtFechaGPS.setTextColor(Color.GREEN);
             txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
             //dialogUtils.dissmissDialog();
-            spnBodega.setEnabled(false);
+            //spnBodega.setEnabled(false);
         } else {
             localizacionGPSFallida();
         }
@@ -540,13 +545,12 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     private void localizacionGPSFallida() {
         txtMensaje.setTextColor(Color.RED);
-        txtMensaje.setText("La sincronización GPS ha fallado. Asegurese que el GPS esté encendido o seleccione de forma manual y CUIDADOSAMENTE su bodega ya que de ésto depende el éxito del proceso.");
+        txtMensaje.setText("La sincronización GPS ha fallado. Asegurese que el GPS esté encendido o habilite la selecciòn de bodega desde el menú.");
         txtFechaGPS.setTextColor(Color.RED);
         txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
-        spnBodega.setEnabled(true);
+        //spnBodega.setEnabled(true);
         spnBodega.setSelection(0);
     }
-
 
 
     private static double getDistanceBetweenTwoPoints(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -559,7 +563,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             dist = Math.toDegrees(dist);
             dist = dist * 60 * 1.1515;
             if (unit == "K") {//metros
-                dist = dist * 1.609344*1000;
+                dist = dist * 1.609344 * 1000;
             } else if (unit == "N") {
                 dist = dist * 0.8684;
             }

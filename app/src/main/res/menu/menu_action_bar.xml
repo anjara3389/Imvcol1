@@ -23,4 +23,7 @@
     <item
         android:id="@+id/action_liberar_con_contrasenia"
         android:title="Liberar con contraseña"></item>
+    <item
+        android:id="@+id/action_habilitar_bodegas"
+        android:title="Habilitar bodegas"></item>
 </menu>
