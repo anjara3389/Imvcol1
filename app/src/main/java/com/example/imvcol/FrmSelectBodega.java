@@ -81,8 +81,17 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     // Time de ultima actualización de localización
     private String mLastUpdateTime;
+
+    // location updates interval - 10sec
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    // fastest updates interval - 5 sec
+    // location updates will be received if another app is requesting the locations
+    // than your app can handle
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
     private static final int REQUEST_CHECK_SETTINGS = 100;
 
+    //https://www.androidhive.info/2012/07/android-gps-location-manager-tutorial/
     //https://www.androidhive.info/2012/07/android-gps-location-manager-tutorial/
     // Apis relacionadas con localización
     private FusedLocationProviderClient mFusedLocationClient;
@@ -452,8 +461,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         mRequestingLocationUpdates = false;
 
         mLocationRequest = new LocationRequest();
-        //mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        //mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
@@ -515,6 +524,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                                 exitoso = true;
                                 System.out.println("/////////////Entra////");
                                 spnBodega.setSelection(bodegaEntry.getKey());
+                                this.stopLocationUpdates();
                             }
                         }
                     }
@@ -671,7 +681,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
     }
 
     /**
-     * Para la actualización de la localización(ON CLICK)
+     * Para la actualización de la localización
      */
     public void stopLocationUpdates() {
         mRequestingLocationUpdates = false;
@@ -680,8 +690,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(getApplicationContext(), "Acualizaciones de localización no disponibles!", Toast.LENGTH_SHORT).show();
-                        localizacionGPSFallida();
+                        //Toast.makeText(getApplicationContext(), "Acualizaciones de localización no disponibles!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
