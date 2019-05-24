@@ -555,7 +555,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     private void localizacionGPSFallida() {
         txtMensaje.setTextColor(Color.RED);
-        txtMensaje.setText("La sincronización GPS ha fallado. Asegurese que el GPS esté encendido o habilite la selecciòn de bodega desde el menú.");
+        txtMensaje.setText("La sincronización GPS ha fallado o no se ha encontrado ninguna bodega cercana. Asegurese que el GPS esté encendido o habilite la selecciòn de bodega desde el menú.");
         txtFechaGPS.setTextColor(Color.RED);
         txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
         //spnBodega.setEnabled(true);
