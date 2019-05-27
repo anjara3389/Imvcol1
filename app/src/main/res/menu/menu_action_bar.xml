@@ -25,5 +25,5 @@
         android:title="Liberar con contraseña"></item>
     <item
         android:id="@+id/action_habilitar_bodegas"
-        android:title="Habilitar bodegas"></item>
+        android:title="Habilitar todas las bodegas"></item>
 </menu>

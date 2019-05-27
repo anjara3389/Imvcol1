@@ -57,6 +57,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,9 +128,6 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             spnTipoBodega = findViewById(R.id.frm_select_bodega_spn_tipo_bodega);
             txtTipoBodega = findViewById(R.id.frm_select_bodega_lbl_tipo_bodega);
 
-            spnBodega.setEnabled(false);
-
-
             spnTipoBodega.setVisibility(View.GONE);
             txtTipoBodega.setVisibility(View.GONE);
 
@@ -142,7 +140,11 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             if (wholeBodegas != null) {
                 prepareSpinners();
             }
-            filterBodegasSpinner();
+
+            ArrayList emptyBodega = new ArrayList();
+            emptyBodega.add(wholeBodegas[0]);
+
+            fillBodegasSpinner(null, emptyBodega);
             // reestablece los valores de instancia guardada del gps
 
             //restoreValuesFromBundle(savedInstanceState);
@@ -229,9 +231,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
     }
 
     /**
-     * Filtra el spinner de bodegas según la selección de tipo de bodega
+     * Llena el spinner de bodegas con las bodegas dadas como parámetro
      */
-    private void filterBodegasSpinner() {
+    private void fillBodegasSpinner(Object[][] bodegas, ArrayList arrayBodegas) {
         /*ArrayList selectedBodegas = new ArrayList();
 
         for (int i = 0; i < wholeBodegas.length; i++) {
@@ -239,13 +241,27 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 selectedBodegas.add(wholeBodegas[i]);
             }
         }*/
-        rawBodegas = ArrayUtils.mapObjects(wholeBodegas);
+        if (bodegas != null) {
+            rawBodegas = ArrayUtils.mapObjects(bodegas);
+        } else {
+            rawBodegas = ArrayUtils.mapObjects(arrayBodegas);
+        }
 
         this.dataSpnBodegas = (String[]) rawBodegas.get(0);
         ArrayAdapter<String> adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
         adapterBodegas.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnBodega.setAdapter(adapterBodegas);
     }
+
+    /*private void filterBodegasByLocation() {
+        ArrayList selectedBodegas = new ArrayList();
+
+        for (int i = 0; i < wholeBodegas.length; i++) {
+            if (validarTipoBodega(wholeBodegas[i][0].toString())) {
+                selectedBodegas.add(wholeBodegas[i]);
+            }
+        }
+    }*/
 
     /**
      * Según el tipo de bodega seleccionado, valida si una bodega es de ese tipo de bodega.
@@ -315,7 +331,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 dial2.show(getSupportFragmentManager(), "MyDialog");
                 break;
             case R.id.action_habilitar_bodegas:
-                spnBodega.setEnabled(true);
+                fillBodegasSpinner(wholeBodegas, null);
                 break;
             default:
                 break;
@@ -454,7 +470,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 mCurrentLocation = locationResult.getLastLocation();
                 mLastUpdateTime = DateFormat.getDateTimeInstance().format(new Date());
 
-                updateLocationUI();
+                filterBodegasByLocation();
             }
         };
 
@@ -470,92 +486,55 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         mLocationSettingsRequest = builder.build();
     }
 
-    /**
-     * Restaura valores de un estado de una instancia guardada
-     */
-    private void restoreValuesFromBundle(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey("is_requesting_updates")) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean("is_requesting_updates");
-            }
-
-            if (savedInstanceState.containsKey("last_known_location")) {
-                mCurrentLocation = savedInstanceState.getParcelable("last_known_location");
-            }
-
-            if (savedInstanceState.containsKey("last_updated_on")) {
-                mLastUpdateTime = savedInstanceState.getString("last_updated_on");
-            }
-        }
-
-        updateLocationUI();
-    }
-
 
     /**
      * Actualiza el spinner de la bodega según los datos de localización GPS
      */
-    private void updateLocationUI() {
-        boolean exitoso = false;
+    private void filterBodegasByLocation() {
         if (mCurrentLocation != null) {
+            ArrayList selectedBodegas = new ArrayList();
             for (int i = 0; i < wholeBodegas.length; i++) {
-                if (wholeBodegas[i][2] != null && !wholeBodegas[i][2].equals("null") && !wholeBodegas[i][2].equals("NN,NN")) {
-                    String[] latlongBodega = wholeBodegas[i][2].toString().split(",");
+                if (wholeBodegas[i][2] != null && !wholeBodegas[i][2].equals("null")) {
 //1.2068505,-77.2626163
-                    //Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
-                    Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
-                    System.out.println(rawBodegas);
-                    System.out.println(wholeBodegas[i][2].toString() + wholeBodegas[i][1].toString() + "Dist Puntos: " + distPuntos);
-                    if (distPuntos < 200) {
+                    if (Integer.parseInt(wholeBodegas[i][0].toString()) != -1) {
+                        String[] latlongBodega = wholeBodegas[i][2].toString().split(",");
 
-                        /*spnTipoBodega.setSelection(this.getPositionSpinnerTipoBodega(wholeBodegas[i][0].toString()));
-                        Handler handler = new Handler();
-                        final int m = i;*/
-/*
-                        handler.postDelayed(new Runnable() {
-                            public void run() {*/
-
-                        final HashMap<Integer, String> mapBodegas = (HashMap<Integer, String>) rawBodegas.get(1);
-
-                        for (Map.Entry<Integer, String> bodegaEntry : mapBodegas.entrySet()) {
-                            System.out.println("/////////////3 ////" + wholeBodegas[i][0].toString() + "  ..... " + bodegaEntry.getValue());
-                            System.out.println("/////////////3 ////" + wholeBodegas[i][0].toString() + "  ..... " + bodegaEntry.getKey());
-                            if (bodegaEntry.getValue().equals(wholeBodegas[i][0])) {
-                                exitoso = true;
-                                System.out.println("/////////////Entra////");
-                                spnBodega.setSelection(bodegaEntry.getKey());
-                                this.stopLocationUpdates();
-                            }
+                        Double distPuntos = this.getDistanceBetweenTwoPoints(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
+                        //Double distPuntos = this.getDistanceBetweenTwoPoints(Double.parseDouble("1.226453"), Double.parseDouble("-77.268917"), Double.parseDouble(latlongBodega[0]), Double.parseDouble(latlongBodega[1]), "K");
+                        System.out.println(rawBodegas);
+                        System.out.println(wholeBodegas[i][2].toString() + wholeBodegas[i][1].toString() + "Dist Puntos: " + distPuntos);
+                        if (distPuntos < 200) {
+                            selectedBodegas.add(wholeBodegas[i]);
                         }
+                    } else {
+                        selectedBodegas.add(wholeBodegas[i]);
                     }
-                    /* }, 1000);*/
                 }
             }
-        }
-
-        if (exitoso == true) {
-
-            txtMensaje.setTextColor(Color.GREEN);
-            txtMensaje.setText("La sincronización GPS se ha realizado con éxito.");
-            txtFechaGPS.setTextColor(Color.GREEN);
-            txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
-            //dialogUtils.dissmissDialog();
-            //spnBodega.setEnabled(false);
+            fillBodegasSpinner(null, selectedBodegas);
+            if (selectedBodegas.size() > 1) {
+                txtMensaje.setTextColor(Color.GREEN);
+                txtMensaje.setText("La sincronización GPS se ha realizado con éxito. Si no encuentra su bodega, habilite todas las bodegas desde el menú.");
+                txtFechaGPS.setTextColor(Color.GREEN);
+                txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
+                stopLocationUpdates();
+            } else {
+                txtMensaje.setTextColor(Color.RED);
+                txtMensaje.setText("No se ha encontrado ninguna bodega cercana. Habilite todas las bodegas desde el menú y elija CUIDADOSAMENTE la que necesita.");
+                txtFechaGPS.setTextColor(Color.RED);
+                txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
+                //spnBodega.setEnabled(true);
+                spnBodega.setSelection(0);
+            }
         } else {
             localizacionGPSFallida();
         }
-            /*
-            if (!txtMensaje.getText().equals("La sincronización GPS de las bodegas se ha realizado con éxito.")) {
-                txtMensaje.setTextColor(Color.RED);
-                //txtMensaje.setText("La sincronización GPS de las bodegas ha fallado");
-                txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
-                //dialogUtils.dissmissDialog();
-            }*/
+
     }
 
     private void localizacionGPSFallida() {
         txtMensaje.setTextColor(Color.RED);
-        txtMensaje.setText("La sincronización GPS ha fallado o no se ha encontrado ninguna bodega cercana. Asegurese que el GPS esté encendido o habilite la selecciòn de bodega desde el menú.");
+        txtMensaje.setText("No se puede obtener información GPS del dispositivo. Asegurese que el GPS esté encendido o habilite todas las bodegas desde el menú y elija CUIDADOSAMENTE la que necesita.");
         txtFechaGPS.setTextColor(Color.RED);
         txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
         //spnBodega.setEnabled(true);
@@ -612,7 +591,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                                 mLocationCallback, Looper.myLooper());
 
-                        updateLocationUI();
+                        filterBodegasByLocation();
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {
@@ -645,7 +624,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                                 Toast.makeText(FrmSelectBodega.this, "Error: " + errorMessage, Toast.LENGTH_LONG).show();
                         }
 
-                        updateLocationUI();
+                        filterBodegasByLocation();
                     }
                 });
 
