@@ -76,7 +76,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         menu.findItem(R.id.action_finalizar_conteo).setVisible(false);
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
-        setTitle("INVFISCOL 3.0");
+        setTitle("INVFISCOL 3.1");
         return true;
     }
 
