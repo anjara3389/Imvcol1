@@ -519,9 +519,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
                 stopLocationUpdates();
             } else {
-                txtMensaje.setTextColor(Color.RED);
+                txtMensaje.setTextColor(Color.BLUE);
                 txtMensaje.setText("No se ha encontrado ninguna bodega cercana. Habilite todas las bodegas desde el menú y elija CUIDADOSAMENTE la que necesita.");
-                txtFechaGPS.setTextColor(Color.RED);
+                txtFechaGPS.setTextColor(Color.BLUE);
                 txtFechaGPS.setText("Última sincronización GPS: " + mLastUpdateTime);
                 //spnBodega.setEnabled(true);
                 spnBodega.setSelection(0);
