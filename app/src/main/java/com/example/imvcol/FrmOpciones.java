@@ -53,6 +53,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     HashMap<Integer, String> mapSubgrupos2;
     HashMap<Integer, String> mapSubgrupos3;
     HashMap<Integer, String> mapClases;
+    private static final int LIBERAR_SELECCION_CONTRASENIA = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +185,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
         menu.findItem(R.id.action_habilitar_bodegas).setVisible(false);
-        setTitle("INVFISCOL 3.2");
+        setTitle("INVFISCOL 3.3");
         return true;
     }
 
@@ -206,6 +207,11 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     e.printStackTrace();
                     Toast.makeText(FrmOpciones.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
+                break;
+            case R.id.action_liberar_con_contrasenia:
+                YesNoDialogFragment dia3 = new YesNoDialogFragment();
+                dia3.setInfo(FrmOpciones.this, FrmOpciones.this, "Liberar selección", "¿Está seguro de liberar selección?, perderá todos sus datos", LIBERAR_SELECCION_CONTRASENIA);
+                dia3.show(getSupportFragmentManager(), "MyDialog");
                 break;
             default:
                 break;
@@ -572,7 +578,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         double porcentaje = (cantRealizados * 100) / cantTotal;
 
                         DecimalFormat df = new DecimalFormat("#.0");
-                        String porcentStr=df.format(porcentaje);
+                        String porcentStr = df.format(porcentaje);
 
                         System.out.println("DATOS ENVIADOSSSSS///" + cantRealizados);
                         System.out.println("DATOS ENVIADOSSSSS///" + cantTotal);
@@ -679,6 +685,41 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 SQLiteDatabase db = BaseHelper.getWritable(this);
                 usuario.updateCurrent(db);
                 BaseHelper.tryClose(db);
+            }
+        }
+        if (code == LIBERAR_SELECCION_CONTRASENIA && ans) {
+            try {
+
+                mapSubgrupos = (HashMap<Integer, String>) rawSubgrupos.get(1);
+                if (usuario.getModo() == usuario.MODO_LISTA) {
+                    mapSubgrupos2 = (HashMap<Integer, String>) rawSubgrupos2.get(1);
+                    mapSubgrupos3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
+                    mapClases = (HashMap<Integer, String>) rawClases.get(1);
+                }
+                if (changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
+                    throw new Exception("Debe seleccionar un grupo");
+                } else if (changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                    throw new Exception("Debe seleccionar un subgrupo");
+                } else {
+                    Intent i = new Intent(FrmOpciones.this, FrmLiberarSeleccion.class);
+                    dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
+                    dialogUtils.showDialog(getWindow());
+                    i.putExtra("grupo", changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())));
+                    i.putExtra("subgrupo", changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())));
+
+                    if (usuario.getModo() == usuario.MODO_LISTA) {
+                        i.putExtra("subgr2", changeValue(mapSubgrupos2.get(spnSubgrupo2.getSelectedItemPosition())));
+                        i.putExtra("subgr3", changeValue(mapSubgrupos3.get(spnSubgrupo3.getSelectedItemPosition())));
+                        i.putExtra("clase", changeValue(mapClases.get(spnClase.getSelectedItemPosition())));
+                        i.putExtra("desdeOpciones", "desdeOpciones");
+                    }
+                    startActivityForResult(i, 1);
+                    dialogUtils.dissmissDialog();
+                    finish();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }

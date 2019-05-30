@@ -28,15 +28,41 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
     private Usuario usuario;
     private DialogUtils dialogUtils;
 
+    private String grupo;
+    private String subgrupo;
+    private String subgr2;
+    private String subgr3;
+    private String clase;
+    private String desdeOpciones;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_liberar_seleccion);
 
         try {
+
+            Bundle bundle = getIntent().getExtras();
+
+            if (bundle != null) {
+                grupo = bundle.get("grupo") != null ? bundle.getString("grupo") : null;
+                subgrupo = bundle.get("subgrupo") != null ? bundle.getString("subgrupo") : null;
+                subgr2 = bundle.get("subgr2") != null ? bundle.getString("subgr2") : null;
+                subgr3 = bundle.get("subgr3") != null ? bundle.getString("subgr3") : null;
+                clase = bundle.get("clase") != null ? bundle.getString("clase") : null;
+                desdeOpciones = bundle.get("desdeOpciones") != null ? bundle.getString("desdeOpciones") : null;
+
+                System.out.println("//////grupo" + grupo);
+                System.out.println("//////subgrupo" + subgrupo);
+                System.out.println("//////subgr2" + subgr2);
+                System.out.println("//////subgr3" + subgr3);
+                System.out.println("//////clase" + clase);
+                System.out.println("//////desdeOpciones" + desdeOpciones);
+
+            }
+
             contrasenia = findViewById(R.id.frm_liberar_seleccion_contrasenia);
             aceptar = findViewById(R.id.frm_liberar_seleccion_btn_aceptar);
-
 
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
@@ -106,23 +132,41 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
                     "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
-                    "AND s.mes=MONTH(getdate()) " +
-                    "AND f.fisico=1  ";
+                    "AND s.mes=MONTH(getdate())";
+                    //"AND f.fisico=1  ";
 
-            if (usuario.getCurrGrupo() != null) {
-                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-            }
-            if (usuario.getCurrSubgr() != null) {
-                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-            }
-            if (usuario.getCurrSubgr2() != null) {
-                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-            }
-            if (usuario.getCurrSubgr3() != null) {
-                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-            }
-            if (usuario.getCurrClase() != null) {
-                query += "AND r.clase='" + usuario.getCurrClase() + "'";
+            if (desdeOpciones == null) {
+                if (usuario.getCurrGrupo() != null) {
+                    query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+                }
+                if (usuario.getCurrSubgr() != null) {
+                    query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+                }
+                if (usuario.getCurrSubgr2() != null) {
+                    query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+                }
+                if (usuario.getCurrSubgr3() != null) {
+                    query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+                }
+                if (usuario.getCurrClase() != null) {
+                    query += "AND r.clase='" + usuario.getCurrClase() + "'";
+                }
+            } else {
+                if (grupo != null) {
+                    query += "AND r.grupo='" + grupo + "' ";
+                }
+                if (subgrupo != null) {
+                    query += "AND r.subgrupo='" + subgrupo + "' ";
+                }
+                if (subgr2 != null) {
+                    query += "AND r.subgrupo2='" + subgr2 + "' ";
+                }
+                if (subgr3 != null) {
+                    query += "AND r.subgrupo3='" + subgr3 + "' ";
+                }
+                if (clase != null) {
+                    query += "AND r.clase='" + clase + "'";
+                }
             }
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
@@ -144,9 +188,9 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
 
                     ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmLiberarSeleccion.this);
                     if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmLiberarSeleccion.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                        dialogUtils.dissmissDialog();
                     } else {
                         boolean validar = true;
 
@@ -186,6 +230,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
 
                         } else {
                             Toast.makeText(FrmLiberarSeleccion.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                            dialogUtils.dissmissDialog();
                         }
                     }
                 }
@@ -209,20 +254,38 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate()) ";
 
-            if (usuario.getCurrGrupo() != null) {
-                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-            }
-            if (usuario.getCurrSubgr() != null) {
-                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-            }
-            if (usuario.getCurrSubgr2() != null) {
-                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-            }
-            if (usuario.getCurrSubgr3() != null) {
-                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-            }
-            if (usuario.getCurrClase() != null) {
-                query += "AND r.clase='" + usuario.getCurrClase() + "'";
+            if (desdeOpciones == null) {
+                if (usuario.getCurrGrupo() != null) {
+                    query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
+                }
+                if (usuario.getCurrSubgr() != null) {
+                    query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
+                }
+                if (usuario.getCurrSubgr2() != null) {
+                    query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
+                }
+                if (usuario.getCurrSubgr3() != null) {
+                    query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
+                }
+                if (usuario.getCurrClase() != null) {
+                    query += "AND r.clase='" + usuario.getCurrClase() + "'";
+                }
+            } else {
+                if (grupo != null) {
+                    query += "AND r.grupo='" + grupo + "' ";
+                }
+                if (subgrupo != null) {
+                    query += "AND r.subgrupo='" + subgrupo + "' ";
+                }
+                if (subgr2 != null) {
+                    query += "AND r.subgrupo2='" + subgr2 + "' ";
+                }
+                if (subgr3 != null) {
+                    query += "AND r.subgrupo3='" + subgr3 + "' ";
+                }
+                if (clase != null) {
+                    query += "AND r.clase='" + clase + "'";
+                }
             }
 
             queryDatos.add(query);
