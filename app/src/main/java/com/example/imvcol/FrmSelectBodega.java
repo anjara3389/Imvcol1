@@ -318,7 +318,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         menu.findItem(R.id.action_totales).setVisible(false);
         menu.findItem(R.id.action_liberar_con_contrasenia).setVisible(false);
         //menu.findItem(R.id.action_generar_reporte).setVisible(false);
-        setTitle("INVFISCOL 3.1");
+        setTitle("INVFISCOL 3.2");
         return true;
     }
 
@@ -332,6 +332,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 break;
             case R.id.action_habilitar_bodegas:
                 fillBodegasSpinner(wholeBodegas, null);
+                stopLocationUpdates();
                 break;
             default:
                 break;
