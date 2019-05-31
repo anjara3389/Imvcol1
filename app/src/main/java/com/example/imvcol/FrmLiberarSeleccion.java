@@ -41,7 +41,6 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         setContentView(R.layout.frm_liberar_seleccion);
 
         try {
-
             Bundle bundle = getIntent().getExtras();
 
             if (bundle != null) {
@@ -76,7 +75,11 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                         try {
                             dialogUtils = new DialogUtils(FrmLiberarSeleccion.this, "Cargando");
                             dialogUtils.showDialog(FrmLiberarSeleccion.this.getWindow());
-                            FrmLiberarSeleccion.this.freeWebserviceFisicosTotal();
+                            if (desdeOpciones == null) {
+                                FrmLiberarSeleccion.this.freeWebserviceFisicosTotal();
+                            } else {
+                                countWebserviceConDatos();
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(FrmLiberarSeleccion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -106,6 +109,80 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Cuenta las referencias que ya tengan al menos conteo 1 en la base de datos por medio del webservice.
+     *
+     * @throws Exception
+     */
+    private void countWebserviceConDatos() throws Exception {
+        System.out.println("//////PASÒ POR COUNT WEBSERVICE DATOS");
+        if (!NetUtils.isOnlineNet(FrmLiberarSeleccion.this)) {
+            dialogUtils.dissmissDialog();
+            throw new Exception("No hay conexión a internet");
+        } else {
+            final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    ArrayList resultsDatos = (ArrayList) object;
+                    JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmLiberarSeleccion.this).get(0);
+                    int cantidadFisicos = Integer.parseInt(rawResult.getString("computed"));
+
+                    if (resultsDatos.get(0).equals("[]")) {
+                        dialogUtils.dissmissDialog();
+                        BaseHelper.tryClose(db);
+                        Toast.makeText(FrmLiberarSeleccion.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
+                    } else if (cantidadFisicos > 0) {
+                        System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
+                        Toast.makeText(FrmLiberarSeleccion.this, "No se pueden liberar los productos. La referencias seleccionadas ya tienen registrado al menos el primer conteo en la base de datos.", Toast.LENGTH_LONG).show();
+                        dialogUtils.dissmissDialog();
+                    } else {
+                        freeWebserviceFisicosTotal();
+                    }
+                }
+            };
+            remote.setContext(FrmLiberarSeleccion.this);
+
+            ArrayList queryDatos = new ArrayList();
+
+            String query = "SELECT COUNT(*) " +
+                    "FROM referencias_fis f " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "JOIN referencias r on r.codigo=s.codigo " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND toma_1 IS NOT NULL ";
+            //"AND f.fisico<>0  ";
+
+            if (grupo != null) {
+                query += "AND r.grupo='" + grupo + "' ";
+            }
+            if (subgrupo != null) {
+                query += "AND r.subgrupo='" + subgrupo + "' ";
+            }
+            if (subgr2 != null) {
+                query += "AND r.subgrupo2='" + subgr2 + "' ";
+            }
+            if (subgr3 != null) {
+                query += "AND r.subgrupo3='" + subgr3 + "' ";
+            }
+            if (clase != null) {
+                query += "AND r.clase='" + clase + "'";
+            }
+
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
+    }
+
+    /**
+     * Libera las referencias físicas.
+     *
+     * @throws Exception
+     */
     private void freeWebserviceFisicosTotal() throws Exception {
         if (!NetUtils.isOnlineNet(FrmLiberarSeleccion.this)) {
             dialogUtils.dissmissDialog();
@@ -133,7 +210,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate())";
-                    //"AND f.fisico=1  ";
+            //"AND f.fisico=1  ";
 
             if (desdeOpciones == null) {
                 if (usuario.getCurrGrupo() != null) {
