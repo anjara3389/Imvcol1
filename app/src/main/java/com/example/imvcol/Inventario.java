@@ -110,8 +110,15 @@ public class Inventario {
         return null;
     }
 
-    public void insertProductsNotOnInventario(SQLiteDatabase db, String bodega, String fecha, String usuario, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
-        Object[][] productos = new Producto().selectProductsNotOnInventario(db, null, grupo, subgrupo, subgr2, subgr3, clase);
+    public void insertProductsNotOnInventario(SQLiteDatabase db, String bodega, String fecha, String usuario, String grupo,
+                                              String subgrupo, String subgr2, String subgr3, String clase,String ubicacion) throws Exception {
+        Object[][] productos = new Producto().selectProductsNotOnInventario(db, null,
+                grupo,
+                subgrupo,
+                subgr2,
+                subgr3,
+                clase,
+                ubicacion);
         if (productos != null) {
             for (int i = 0; i < productos.length; i++) {
                 Inventario inventario = new Inventario(fecha, bodega, productos[i][0].toString(), null, usuario, null, usuario, null, usuario);

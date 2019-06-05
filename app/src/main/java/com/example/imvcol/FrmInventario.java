@@ -767,7 +767,15 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
                     dialogUtils = new DialogUtils(this, "Cargando");
                     dialogUtils.showDialog(this.getWindow());
-                    new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(), new Date().toString(), usuario.getUsuario(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+                    new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(),
+                            new Date().toString(),
+                            usuario.getUsuario(),
+                            usuario.getCurrGrupo(),
+                            usuario.getCurrSubgr(),
+                            usuario.getCurrSubgr2(),
+                            usuario.getCurrSubgr3(),
+                            usuario.getCurrClase(),
+                            usuario.getCurrUbicacion());
                     insertResultsOnWebservice();
                     BaseHelper.tryClose(db);
                 } catch (Exception e) {

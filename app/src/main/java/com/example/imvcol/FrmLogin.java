@@ -87,7 +87,25 @@ public class FrmLogin extends AppCompatActivity {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
 
                         new Usuario().delete(db);
-                        usuario = new Usuario(txtUsuario.getText().toString(), contrasenia.getText().toString(), null, null, null, null, null, null, 1, null, false, null, null, null, null, null, null, null);
+                        usuario = new Usuario(txtUsuario.getText().toString(),
+                                contrasenia.getText().toString(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                1,
+                                null,
+                                false,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null);
                         usuario.insert(db);
                         usuario = usuario.selectUsuario(db);
 
