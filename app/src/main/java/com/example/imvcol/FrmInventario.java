@@ -172,7 +172,14 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 try {
                     if (producto.getText().toString() != "" && producto.getText().length() != 0) {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                        productos = new Producto().selectProductsByDescripcion(db, producto.getText().toString(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+                        productos = new Producto().selectProductsByDescripcion(db,
+                                producto.getText().toString(),
+                                usuario.getCurrGrupo(),
+                                usuario.getCurrSubgr(),
+                                usuario.getCurrSubgr2(),
+                                usuario.getCurrSubgr3(),
+                                usuario.getCurrClase(),
+                                usuario.getCurrUbicacion());
                         if (productos == null || productos.length == 0) {
                             throw new Exception("El producto no exíste dentro del grupo seleccionado");
                         } else {
@@ -302,7 +309,15 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void selectProductoWithNumber(int code) throws Exception {
         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-        selectedProduct = new Producto().selectProductByNumber(db, numero.getText().toString(), code, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        selectedProduct = new Producto().selectProductByNumber(db,
+                numero.getText().toString(),
+                code,
+                usuario.getCurrGrupo(),
+                usuario.getCurrSubgr(),
+                usuario.getCurrSubgr2(),
+                usuario.getCurrSubgr3(),
+                usuario.getCurrClase(),
+                usuario.getCurrUbicacion());
         BaseHelper.tryClose(db);
         if (selectedProduct == null) {
             throw new Exception("El producto no exíste dentro del grupo seleccionado");
@@ -316,7 +331,14 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void prepareFaltantesSpinner() throws Exception {
         final SQLiteDatabase db = BaseHelper.getReadable(this);
-        wholeFaltantes = new Producto().selectProductsNotOnInventario(db, usuario.getCurrConteo(), usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        wholeFaltantes = new Producto().selectProductsNotOnInventario(db,
+                usuario.getCurrConteo(),
+                usuario.getCurrGrupo(),
+                usuario.getCurrSubgr(),
+                usuario.getCurrSubgr2(),
+                usuario.getCurrSubgr3(),
+                usuario.getCurrClase(),
+                usuario.getCurrUbicacion());
         if (wholeFaltantes == null) {
             wholeFaltantes = new Object[1][2];
             wholeFaltantes[0][0] = "-1";
@@ -366,7 +388,15 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         try {
                             if (mapFaltantes.get(spnFaltantes.getSelectedItemPosition()) != "-1") {
                                 SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-                                selectedProduct = new Producto().selectProductByNumber(db, mapFaltantes.get(spnFaltantes.getSelectedItemPosition()), 0, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+                                selectedProduct = new Producto().selectProductByNumber(db,
+                                        mapFaltantes.get(spnFaltantes.getSelectedItemPosition()),
+                                        0,
+                                        usuario.getCurrGrupo(),
+                                        usuario.getCurrSubgr(),
+                                        usuario.getCurrSubgr2(),
+                                        usuario.getCurrSubgr3(),
+                                        usuario.getCurrClase(),
+                                        usuario.getCurrUbicacion());
                                 //producto.setText(selectedProduct[1].toString());
                                 //numero.setText(selectedProduct[0].toString());
                                 BaseHelper.tryClose(db);
@@ -959,21 +989,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     "FROM referencias_fis rf " +
                     "JOIN referencias r on r.codigo=rf.codigo " +
                     "WHERE bodega='" + usuario.getCurrBodega() + "' ";
-            if (usuario.getCurrGrupo() != null) {
-                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-            }
-            if (usuario.getCurrSubgr() != null) {
-                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-            }
-            if (usuario.getCurrSubgr2() != null) {
-                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-            }
-            if (usuario.getCurrSubgr3() != null) {
-                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-            }
-            if (usuario.getCurrClase() != null) {
-                query += "AND r.clase='" + usuario.getCurrClase() + "'";
-            }
+            query += usuario.getFilterQueryForWebservice();
 
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
@@ -995,30 +1011,16 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             };
             ArrayList queryDatos = new ArrayList();
             remote.setContext(this);
-            String query = "UPDATE F SET fisico=0 " +
-                    "FROM referencias_fis F " +
-                    "JOIN referencias r on r.codigo=F.codigo " +
+            String query = "UPDATE f SET fisico=0 " +
+                    "FROM referencias_fis f " +
+                    "JOIN referencias r on r.codigo=f.codigo " +
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                    "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate()) " +
                     "AND f.fisico=1  ";
 
-            if (usuario.getCurrGrupo() != null) {
-                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-            }
-            if (usuario.getCurrSubgr() != null) {
-                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-            }
-            if (usuario.getCurrSubgr2() != null) {
-                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-            }
-            if (usuario.getCurrSubgr3() != null) {
-                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-            }
-            if (usuario.getCurrClase() != null) {
-                query += "AND r.clase='" + usuario.getCurrClase() + "'";
-            }
+            query += usuario.getFilterQueryForWebservice();
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
             remote.setQuery(queryDatos);
@@ -1082,28 +1084,14 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             ArrayList queryDatos = new ArrayList();
 
             String query = "SELECT fisico " +
-                    "FROM referencias_fis F " +
-                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "FROM referencias_fis f " +
+                    "JOIN referencias r on r.codigo=f.codigo " +
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                    "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate()) ";
 
-            if (usuario.getCurrGrupo() != null) {
-                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-            }
-            if (usuario.getCurrSubgr() != null) {
-                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-            }
-            if (usuario.getCurrSubgr2() != null) {
-                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-            }
-            if (usuario.getCurrSubgr3() != null) {
-                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-            }
-            if (usuario.getCurrClase() != null) {
-                query += "AND r.clase='" + usuario.getCurrClase() + "'";
-            }
+            query += usuario.getFilterQueryForWebservice();
 
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);

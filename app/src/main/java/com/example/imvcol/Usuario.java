@@ -14,6 +14,7 @@ public class Usuario {
     private String currSubgr2;
     private String currSubgr3;
     private String currClase;
+    private String currUbicacion;
     private int currConteo;
     private Integer modo;
     private Boolean datosEnviados;
@@ -40,6 +41,7 @@ public class Usuario {
                    String currSubgr2,
                    String currSubgr3,
                    String currClase,
+                   String currUbicacion,
                    Integer currConteo,
                    Integer modo,
                    Boolean datosEnviados,
@@ -58,6 +60,7 @@ public class Usuario {
         this.currSubgr2 = currSubgr2;
         this.currSubgr3 = currSubgr3;
         this.currClase = currClase;
+        this.currUbicacion = currUbicacion;
         this.currConteo = currConteo;
         this.modo = modo;
         this.datosEnviados = datosEnviados;
@@ -80,6 +83,7 @@ public class Usuario {
         c.put("curr_subgr2", currSubgr2);
         c.put("curr_subgr3", currSubgr3);
         c.put("curr_clase", currClase);
+        c.put("curr_ubicacion", currUbicacion);
         c.put("curr_conteo", currConteo);
         c.put("modo", modo);
         c.put("datos_enviados", datosEnviados);
@@ -101,6 +105,7 @@ public class Usuario {
         c.put("curr_subgr2", currSubgr2);
         c.put("curr_subgr3", currSubgr3);
         c.put("curr_clase", currClase);
+        c.put("curr_ubicacion", currUbicacion);
         c.put("curr_conteo", currConteo);
         c.put("modo", modo);
         c.put("datos_enviados", datosEnviados);
@@ -137,28 +142,55 @@ public class Usuario {
 
         Object[] rawUsuario = sq.getRecord(db);
         if (rawUsuario != null && rawUsuario.length > 0) {
-            return new Usuario(rawUsuario[0].toString(),
-                    rawUsuario[1].toString(),
-                    rawUsuario[2] != null ? rawUsuario[2].toString() : null,
-                    rawUsuario[3] != null ? rawUsuario[3].toString() : null,
-                    rawUsuario[4] != null ? rawUsuario[4].toString() : null,
-                    rawUsuario[5] != null ? rawUsuario[5].toString() : null,
-                    rawUsuario[6] != null ? rawUsuario[6].toString() : null,
-                    rawUsuario[7] != null ? rawUsuario[7].toString() : null,
-                    rawUsuario[8] != null ? Integer.parseInt(rawUsuario[8].toString()) : null,
-                    rawUsuario[9] != null ? Integer.parseInt(rawUsuario[9].toString()) : null,
-                    rawUsuario[10] != null ? (Integer.parseInt(rawUsuario[10].toString()) == 0 ? false : true) : null,
-                    rawUsuario[11] != null ? Integer.parseInt(rawUsuario[11].toString()) : null,
-                    rawUsuario[12] != null ? Integer.parseInt(rawUsuario[12].toString()) : null,
-                    rawUsuario[13] != null ? Integer.parseInt(rawUsuario[13].toString()) : null,
-                    rawUsuario[14] != null ? Integer.parseInt(rawUsuario[14].toString()) : null,
-                    rawUsuario[15] != null ? Integer.parseInt(rawUsuario[15].toString()) : null,
-                    rawUsuario[16] != null ? Integer.parseInt(rawUsuario[16].toString()) : null,
-                    rawUsuario[17] != null ? Integer.parseInt(rawUsuario[17].toString()) : null);
+            return new Usuario(rawUsuario[0].toString(),//usuario
+                    rawUsuario[1].toString(),//clave
+                    rawUsuario[2] != null ? rawUsuario[2].toString() : null,//bodega
+                    rawUsuario[3] != null ? rawUsuario[3].toString() : null,//grupo
+                    rawUsuario[4] != null ? rawUsuario[4].toString() : null,//subr
+                    rawUsuario[5] != null ? rawUsuario[5].toString() : null,//subr2
+                    rawUsuario[6] != null ? rawUsuario[6].toString() : null,//subr3
+                    rawUsuario[7] != null ? rawUsuario[7].toString() : null,//clase
+                    rawUsuario[8] != null ? rawUsuario[8].toString() : null,//ubicacion
+                    rawUsuario[9] != null ? Integer.parseInt(rawUsuario[9].toString()) : null,//currConteo
+                    rawUsuario[10] != null ? Integer.parseInt(rawUsuario[10].toString()) : null,//modo
+                    rawUsuario[11] != null ? (Integer.parseInt(rawUsuario[11].toString()) == 0 ? false : true) : null,//datos enviados
+                    rawUsuario[12] != null ? Integer.parseInt(rawUsuario[12].toString()) : null,//nProductos
+                    rawUsuario[13] != null ? Integer.parseInt(rawUsuario[13].toString()) : null,//nBodegas
+                    rawUsuario[14] != null ? Integer.parseInt(rawUsuario[14].toString()) : null,//nGrupos
+                    rawUsuario[15] != null ? Integer.parseInt(rawUsuario[15].toString()) : null,//nSubgrupos
+                    rawUsuario[16] != null ? Integer.parseInt(rawUsuario[16].toString()) : null,//nSubgrupos2
+                    rawUsuario[17] != null ? Integer.parseInt(rawUsuario[17].toString()) : null,//nSubgrupos3
+                    rawUsuario[18] != null ? Integer.parseInt(rawUsuario[18].toString()) : null);//Nclases
         } else {
             return null;
         }
     }
+
+    public String getFilterQueryForWebservice() {
+
+        String complement = "";
+        if (getCurrGrupo() != null) {
+            complement += "AND r.grupo='" + getCurrGrupo() + "' ";
+        }
+        if (getCurrSubgr() != null) {
+            complement += "AND r.subgrupo='" + getCurrSubgr() + "' ";
+        }
+        if (getCurrSubgr2() != null) {
+            complement += "AND r.subgrupo2='" + getCurrSubgr2() + "' ";
+        }
+        if (getCurrSubgr3() != null) {
+            complement += "AND r.subgrupo3='" + getCurrSubgr3() + "' ";
+        }
+        if (getCurrClase() != null) {
+            complement += "AND r.clase='" + getCurrClase() + "' ";
+        }
+        if (getCurrUbicacion() != null) {
+            complement += "AND f.ubicacion='" + getCurrUbicacion() + "' ";
+        }
+
+        return complement;
+    }
+
 
     public String getUsuario() {
         return usuario;
@@ -222,6 +254,14 @@ public class Usuario {
 
     public void setCurrClase(String currClase) {
         this.currClase = currClase;
+    }
+
+    public String getCurrUbicacion() {
+        return currUbicacion;
+    }
+
+    public void setCurrUbicacion(String currUbicacion) {
+        this.currUbicacion = currUbicacion;
     }
 
     public int getCurrConteo() {

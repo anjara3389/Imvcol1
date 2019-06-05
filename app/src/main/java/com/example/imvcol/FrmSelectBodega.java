@@ -405,7 +405,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
                     "AND F.fisico=0");
 
-            String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase " +
+            String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase,F.ubicacion " +
                     "FROM referencias_fis F " +
                     "JOIN referencias r on r.codigo=F.codigo " +
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
@@ -450,7 +450,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     rawProducto.getString("subgrupo2"),
                     rawProducto.getString("subgrupo3"),
                     rawProducto.getString("clase"),
-                    false);
+                    false,
+                    rawProducto.getString("ubicacion"));
             producto.insert(db);
         }
         BaseHelper.tryClose(db);

@@ -33,6 +33,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
     private String subgr2;
     private String subgr3;
     private String clase;
+    private String ubicacion;
     private String desdeOpciones;
 
     @Override
@@ -49,6 +50,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                 subgr2 = bundle.get("subgr2") != null ? bundle.getString("subgr2") : null;
                 subgr3 = bundle.get("subgr3") != null ? bundle.getString("subgr3") : null;
                 clase = bundle.get("clase") != null ? bundle.getString("clase") : null;
+                ubicacion = bundle.get("ubicacion") != null ? bundle.getString("ubicacion") : null;
                 desdeOpciones = bundle.get("desdeOpciones") != null ? bundle.getString("desdeOpciones") : null;
 
                 System.out.println("//////grupo" + grupo);
@@ -56,6 +58,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                 System.out.println("//////subgr2" + subgr2);
                 System.out.println("//////subgr3" + subgr3);
                 System.out.println("//////clase" + clase);
+                System.out.println("//////ubicacion" + ubicacion);
                 System.out.println("//////desdeOpciones" + desdeOpciones);
 
             }
@@ -170,6 +173,9 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
             if (clase != null) {
                 query += "AND r.clase='" + clase + "'";
             }
+            if (usuario.getCurrUbicacion() != null) {
+                query += "AND f.ubicacion='" + usuario.getCurrUbicacion() + "'";
+            }
 
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
@@ -196,7 +202,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
             };
             ArrayList queryDatos = new ArrayList();
             remote.setContext(this);
-            String query = "UPDATE F SET fisico=0, " +
+            String query = "UPDATE f SET fisico=0, " +
                     "toma_1=NULL, " +
                     "toma_2=NULL, " +
                     "toma_3=NULL, " +
@@ -204,30 +210,16 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     "usu_toma_2=NULL, " +
                     "usu_toma_3=NULL, " +
                     "fecha_ultima=NULL " +
-                    "FROM referencias_fis F " +
-                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "FROM referencias_fis f " +
+                    "JOIN referencias r on r.codigo=f.codigo " +
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                    "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate())";
             //"AND f.fisico=1  ";
 
             if (desdeOpciones == null) {
-                if (usuario.getCurrGrupo() != null) {
-                    query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-                }
-                if (usuario.getCurrSubgr() != null) {
-                    query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-                }
-                if (usuario.getCurrSubgr2() != null) {
-                    query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-                }
-                if (usuario.getCurrSubgr3() != null) {
-                    query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-                }
-                if (usuario.getCurrClase() != null) {
-                    query += "AND r.clase='" + usuario.getCurrClase() + "'";
-                }
+                query += usuario.getFilterQueryForWebservice();
             } else {
                 if (grupo != null) {
                     query += "AND r.grupo='" + grupo + "' ";
@@ -243,6 +235,9 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                 }
                 if (clase != null) {
                     query += "AND r.clase='" + clase + "'";
+                }
+                if (ubicacion != null) {
+                    query += "AND r.ubicacion='" + ubicacion + "'";
                 }
             }
             queryDatos.add(query);
@@ -324,29 +319,16 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     "usu_toma_2, " +
                     "usu_toma_3, " +
                     "fecha_ultima " +
-                    "FROM referencias_fis F " +
-                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "FROM referencias_fis f " +
+                    "JOIN referencias r on r.codigo=f.codigo " +
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                    "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate()) ";
 
             if (desdeOpciones == null) {
-                if (usuario.getCurrGrupo() != null) {
-                    query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-                }
-                if (usuario.getCurrSubgr() != null) {
-                    query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-                }
-                if (usuario.getCurrSubgr2() != null) {
-                    query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-                }
-                if (usuario.getCurrSubgr3() != null) {
-                    query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-                }
-                if (usuario.getCurrClase() != null) {
-                    query += "AND r.clase='" + usuario.getCurrClase() + "'";
-                }
+                query += usuario.getFilterQueryForWebservice();
+
             } else {
                 if (grupo != null) {
                     query += "AND r.grupo='" + grupo + "' ";
@@ -362,6 +344,9 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                 }
                 if (clase != null) {
                     query += "AND r.clase='" + clase + "'";
+                }
+                if (ubicacion != null) {
+                    query += "AND r.ubicacion='" + ubicacion + "'";
                 }
             }
 

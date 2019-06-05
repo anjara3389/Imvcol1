@@ -39,6 +39,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     private Spinner spnSubgrupo3;
     private Spinner spnSubgrupo2;
     private Spinner spnClase;
+    private Spinner spnUbicacion;
     private TextView lblSubgrupo2;
     private TextView lblSubgrupo3;
     private TextView lblClase;
@@ -69,6 +70,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             spnSubgrupo = findViewById(R.id.frm_opciones_spn_subgrupo);
             spnSubgrupo2 = findViewById(R.id.frm_opciones_spn_subgrupo_2);
             spnSubgrupo3 = findViewById(R.id.frm_opciones_spn_subgrupo_3);
+            spnUbicacion = findViewById(R.id.frm_opciones_spn_ubicacion);
             spnClase = findViewById(R.id.frm_opciones_spn_clase);
             lblClase = findViewById(R.id.frm_opciones_lbl_clase_);
             lblSubgrupo2 = findViewById(R.id.frm_opciones_lbl_subgrupo_2);
@@ -102,6 +104,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             if (wholeGrupos != null && (wholeSubgrupos != null || usuario.getModo() == usuario.MODO_BARRAS)) {
                 if (usuario.getModo() == usuario.MODO_LISTA) {
                     prepareClases();
+                    prepareUbicaciones();
                 }
                 prepareGrupos();
             }
@@ -379,6 +382,18 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         spnClase.setAdapter(adapterClases);
     }
 
+    private void prepareUbicaciones() throws Exception {
+        //rawUbicaciones = ArrayUtils.mapObjects(wholeUbicaciones);
+        //String[] dataSpnClases = (String[]) rawUbicaciones.get(0);
+        SQLiteDatabase bd = BaseHelper.getReadable(this);
+        String[] dataSpnUbicaciones = new Producto().selectUbicaciones(bd);
+
+
+        ArrayAdapter<String> adapterClases = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnUbicaciones);
+        adapterClases.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnClase.setAdapter(adapterClases);
+    }
+
     private void countWebserviceFisicos(final View v) throws Exception {
         if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
             dialogUtils.dissmissDialog();
@@ -418,21 +433,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     "AND s.mes=MONTH(getdate()) " +
                     "AND f.fisico<>0  ";
 
-            if (usuario.getCurrGrupo() != null) {
-                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-            }
-            if (usuario.getCurrSubgr() != null) {
-                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-            }
-            if (usuario.getCurrSubgr2() != null) {
-                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-            }
-            if (usuario.getCurrSubgr3() != null) {
-                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-            }
-            if (usuario.getCurrClase() != null) {
-                query += "AND r.clase='" + usuario.getCurrClase() + "'";
-            }
+            query += usuario.getFilterQueryForWebservice();
 
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
@@ -463,21 +464,8 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     "AND s.mes=MONTH(getdate()) " +
                     "AND f.fisico=0  ";
 
-            if (usuario.getCurrGrupo() != null) {
-                query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-            }
-            if (usuario.getCurrSubgr() != null) {
-                query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-            }
-            if (usuario.getCurrSubgr2() != null) {
-                query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-            }
-            if (usuario.getCurrSubgr3() != null) {
-                query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-            }
-            if (usuario.getCurrClase() != null) {
-                query += "AND r.clase='" + usuario.getCurrClase() + "'";
-            }
+            query += usuario.getFilterQueryForWebservice();
+
             queryDatos.add(query);
             System.out.println("QUERYYYYYY///" + query);
             remote.setQuery(queryDatos);
@@ -527,28 +515,14 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         ArrayList queryDatos = new ArrayList();
 
         String query = "SELECT fisico " +
-                "FROM referencias_fis F " +
-                "JOIN referencias r on r.codigo=F.codigo " +
+                "FROM referencias_fis f " +
+                "JOIN referencias r on r.codigo=f.codigo " +
                 "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
-                "WHERE F.bodega='" + usuario.getCurrBodega() + "' " +
+                "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
                 "AND s.ano=YEAR(getdate()) " +
                 "AND s.mes=MONTH(getdate()) ";
 
-        if (usuario.getCurrGrupo() != null) {
-            query += "AND r.grupo='" + usuario.getCurrGrupo() + "' ";
-        }
-        if (usuario.getCurrSubgr() != null) {
-            query += "AND r.subgrupo='" + usuario.getCurrSubgr() + "' ";
-        }
-        if (usuario.getCurrSubgr2() != null) {
-            query += "AND r.subgrupo2='" + usuario.getCurrSubgr2() + "' ";
-        }
-        if (usuario.getCurrSubgr3() != null) {
-            query += "AND r.subgrupo3='" + usuario.getCurrSubgr3() + "' ";
-        }
-        if (usuario.getCurrClase() != null) {
-            query += "AND r.clase='" + usuario.getCurrClase() + "'";
-        }
+        query += usuario.getFilterQueryForWebservice();
 
         queryDatos.add(query);
         System.out.println("QUERYYYYYY///" + query);

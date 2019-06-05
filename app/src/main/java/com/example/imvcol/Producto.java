@@ -15,12 +15,13 @@ public class Producto {
     private String subgr3;
     private String clase;
     private Boolean inventareado;
+    private String ubicacion;
 
     public Producto() {
 
     }
 
-    public Producto(String producto, String descripcion, String cantidad, String barras, String grupo, String subgrupo, String subgr2, String subgr3, String clase, Boolean inventareado) {
+    public Producto(String producto, String descripcion, String cantidad, String barras, String grupo, String subgrupo, String subgr2, String subgr3, String clase, Boolean inventareado, String ubicacion) {
         this.producto = producto;
         this.descripcion = descripcion;
         this.cantidad = cantidad;
@@ -31,6 +32,7 @@ public class Producto {
         this.subgr3 = subgr3;
         this.clase = clase;
         this.inventareado = inventareado;
+        this.ubicacion = ubicacion;
 
     }
 
@@ -46,6 +48,7 @@ public class Producto {
         c.put("subgr3", subgr3);
         c.put("clase", clase);
         c.put("inventareado", inventareado);
+        c.put("ubicacion", ubicacion);
         return c;
     }
 
@@ -54,12 +57,12 @@ public class Producto {
     }
 
     public Object[][] selectProductos(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT producto,descripcion,cantidad,barras,grupo,subgrupo,subgr2,subgr3,clase,inventareado " +
+        SQLiteQuery sq = new SQLiteQuery("SELECT producto,descripcion,cantidad,barras,grupo,subgrupo,subgr2,subgr3,clase,inventareado,ubicacion" +
                 "FROM producto");
         return sq.getRecords(db);
     }
 
-    public Object[] selectProductByNumber(SQLiteDatabase db, String numero, int option, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
+    public Object[] selectProductByNumber(SQLiteDatabase db, String numero, int option, String grupo, String subgrupo, String subgr2, String subgr3, String clase, String ubicacion) throws Exception {
         String query = "SELECT * " +
                 "FROM producto " +
                 "WHERE ";
@@ -84,6 +87,9 @@ public class Producto {
         if (clase != null) {
             query += "AND clase='" + clase + "' ";
         }
+        if (ubicacion != null) {
+            query += "AND ubicacion='" + ubicacion + "' ";
+        }
 
 
         System.out.println("AQUIIII QUERY " + query);
@@ -92,7 +98,7 @@ public class Producto {
         return sq.getRecord(db);
     }
 
-    public Object[][] selectProductsByDescripcion(SQLiteDatabase db, String descripcion, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
+    public Object[][] selectProductsByDescripcion(SQLiteDatabase db, String descripcion, String grupo, String subgrupo, String subgr2, String subgr3, String clase, String ubicacion) throws Exception {
         String query = "SELECT * " +
                 "FROM producto " +
                 "WHERE ";
@@ -114,6 +120,9 @@ public class Producto {
         if (clase != null) {
             query += "AND clase='" + clase + "' ";
         }
+        if (ubicacion != null) {
+            query += "AND ubicacion='" + ubicacion + "' ";
+        }
 
         System.out.println("AQUIIII QUERY " + query);
 
@@ -121,12 +130,23 @@ public class Producto {
         return sq.getRecords(db);
     }
 
+    public String[] selectUbicaciones(SQLiteDatabase db) throws Exception {
+        SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT ubicacion" +
+                "FROM producto");
+        Object[][] recs = sq.getRecords(db);
+        String[] ubicaciones = new String[recs.length];
+        for (int i = 0; i < recs.length; i++) {
+            ubicaciones[i] = recs[i][0].toString();
+        }
+        return ubicaciones;
+    }
+
     public int countProductos(SQLiteDatabase db) throws Exception {
         SQLiteQuery sq = new SQLiteQuery("SELECT COUNT(*) FROM producto");
         return sq.getInteger(db);
     }
 
-    public Object[][] selectProductsNotOnInventario(SQLiteDatabase db, Integer conteo, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
+    public Object[][] selectProductsNotOnInventario(SQLiteDatabase db, Integer conteo, String grupo, String subgrupo, String subgr2, String subgr3, String clase, String ubicacion) throws Exception {
 
         String condition = conteo == null ? "" : (conteo == 1 ? "WHERE i.conteo1 IS NOT NULL " :
                 (conteo == 2 ? "WHERE i.conteo2 IS NOT NULL OR i.conteo1=p.cantidad  " :
@@ -148,6 +168,9 @@ public class Producto {
         if (clase != null) {
             secCondition += "AND p.clase='" + clase + "' ";
         }
+        if (ubicacion != null) {
+            secCondition += "AND p.ubicacion='" + ubicacion + "' ";
+        }
 
         String query = "SELECT p.producto,p.descripcion " +
                 "FROM producto p " +
@@ -168,7 +191,7 @@ public class Producto {
     public void updateProductosOnInventario(SQLiteDatabase db) {
         String query = "UPDATE producto " +
                 "SET inventareado = 1 " +
-                "WHERE producto IN (SELECT producto FROM inventario)" ;
+                "WHERE producto IN (SELECT producto FROM inventario)";
 
         db.execSQL(query);
     }
@@ -176,5 +199,4 @@ public class Producto {
     public void delete(SQLiteDatabase db) {
         db.execSQL("DELETE FROM producto");
     }
-
 }
