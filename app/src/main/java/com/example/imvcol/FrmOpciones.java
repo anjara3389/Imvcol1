@@ -553,7 +553,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         System.out.println("DATOS ENVIADOSSSSS///" + cantTotal);
                         System.out.println("DATOS ENVIADOSSSSS///" + porcentaje);
 
-                        lblPorcentaje.setText("Porcentaje inventario: " + porcentStr + "%");
+                        lblPorcentaje.setText("Porcentaje:     " + porcentStr + "%");
                     }
                 }
             };

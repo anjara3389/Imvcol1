@@ -999,9 +999,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
             ArrayList queryDatos = new ArrayList();
 
-            String query = "SELECT rf.codigo,rf.toma_1,rf.usu_toma_1,rf.toma_2,rf.usu_toma_2,rf.toma_3,rf.usu_toma_3,rf.fecha_ultima " +
-                    "FROM referencias_fis rf " +
-                    "JOIN referencias r on r.codigo=rf.codigo " +
+            String query = "SELECT f.codigo,f.toma_1,f.usu_toma_1,f.toma_2,f.usu_toma_2,f.toma_3,f.usu_toma_3,f.fecha_ultima " +
+                    "FROM referencias_fis f " +
+                    "JOIN referencias r on r.codigo=f.codigo " +
                     "WHERE bodega='" + usuario.getCurrBodega() + "' ";
             query += usuario.getFilterQueryForWebservice();
 
