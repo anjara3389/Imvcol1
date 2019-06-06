@@ -50,6 +50,7 @@ import java.util.HashMap;
 public class FrmInventario extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
     private EditText producto, numero, cantidad;
+    private TextView info;
     private Button btnCargar, btnAceptar, btnCancelar;
     private RadioButton rbCodigo;
     private RadioButton rbLectura;
@@ -88,6 +89,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             rbLectura = findViewById(R.id.frm_inventario_rbtn_lectura);
             spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
             card = findViewById(R.id.frm_inventario_card);
+            info = findViewById(R.id.frm_inventario_lbl_info);
 
 
             listaProductos = findViewById(R.id.frm_inventario_lst);
@@ -142,6 +144,10 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             disableEnableCantidad(false);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
+
+            info.setText("Bod: " + usuario.getCurrBodega() + "/ Gr: " + usuario.getCurrGrupo() + "/ Subgr: " + usuario.getCurrSubgr() +
+                    "/ Subg2: " + usuario.getCurrSubgr2() + "/ Subg3: " + usuario.getCurrSubgr3() + "/ Clase: " + usuario.getCurrClase() +
+                    "/ Ubicac: " + usuario.getCurrUbicacion());
 
             if (usuario.getModo() == usuario.MODO_BARRAS) {
                 spnFaltantes.setVisibility(View.GONE);

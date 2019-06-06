@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".FrmInventario">
 
+    <TextView
+        android:id="@+id/frm_inventario_lbl_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp" />
+
     <ListView
         android:id="@+id/frm_inventario_lst"
         android:layout_width="match_parent"

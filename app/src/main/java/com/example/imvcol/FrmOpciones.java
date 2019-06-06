@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,26 +35,15 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
     DialogUtils dialogUtils;
 
-    private Spinner spnGrupo;
-    private Spinner spnSubgrupo;
-    private Spinner spnSubgrupo3;
-    private Spinner spnSubgrupo2;
-    private Spinner spnClase;
-    private Spinner spnUbicacion;
-    private TextView lblSubgrupo2;
-    private TextView lblSubgrupo3;
-    private TextView lblClase;
-    private TextView lblPorcentaje;
+    private Spinner spnGrupo, spnSubgrupo, spnSubgrupo3, spnSubgrupo2, spnClase, spnUbicacion;
+    private TextView lblSubgrupo2, lblSubgrupo3, lblClase, lblPorcentaje;
     private Object[][] wholeGrupos, wholeSubgrupos, wholeSubgrupos3, wholeSubgrupos2, wholeClases;
     private ArrayList rawGrupos, rawSubgrupos, rawSubgrupos3, rawSubgrupos2, rawClases;
+    private Switch swSubgrObligatorio;
     private Usuario usuario;
     private static final int FINALIZAR_INVENTARIO = 3;
     private static final int SELECCION_ANTERIOR = 0;
-    HashMap<Integer, String> mapGrupos;
-    HashMap<Integer, String> mapSubgrupos;
-    HashMap<Integer, String> mapSubgrupos2;
-    HashMap<Integer, String> mapSubgrupos3;
-    HashMap<Integer, String> mapClases;
+    HashMap<Integer, String> mapGrupos, mapSubgrupos, mapSubgrupos2, mapSubgrupos3, mapClases;
     private static final int LIBERAR_SELECCION_CONTRASENIA = 6;
 
     @Override
@@ -76,6 +66,8 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             lblSubgrupo2 = findViewById(R.id.frm_opciones_lbl_subgrupo_2);
             lblSubgrupo3 = findViewById(R.id.frm_opciones_lbl_subgrupo_3);
             lblPorcentaje = findViewById(R.id.frm_opciones_lbl_porcentaje);
+            swSubgrObligatorio = findViewById(R.id.frm_opciones_sw_subgrupo_obligatorio);
+            swSubgrObligatorio.setChecked(true);
 
             if (usuario.getModo() == usuario.MODO_BARRAS) {
                 spnSubgrupo2.setVisibility(View.GONE);
@@ -116,9 +108,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
             System.out.println("DATOS ENVIADOSSSSS" + usuario.getDatosEnviados());
 
-
             getPorcentajeOnWebService();
-
 
             btnAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -133,7 +123,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         }
                         if (changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
                             throw new Exception("Debe seleccionar un grupo");
-                        } else if (changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                        } else if (swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
                             throw new Exception("Debe seleccionar un subgrupo");
                         } else {
                             dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
@@ -145,6 +135,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                                 usuario.setCurrSubgr3(changeValue(mapSubgrupos3.get(spnSubgrupo3.getSelectedItemPosition())));
                                 usuario.setCurrClase(changeValue(mapClases.get(spnClase.getSelectedItemPosition())));
                             }
+                            usuario.setCurrUbicacion(spnUbicacion.getSelectedItem().toString());
                             countWebserviceFisicos(v);
                         }
                     } catch (Exception e) {
@@ -388,10 +379,9 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         SQLiteDatabase bd = BaseHelper.getReadable(this);
         String[] dataSpnUbicaciones = new Producto().selectUbicaciones(bd);
 
-
-        ArrayAdapter<String> adapterClases = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnUbicaciones);
-        adapterClases.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnClase.setAdapter(adapterClases);
+        ArrayAdapter<String> adapterUbicaciones = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnUbicaciones);
+        adapterUbicaciones.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnUbicacion.setAdapter(adapterUbicaciones);
     }
 
     private void countWebserviceFisicos(final View v) throws Exception {
@@ -545,10 +535,15 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmOpciones.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
-                        JSONObject rawResult = (JSONObject) ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this).get(0);
 
-                        double cantRealizados = Double.parseDouble(rawResult.getString("computed"));
-                        double cantTotal = new Producto().countProductos(db);
+                        ArrayList rawRealizados = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this);
+                        ArrayList rawTotal = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), FrmOpciones.this);
+
+
+                        //double cantRealizados = Double.parseDouble(((JSONObject) rawRealizados.get(0)).getString("computed"));
+                        double cantRealizados = Double.parseDouble(((JSONObject) rawRealizados.get(0)).getString("computed"));
+                        double cantTotal = Double.parseDouble(((JSONObject) rawTotal.get(0)).getString("computed"));
+
                         double porcentaje = (cantRealizados * 100) / cantTotal;
 
                         DecimalFormat df = new DecimalFormat("#.0");
@@ -578,9 +573,20 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
                     "AND F.fisico=1 " +
                     "AND F.usu_toma_1 IS NOT NULL  ";
+            String queryTotal = "SELECT COUNT(*) " +
+                    "FROM referencias_fis F " +
+                    "JOIN referencias r on r.codigo=F.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND F.bodega=s.bodega " +
+                    "LEFT JOIN referencias_alt a on r.codigo=a.codigo " +
+                    "WHERE s.stock<>0 " +
+                    "AND s.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) ";
 
 
             queryDatos.add(query);
+            queryDatos.add(queryTotal);
             System.out.println("QUERYYYYYY///" + query);
             remote.setQuery(queryDatos);
             remote.execute();

@@ -131,13 +131,20 @@ public class Producto {
     }
 
     public String[] selectUbicaciones(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT ubicacion" +
-                "FROM producto");
+        SQLiteQuery sq = new SQLiteQuery("SELECT DISTINCT ubicacion " +
+                "FROM producto " +
+                "WHERE ubicacion IS NOT NULL " +
+                "AND ubicacion NOT LIKE ' ' " +
+                "AND ubicacion NOT LIKE 'null'");
         Object[][] recs = sq.getRecords(db);
-        String[] ubicaciones = new String[recs.length];
-        for (int i = 0; i < recs.length; i++) {
-            ubicaciones[i] = recs[i][0].toString();
+        String[] ubicaciones = new String[recs != null ? recs.length + 1 : 1];
+        ubicaciones[0] = "Seleccione una ubicación";
+        if (recs != null) {
+            for (int i = 0; i < recs.length; i++) {
+                ubicaciones[i + 1] = recs[i][0].toString();
+            }
         }
+
         return ubicaciones;
     }
 

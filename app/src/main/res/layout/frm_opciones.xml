@@ -189,4 +189,13 @@
         android:gravity="center"
         android:text="Aceptar"
         android:textColor="#01579b" />
+
+    <Switch
+        android:id="@+id/frm_opciones_sw_subgrupo_obligatorio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="5dp"
+        android:text="Subgr " />
 </android.widget.RelativeLayout>
