@@ -57,7 +57,7 @@ public class Producto {
     }
 
     public Object[][] selectProductos(SQLiteDatabase db) throws Exception {
-        SQLiteQuery sq = new SQLiteQuery("SELECT producto,descripcion,cantidad,barras,grupo,subgrupo,subgr2,subgr3,clase,inventareado,ubicacion" +
+        SQLiteQuery sq = new SQLiteQuery("SELECT producto,descripcion,cantidad,barras,grupo,subgrupo,subgr2,subgr3,clase,ubicacion, inventareado" +
                 "FROM producto");
         return sq.getRecords(db);
     }

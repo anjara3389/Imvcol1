@@ -31,7 +31,7 @@ public class FrmInventarios extends AppCompatActivity {
         try {
             SQLiteDatabase db = BaseHelper.getReadable(this);
             Usuario usuario = new Usuario().selectUsuario(db);
-            Object[][] inventarios = new Inventario().selectInventariosTotales(db, diferencia, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+            Object[][] inventarios = new Inventario().selectInventariosTotales(db, diferencia, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase(),usuario.getCurrUbicacion());
             BaseHelper.tryClose(db);
 
             if (inventarios == null) {

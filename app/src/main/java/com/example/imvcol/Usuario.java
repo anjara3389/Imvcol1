@@ -343,4 +343,5 @@ public class Usuario {
     public void setnClases(Integer nClases) {
         this.nClases = nClases;
     }
+
 }

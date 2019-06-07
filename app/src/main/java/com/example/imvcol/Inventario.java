@@ -135,7 +135,7 @@ public class Inventario {
         return getInventarios(rawInventario);
     }
 
-    public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia, String grupo, String subgrupo, String subgr2, String subgr3, String clase) throws Exception {
+    public Object[][] selectInventariosTotales(SQLiteDatabase db, boolean diferencia, String grupo, String subgrupo, String subgr2, String subgr3, String clase,String ubicacion) throws Exception {
         String query = "SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
                 "FROM producto p " +
                 "LEFT JOIN inventario i on p.producto=i.producto " +
@@ -151,6 +151,9 @@ public class Inventario {
         }
         if (clase != null) {
             query += "AND clase='" + clase + "' ";
+        }
+        if (ubicacion != null) {
+            query += "AND ubicacion='" + ubicacion + "' ";
         }
         if (diferencia) {
             query += "AND " +

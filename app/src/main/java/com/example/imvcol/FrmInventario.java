@@ -459,7 +459,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 try {
                     if (usuario.getCurrConteo() != 3) {
                         SQLiteDatabase db = BaseHelper.getWritable(this);
-                        Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+                        Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(),
+                                usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase(),
+                                usuario.getCurrUbicacion());
                         boolean answ = true;
                         for (int f = 0; f < inventarios.length; f++) {
                             if ((usuario.getCurrConteo() == 1 && inventarios[f][3] == null) || (usuario.getCurrConteo() == 2 && inventarios[f][4] == null)) {
@@ -497,7 +499,12 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             case R.id.action_enviar_datos:
                 try {
                     SQLiteDatabase db = BaseHelper.getWritable(this);
-                    Object[][] inventarios = new Inventario().selectInventariosTotales(db, false, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+                    Object[][] inventarios = new Inventario().selectInventariosTotales(db, false, usuario.getCurrGrupo(),
+                            usuario.getCurrSubgr(),
+                            usuario.getCurrSubgr2(),
+                            usuario.getCurrSubgr3(),
+                            usuario.getCurrClase(),
+                            usuario.getCurrUbicacion());
 
                     boolean answ = true;
                     for (int f = 0; f < inventarios.length; f++) {
@@ -632,7 +639,8 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
         Date date = new Date();
         SQLiteDatabase db = BaseHelper.getReadable(this);
-        Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase());
+        Object[][] inventarios = new Inventario().selectInventariosTotales(db, true, usuario.getCurrGrupo(), usuario.getCurrSubgr(),
+                usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase(), usuario.getCurrUbicacion());
         BaseHelper.tryClose(db);
 
         Document document = new Document();
@@ -650,6 +658,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         }
         if (usuario.getCurrClase() != null) {
             document.add(new Paragraph("Clase " + usuario.getCurrClase()));
+        }
+        if (usuario.getCurrUbicacion() != null) {
+            document.add(new Paragraph("Ubicacion " + usuario.getCurrUbicacion()));
         }
         document.add(new Paragraph("Conteo " + usuario.getCurrConteo()));
         document.add(new Paragraph("Fecha de generación: " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date)));

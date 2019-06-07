@@ -678,7 +678,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
                 if (changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
                     throw new Exception("Debe seleccionar un grupo");
-                } else if (changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                } else if (swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
                     throw new Exception("Debe seleccionar un subgrupo");
                 } else {
                     Intent i = new Intent(FrmOpciones.this, FrmLiberarSeleccion.class);
@@ -686,8 +686,10 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     dialogUtils.showDialog(getWindow());
                     i.putExtra("grupo", changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())));
                     i.putExtra("subgrupo", changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())));
+                    i.putExtra("ubicacion", spnUbicacion.getSelectedItem().toString());
 
                     if (usuario.getModo() == usuario.MODO_LISTA) {
+
                         i.putExtra("subgr2", changeValue(mapSubgrupos2.get(spnSubgrupo2.getSelectedItemPosition())));
                         i.putExtra("subgr3", changeValue(mapSubgrupos3.get(spnSubgrupo3.getSelectedItemPosition())));
                         i.putExtra("clase", changeValue(mapClases.get(spnClase.getSelectedItemPosition())));
