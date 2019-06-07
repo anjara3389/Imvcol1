@@ -26,4 +26,7 @@
     <item
         android:id="@+id/action_habilitar_bodegas"
         android:title="Habilitar todas las bodegas"></item>
+    <item
+        android:id="@+id/action_dar_informacion"
+        android:title="Información referencia"></item>
 </menu>

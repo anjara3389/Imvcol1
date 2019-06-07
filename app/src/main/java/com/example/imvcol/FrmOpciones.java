@@ -135,7 +135,10 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                                 usuario.setCurrSubgr3(changeValue(mapSubgrupos3.get(spnSubgrupo3.getSelectedItemPosition())));
                                 usuario.setCurrClase(changeValue(mapClases.get(spnClase.getSelectedItemPosition())));
                             }
-                            usuario.setCurrUbicacion(spnUbicacion.getSelectedItem().toString());
+
+                            if (!spnUbicacion.getSelectedItem().toString().equals("Seleccione una ubicación")) {
+                                usuario.setCurrUbicacion(spnUbicacion.getSelectedItem().toString());
+                            }
                             countWebserviceFisicos(v);
                         }
                     } catch (Exception e) {
@@ -179,7 +182,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         menu.findItem(R.id.action_liberar_seleccion).setVisible(false);
         menu.findItem(R.id.action_totales).setVisible(false);
         menu.findItem(R.id.action_habilitar_bodegas).setVisible(false);
-        setTitle("INVFISCOL 3.3");
+        setTitle("INVFISCOL 4");
         return true;
     }
 
@@ -686,7 +689,10 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     dialogUtils.showDialog(getWindow());
                     i.putExtra("grupo", changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())));
                     i.putExtra("subgrupo", changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())));
-                    i.putExtra("ubicacion", spnUbicacion.getSelectedItem().toString());
+
+                    if (!spnUbicacion.getSelectedItem().toString().equals("Seleccione una ubicación")) {
+                        i.putExtra("ubicacion", spnUbicacion.getSelectedItem().toString());
+                    }
 
                     if (usuario.getModo() == usuario.MODO_LISTA) {
 

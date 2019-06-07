@@ -56,6 +56,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="180dp"
-        android:text="INVFISCOL v3.3" />
+        android:text="INVFISCOL v4" />
 
 </android.widget.RelativeLayout>
