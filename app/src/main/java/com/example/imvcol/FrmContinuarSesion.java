@@ -39,7 +39,8 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
                         if (usuario.getCurrBodega() != null
                                 && usuario.getnProductos() != null
                                 && new Producto().countProductos(db) == usuario.getnProductos()) {
-                            if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null && !usuario.getDatosEnviados()) {
+                            //if (usuario.getCurrGrupo() != null && usuario.getCurrSubgr() != null && !usuario.getDatosEnviados()) {
+                            if (usuario.getCurrGrupo() != null && !usuario.getDatosEnviados()) {
                                 Intent i = new Intent(FrmContinuarSesion.this, FrmInventario.class);
                                 startActivityForResult(i, 1);
                                 finish();

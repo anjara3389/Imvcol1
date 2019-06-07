@@ -145,9 +145,9 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
 
-            info.setText("Bod: " + usuario.getCurrBodega() + "/ Gr: " + usuario.getCurrGrupo() + "/ Subgr: " + usuario.getCurrSubgr() +
-                    "/ Subg2: " + usuario.getCurrSubgr2() + "/ Subg3: " + usuario.getCurrSubgr3() + "/ Clase: " + usuario.getCurrClase() +
-                    "/ Ubicac: " + usuario.getCurrUbicacion());
+            info.setText("Bodega: " + usuario.getCurrBodega() + "   Grupo: " + usuario.getCurrGrupo() + "   Subgrupo: " + usuario.getCurrSubgr() +
+                    "   Subgrupo2: " + usuario.getCurrSubgr2() + "   Subgrupo3: " + usuario.getCurrSubgr3() + "   Clase: " + usuario.getCurrClase() +
+                    "   Ubicación: " + usuario.getCurrUbicacion());
 
             if (usuario.getModo() == usuario.MODO_BARRAS) {
                 spnFaltantes.setVisibility(View.GONE);
