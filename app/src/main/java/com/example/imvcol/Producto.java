@@ -135,7 +135,8 @@ public class Producto {
                 "FROM producto " +
                 "WHERE ubicacion IS NOT NULL " +
                 "AND ubicacion NOT LIKE ' ' " +
-                "AND ubicacion NOT LIKE 'null'");
+                "AND ubicacion NOT LIKE 'null'" +
+                "AND (inventareado<>1 OR inventareado is NULL)");
         Object[][] recs = sq.getRecords(db);
         String[] ubicaciones = new String[recs != null ? recs.length + 1 : 1];
         ubicaciones[0] = "Seleccione una ubicación";
