@@ -211,8 +211,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 dia3.show(getSupportFragmentManager(), "MyDialog");
                 break;
             case R.id.action_dar_informacion:
-                Intent rl = new Intent(this, FrmInventarios.class);
-                rl.putExtra("diferencia", false);
+                Intent rl = new Intent(this,  FrmGetInfoCodigo.class);
                 startActivityForResult(rl, 1);
                 break;
             default:

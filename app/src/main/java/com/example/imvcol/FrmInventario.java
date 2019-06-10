@@ -145,9 +145,13 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
 
-            info.setText("Bodega: " + usuario.getCurrBodega() + "   Grupo: " + usuario.getCurrGrupo() + "   Subgrupo: " + usuario.getCurrSubgr() +
-                    "   Subgrupo2: " + usuario.getCurrSubgr2() + "   Subgrupo3: " + usuario.getCurrSubgr3() + "   Clase: " + usuario.getCurrClase() +
-                    "   Ubicación: " + usuario.getCurrUbicacion());
+            info.setText("Bodega: " + (usuario.getCurrBodega() == null ? "n/a" : usuario.getCurrBodega()) +
+                    "   Grupo: " + (usuario.getCurrGrupo() == null ? "n/a" : usuario.getCurrGrupo()) +
+                    "   Subgrupo: " + (usuario.getCurrSubgr() == null ? "n/a" : usuario.getCurrSubgr()) +
+                    "   Subgrupo2: " + (usuario.getCurrSubgr2() == null ? "n/a" : usuario.getCurrSubgr2()) +
+                    "   Subgrupo3: " + (usuario.getCurrSubgr3() == null ? "n/a" : usuario.getCurrSubgr3()) +
+                    "   Clase: " + (usuario.getCurrClase() == null ? "n/a" : usuario.getCurrClase()) +
+                    "   Ubicación: " + (usuario.getCurrUbicacion() == null ? "n/a" : usuario.getCurrUbicacion()));
 
             if (usuario.getModo() == usuario.MODO_BARRAS) {
                 spnFaltantes.setVisibility(View.GONE);
@@ -486,8 +490,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             case R.id.action_dar_informacion:
-                Intent rl = new Intent(this, FrmInventarios.class);
-                rl.putExtra("diferencia", false);
+                Intent rl = new Intent(this, FrmGetInfoCodigo.class);
                 startActivityForResult(rl, 1);
                 break;
 

@@ -15,7 +15,7 @@
         android:layout_marginRight="20dp"
         android:ems="10"
         android:hint="ingrese código de una referencia"
-        android:inputType="textPassword" />
+        android:inputType="text" />
 
     <Button
         android:id="@+id/frm_get_info_codigo_btn_info"
@@ -25,7 +25,7 @@
         android:layout_marginTop="220dp"
         android:layout_marginRight="20dp"
         android:background="#01579b"
-        android:text="Informaciòn"
+        android:text="Información"
         android:textColor="@color/cardview_light_background"
         tools:layout_editor_absoluteX="169dp"
         tools:layout_editor_absoluteY="500dp" />

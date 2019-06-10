@@ -57,7 +57,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
     }
 
     /**
-     * Retorna grupo,subgr,subgr2,subgr3,clase,ubicación del código de un producto.
+     * Consulta grupo,subgr,subgr2,subgr3,clase,ubicación del código de un producto y escribe la información en un Text View.
      */
     private void getInfoReferenciaFromWebservice() {
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -73,12 +73,12 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
                     Toast.makeText(FrmGetInfoCodigo.this, "No se han encontrado datos de ésta referencia.", Toast.LENGTH_LONG).show();
                 } else {
                     JSONObject jsonResults = ((JSONObject) rawResults.get(0));
-                    info.setText("Grupo: " + jsonResults.getString("grupo") + "\n" +
-                            "Subgrupo: " + jsonResults.getString("subgrupo") + "\n" +
-                            "Subgrupo2: " + jsonResults.getString("subgrupo2") + "\n" +
-                            "Subgrupo3: " + jsonResults.getString("subgrupo3") + "\n" +
-                            "Clase: " + jsonResults.getString("clase") + "\n" +
-                            "Ubicación: " + jsonResults.getString("ubicacion"));
+                    info.setText("Grupo: " + (jsonResults.isNull("grupo") ? "n/a" : jsonResults.getString("grupo")) + "\n" +
+                            "Subgrupo: " + (jsonResults.isNull("subgrupo") ? "n/a" : jsonResults.getString("subgrupo")) + "\n" +
+                            "Subgrupo2: " + (jsonResults.isNull("subgrupo2") ? "n/a" : jsonResults.getString("subgrupo2")) + "\n" +
+                            "Subgrupo3: " + (jsonResults.isNull("subgrupo3") ? "n/a" : jsonResults.getString("subgrupo3")) + "\n" +
+                            "Clase: " + (jsonResults.isNull("clase") ? "n/a" : jsonResults.getString("clase")) + "\n" +
+                            "Ubicación: " + (jsonResults.isNull("ubicacion") ? "n/a" : jsonResults.getString("ubicacion")));
                     dialogUtils.dissmissDialog();
                 }
             }
@@ -87,7 +87,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
 
         ArrayList queryDatos = new ArrayList();
 
-        String query = "SELECT r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase,r.ubicacion " +
+        String query = "SELECT r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase,f.ubicacion " +
                 "FROM referencias_fis f " +
                 "JOIN referencias r on r.codigo=f.codigo " +
                 "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
