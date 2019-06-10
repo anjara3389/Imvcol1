@@ -121,9 +121,9 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                             mapSubgrupos3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
                             mapClases = (HashMap<Integer, String>) rawClases.get(1);
                         }
-                        if (changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
+                        if (isEmptyUbicacion() && changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
                             throw new Exception("Debe seleccionar un grupo");
-                        } else if (swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                        } else if (isEmptyUbicacion() && swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
                             throw new Exception("Debe seleccionar un subgrupo");
                         } else {
                             dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
@@ -136,7 +136,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                                 usuario.setCurrClase(changeValue(mapClases.get(spnClase.getSelectedItemPosition())));
                             }
 
-                            if (!spnUbicacion.getSelectedItem().toString().equals("Seleccione una ubicación")) {
+                            if (!isEmptyUbicacion()) {
                                 usuario.setCurrUbicacion(spnUbicacion.getSelectedItem().toString());
                             }
                             countWebserviceFisicos(v);
@@ -161,6 +161,10 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 dialogUtils.dissmissDialog();
             }
         }
+    }
+
+    private boolean isEmptyUbicacion() {
+        return spnUbicacion.getSelectedItem().toString().equals("Seleccione una ubicación");
     }
 
     private String changeValue(Object object) {
@@ -211,7 +215,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 dia3.show(getSupportFragmentManager(), "MyDialog");
                 break;
             case R.id.action_dar_informacion:
-                Intent rl = new Intent(this,  FrmGetInfoCodigo.class);
+                Intent rl = new Intent(this, FrmGetInfoCodigo.class);
                 startActivityForResult(rl, 1);
                 break;
             default:
@@ -683,9 +687,9 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     mapSubgrupos3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
                     mapClases = (HashMap<Integer, String>) rawClases.get(1);
                 }
-                if (changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
+                if (isEmptyUbicacion()&&changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
                     throw new Exception("Debe seleccionar un grupo");
-                } else if (swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                } else if (isEmptyUbicacion()&&swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
                     throw new Exception("Debe seleccionar un subgrupo");
                 } else {
                     Intent i = new Intent(FrmOpciones.this, FrmLiberarSeleccion.class);

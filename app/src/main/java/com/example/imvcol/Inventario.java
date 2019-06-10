@@ -26,7 +26,15 @@ public class Inventario {
 
     }
 
-    public Inventario(String fecha, String bodega, String producto, Double conteo1, String usuario1, Double conteo2, String usuario2, Double conteo3, String usuario3) {
+    public Inventario(String fecha,
+                      String bodega,
+                      String producto,
+                      Double conteo1,
+                      String usuario1,
+                      Double conteo2,
+                      String usuario2,
+                      Double conteo3,
+                      String usuario3) {
         this.fecha = fecha;
         this.bodega = bodega;
         this.producto = producto;
