@@ -334,6 +334,11 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 fillBodegasSpinner(wholeBodegas, null);
                 stopLocationUpdates();
                 break;
+            case R.id.action_dar_informacion:
+                Intent rl = new Intent(this, FrmInventarios.class);
+                rl.putExtra("diferencia", false);
+                startActivityForResult(rl, 1);
+                break;
             default:
                 break;
         }

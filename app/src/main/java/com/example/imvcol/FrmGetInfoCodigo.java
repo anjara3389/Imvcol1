@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
 import org.json.JSONArray;
@@ -24,6 +25,8 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
     private TextView info;
     private Button btnInfo;
     private Usuario usuario;
+
+    private DialogUtils dialogUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,9 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
             btnInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    dialogUtils = new DialogUtils(FrmGetInfoCodigo.this, "Cargando");
+                    dialogUtils.showDialog(FrmGetInfoCodigo.this.getWindow());
+                    getInfoReferenciaFromWebservice();
 
                 }
             });
@@ -50,8 +56,8 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
 
     }
 
-    /**Retorna grupo,subgr,subgr2,subgr3,clase,ubicación del código de un producto.
-     *
+    /**
+     * Retorna grupo,subgr,subgr2,subgr3,clase,ubicación del código de un producto.
      */
     private void getInfoReferenciaFromWebservice() {
         @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -62,18 +68,18 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
 
                 ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmGetInfoCodigo.this);
                 if (resultsDatos.get(0).equals("[]")) {
-                    //dialogUtils.dissmissDialog();
+                    dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
-                    Toast.makeText(FrmGetInfoCodigo.this, "No se han encontrado datos", Toast.LENGTH_LONG).show();
+                    Toast.makeText(FrmGetInfoCodigo.this, "No se han encontrado datos de ésta referencia.", Toast.LENGTH_LONG).show();
                 } else {
-                    for (int i = 0; i < rawResults.size(); i++) {
-                        JSONObject fisico = ((JSONObject) rawResults.get(i));
-                        if (fisico.getInt("fisico") == 0) {
-                      //      validar = false;
-                        }
-                    }
-
-
+                    JSONObject jsonResults = ((JSONObject) rawResults.get(0));
+                    info.setText("Grupo: " + jsonResults.getString("grupo") + "\n" +
+                            "Subgrupo: " + jsonResults.getString("subgrupo") + "\n" +
+                            "Subgrupo2: " + jsonResults.getString("subgrupo2") + "\n" +
+                            "Subgrupo3: " + jsonResults.getString("subgrupo3") + "\n" +
+                            "Clase: " + jsonResults.getString("clase") + "\n" +
+                            "Ubicación: " + jsonResults.getString("ubicacion"));
+                    dialogUtils.dissmissDialog();
                 }
             }
         };
@@ -87,7 +93,8 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
                 "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
                 "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
                 "AND s.ano=YEAR(getdate()) " +
-                "AND s.mes=MONTH(getdate()) ";
+                "AND s.mes=MONTH(getdate()) " +
+                "AND r.codigo='" + codigo.getText() + "'";
 
         queryDatos.add(query);
         System.out.println("QUERYYYYYY///" + query);

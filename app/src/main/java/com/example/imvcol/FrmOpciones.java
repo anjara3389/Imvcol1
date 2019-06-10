@@ -210,6 +210,11 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 dia3.setInfo(FrmOpciones.this, FrmOpciones.this, "Liberar selección", "¿Está seguro de liberar selección?, perderá todos sus datos", LIBERAR_SELECCION_CONTRASENIA);
                 dia3.show(getSupportFragmentManager(), "MyDialog");
                 break;
+            case R.id.action_dar_informacion:
+                Intent rl = new Intent(this, FrmInventarios.class);
+                rl.putExtra("diferencia", false);
+                startActivityForResult(rl, 1);
+                break;
             default:
                 break;
         }

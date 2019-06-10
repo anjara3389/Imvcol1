@@ -485,6 +485,11 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     e.printStackTrace();
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
+            case R.id.action_dar_informacion:
+                Intent rl = new Intent(this, FrmInventarios.class);
+                rl.putExtra("diferencia", false);
+                startActivityForResult(rl, 1);
+                break;
 
 
 
