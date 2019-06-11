@@ -3,14 +3,18 @@ package com.example.imvcol;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.imvcol.Email.GMailSender;
+import com.example.imvcol.Email.SendEmailAsyncTask;
 import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
@@ -28,6 +32,7 @@ import java.util.concurrent.CancellationException;
 public class FrmLogin extends AppCompatActivity {
 
     private EditText txtUsuario, contrasenia;
+    private TextView olvidoContrasenia;
     private Button btnIngresar;
     private DialogUtils dialogUtils;
     private Usuario usuario;
@@ -43,6 +48,7 @@ public class FrmLogin extends AppCompatActivity {
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
         dialogUtils = new DialogUtils(this, "Cargando");
+        olvidoContrasenia = findViewById(R.id.frm_login_lbl_olvido_clave);
 
 
         btnIngresar.setOnClickListener(new View.OnClickListener() {
@@ -61,10 +67,25 @@ public class FrmLogin extends AppCompatActivity {
             }
 
         });
+        olvidoContrasenia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    SendEmailAsyncTask emailTask = new SendEmailAsyncTask();
+                    emailTask.setContext(FrmLogin.this);
+                    emailTask.execute();
+
+                   // Toast.makeText(FrmLogin.this, "Mensaje enviado", Toast.LENGTH_LONG).show();
+
+
+            }
+        });
     }
+
 
     /**
      * Verifica el usuario a travéz del wserver en la base de datos DMS
+     *
      * @param v vista
      * @throws Exception
      */
@@ -138,7 +159,8 @@ public class FrmLogin extends AppCompatActivity {
 
     /**
      * Trae bodegas,grupos, sub1,sub2,sub3,clases y la cantidad de cada uno de ellos desde base de datos DMS.
-     * @param v View
+     *
+     * @param v  View
      * @param db Base de datos
      * @throws Exception
      */
@@ -192,7 +214,8 @@ public class FrmLogin extends AppCompatActivity {
 
     /**
      * Llena base de datos local con datos obtenidos en getDataFromWebservice
-     * @param db base de datos
+     *
+     * @param db           base de datos
      * @param resultsDatos datos obtenidos
      * @throws JSONException
      */

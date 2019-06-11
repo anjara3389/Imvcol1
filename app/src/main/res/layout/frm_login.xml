@@ -58,4 +58,13 @@
         android:layout_marginTop="180dp"
         android:text="INVFISCOL v4" />
 
+    <TextView
+        android:id="@+id/frm_login_lbl_olvido_clave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="500dp"
+        android:clickable="true"
+        android:text="¿Olvidó su clave?" />
+
 </android.widget.RelativeLayout>
