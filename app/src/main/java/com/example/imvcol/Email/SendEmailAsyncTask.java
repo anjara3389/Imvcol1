@@ -3,20 +3,25 @@ package com.example.imvcol.Email;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.example.imvcol.BuildConfig;
-
-import java.util.ArrayList;
+import com.example.imvcol.Utils.DialogUtils;
 
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
 public class SendEmailAsyncTask extends AsyncTask<Void, Void, String> {
     private static Context ctx;
+    private static Window window;
+    private DialogUtils dialogUtils;
 
-    public void setContext(Context context) {
+    public void init(Context context, Window window) {
         this.ctx = context;
+        this.window = window;
+        dialogUtils = new DialogUtils(this.ctx, "Enviando email");
+        dialogUtils.showDialog(this.window);
     }
 
     @Override
@@ -47,6 +52,7 @@ public class SendEmailAsyncTask extends AsyncTask<Void, Void, String> {
         if (result != null) {
             Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
         }
+        dialogUtils.dissmissDialog();
     }
 
 }

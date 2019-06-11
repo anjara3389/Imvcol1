@@ -70,14 +70,9 @@ public class FrmLogin extends AppCompatActivity {
         olvidoContrasenia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                    SendEmailAsyncTask emailTask = new SendEmailAsyncTask();
-                    emailTask.setContext(FrmLogin.this);
-                    emailTask.execute();
-
-                   // Toast.makeText(FrmLogin.this, "Mensaje enviado", Toast.LENGTH_LONG).show();
-
-
+                SendEmailAsyncTask emailTask = new SendEmailAsyncTask();
+                emailTask.init(FrmLogin.this, getWindow());
+                emailTask.execute();
             }
         });
     }
