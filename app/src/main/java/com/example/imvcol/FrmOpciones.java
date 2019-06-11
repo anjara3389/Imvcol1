@@ -673,6 +673,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 usuario.setCurrSubgr2(null);
                 usuario.setCurrSubgr3(null);
                 usuario.setCurrClase(null);
+                usuario.setCurrUbicacion(null);
                 SQLiteDatabase db = BaseHelper.getWritable(this);
                 usuario.updateCurrent(db);
                 BaseHelper.tryClose(db);

@@ -1095,6 +1095,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             usuario.setCurrSubgr2(null);
                             usuario.setCurrSubgr3(null);
                             usuario.setCurrClase(null);
+                            usuario.setCurrUbicacion(null);
                             usuario.setCurrConteo(1);
                             usuario.updateCurrent(db);
 
