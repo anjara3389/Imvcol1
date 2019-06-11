@@ -147,7 +147,10 @@ public class Inventario {
         String query = "SELECT p.producto,p.descripcion,p.cantidad,i.conteo1,i.conteo2,i.conteo3  " +
                 "FROM producto p " +
                 "LEFT JOIN inventario i on p.producto=i.producto " +
-                "WHERE grupo='" + grupo + "' ";
+                "WHERE 1=1 ";
+        if (grupo != null) {
+            query += "AND grupo='" + grupo + "' ";
+        }
         if (subgrupo != null) {
             query += "AND subgrupo='" + subgrupo + "' ";
         }
