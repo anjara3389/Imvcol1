@@ -15,11 +15,15 @@ import javax.mail.MessagingException;
 public class SendEmailAsyncTask extends AsyncTask<Void, Void, String> {
     private static Context ctx;
     private static Window window;
+    private static String mail;
+    private static String clave;
     private DialogUtils dialogUtils;
 
-    public void init(Context context, Window window) {
+    public void init(Context context, Window window, String mail, String clave) {
         this.ctx = context;
         this.window = window;
+        this.mail = mail;
+        this.clave = clave;
         dialogUtils = new DialogUtils(this.ctx, "Enviando email");
         dialogUtils.showDialog(this.window);
     }
@@ -30,9 +34,9 @@ public class SendEmailAsyncTask extends AsyncTask<Void, Void, String> {
         try {
             GMailSender sender = new GMailSender("anulaciones@colacteos.com", "AnulacioneS*2015");
             sender.sendMail("Su contraseña DMS/INVFISCOL",
-                    "Su contraseña es:",
-                    "anulaciones@colacteos.com",
-                    "anulaciones@colacteos.com");
+                    "Su contraseña es: " + clave,
+                    mail,
+                    mail);
             return "El mensaje ha sido enviado con éxito";
         } catch (AuthenticationFailedException e) {
             Log.e(SendEmailAsyncTask.class.getName(), "Credenciales erroneas");

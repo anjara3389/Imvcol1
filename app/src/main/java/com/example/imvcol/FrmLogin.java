@@ -70,9 +70,11 @@ public class FrmLogin extends AppCompatActivity {
         olvidoContrasenia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SendEmailAsyncTask emailTask = new SendEmailAsyncTask();
-                emailTask.init(FrmLogin.this, getWindow());
-                emailTask.execute();
+                if (!txtUsuario.getText().toString().equals("")) {
+                    getMailFromWservice();
+                } else {
+                    Toast.makeText(FrmLogin.this, "Escriba un usuario", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -150,6 +152,54 @@ public class FrmLogin extends AppCompatActivity {
             remoteQuery.setQuery(queryUsers);
             remoteQuery.execute();
         }
+    }
+
+
+    /**
+     * Consulta el email de un usuario dado a travez del webservice
+     */
+    private void getMailFromWservice() {
+        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @Override
+            public void receiveData(Object object) throws Exception {
+                SQLiteDatabase db = BaseHelper.getWritable(FrmLogin.this);
+                ArrayList resultsDatos = (ArrayList) object;
+
+                ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmLogin.this);
+                if (resultsDatos.get(0).equals("[]")) {
+                    dialogUtils.dissmissDialog();
+                    BaseHelper.tryClose(db);
+                    Toast.makeText(FrmLogin.this, "El usuario no exíste.", Toast.LENGTH_LONG).show();
+                } else {
+                    JSONObject jsonResults = ((JSONObject) rawResults.get(0));
+
+                    if (jsonResults.isNull("mail")) {
+                        Toast.makeText(FrmLogin.this, "El usuario no tiene un email registrado.", Toast.LENGTH_LONG).show();
+                    } else if (jsonResults.isNull("clave")) {
+                        Toast.makeText(FrmLogin.this, "El usuario no tiene una contraseña válida.", Toast.LENGTH_LONG).show();
+                    } else {
+                        SendEmailAsyncTask emailTask = new SendEmailAsyncTask();
+                        emailTask.init(FrmLogin.this, getWindow(), jsonResults.getString("mail"), jsonResults.getString("clave"));
+                        emailTask.execute();
+                    }
+                    dialogUtils.dissmissDialog();
+                }
+            }
+        };
+        remote.setContext(FrmLogin.this);
+
+        ArrayList queryDatos = new ArrayList();
+
+        String query = "SELECT t.mail,u.clave " +
+                "FROM USUARIOS u " +
+                "LEFT JOIN terceros t ON t.nit=u.nit " +
+                "WHERE u.usuario=UPPER('" + txtUsuario.getText() + "') " +
+                "AND u.bloqueado IS NULL";
+
+        queryDatos.add(query);
+        System.out.println("QUERYYYYYY///" + query);
+        remote.setQuery(queryDatos);
+        remote.execute();
     }
 
     /**
