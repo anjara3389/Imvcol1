@@ -38,6 +38,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
             btnInfo = findViewById(R.id.frm_get_info_codigo_btn_info);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmGetInfoCodigo.this);
             BaseHelper.tryClose(db);
 
             btnInfo.setOnClickListener(new View.OnClickListener() {

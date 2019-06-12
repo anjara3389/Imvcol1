@@ -144,6 +144,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             disableEnableCantidad(false);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmInventario.this);
 
             info.setText("Bodega: " + (usuario.getCurrBodega() == null ? "n/a" : usuario.getCurrBodega()) +
                     "   Grupo: " + (usuario.getCurrGrupo() == null ? "n/a" : usuario.getCurrGrupo()) +

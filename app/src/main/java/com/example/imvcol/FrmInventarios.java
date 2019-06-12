@@ -23,15 +23,16 @@ public class FrmInventarios extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_inventarios);
-
-        listaTotales = findViewById(R.id.frm_inventarios_list);
-        mensaje = findViewById(R.id.frm_inventarios_mensaje);
-        Bundle bundle = getIntent().getExtras();
-        boolean diferencia = bundle.getBoolean("diferencia");
         try {
+            listaTotales = findViewById(R.id.frm_inventarios_list);
+            mensaje = findViewById(R.id.frm_inventarios_mensaje);
+            Bundle bundle = getIntent().getExtras();
+            boolean diferencia = bundle.getBoolean("diferencia");
+
             SQLiteDatabase db = BaseHelper.getReadable(this);
             Usuario usuario = new Usuario().selectUsuario(db);
-            Object[][] inventarios = new Inventario().selectInventariosTotales(db, diferencia, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase(),usuario.getCurrUbicacion());
+            usuario.deleteOldSesion(FrmInventarios.this);
+            Object[][] inventarios = new Inventario().selectInventariosTotales(db, diferencia, usuario.getCurrGrupo(), usuario.getCurrSubgr(), usuario.getCurrSubgr2(), usuario.getCurrSubgr3(), usuario.getCurrClase(), usuario.getCurrUbicacion());
             BaseHelper.tryClose(db);
 
             if (inventarios == null) {

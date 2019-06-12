@@ -1,8 +1,15 @@
 package com.example.imvcol;
 
+import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Usuario {
 
@@ -195,6 +202,37 @@ public class Usuario {
         }
 
         return complement;
+    }
+
+    public void deleteSession(Context context) {
+        SQLiteDatabase db = BaseHelper.getReadable(context);
+        new Usuario().delete(db);
+        new Inventario().delete(db);
+        new Bodega().delete(db);
+        new Producto().delete(db);
+        new Grupo().delete(db);
+        new Subgrupo().delete(db);
+        new Subgrupo2().delete(db);
+        new Subgrupo3().delete(db);
+        new Clase().delete(db);
+        BaseHelper.tryClose(db);
+        Intent i = new Intent(context, FrmLogin.class);
+        ((Activity) context).startActivityForResult(i, 1);
+        ((Activity) context).finish();
+    }
+
+    public boolean deleteOldSesion(Context context) throws ParseException {
+        SimpleDateFormat dformat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date now = dformat.parse(dformat.format(new Date()));
+        Date fechaLogin = dformat.parse(this.getfecha());
+
+        if (fechaLogin.compareTo(now) != 0) {
+            deleteSession(context);
+            Toast.makeText(context, "La sesión es antigua. Debe iniciar sesión otra vez", Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return false;
     }
 
 

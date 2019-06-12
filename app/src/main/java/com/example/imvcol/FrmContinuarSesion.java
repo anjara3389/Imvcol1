@@ -27,6 +27,7 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
         try {
             final SQLiteDatabase db = BaseHelper.getReadable(FrmContinuarSesion.this);
             usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmContinuarSesion.this);
 
             btnContinuar.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -53,6 +53,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         try {
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmOpciones.this);
             BaseHelper.tryClose(db);
 
             Button btnAceptar = findViewById(R.id.frm_opciones_btn_aceptar);
@@ -688,9 +689,9 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     mapSubgrupos3 = (HashMap<Integer, String>) rawSubgrupos3.get(1);
                     mapClases = (HashMap<Integer, String>) rawClases.get(1);
                 }
-                if (isEmptyUbicacion()&&changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
+                if (isEmptyUbicacion() && changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())) == null) {
                     throw new Exception("Debe seleccionar un grupo");
-                } else if (isEmptyUbicacion()&&swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
+                } else if (isEmptyUbicacion() && swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
                     throw new Exception("Debe seleccionar un subgrupo");
                 } else {
                     Intent i = new Intent(FrmOpciones.this, FrmLiberarSeleccion.class);

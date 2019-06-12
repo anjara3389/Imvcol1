@@ -40,8 +40,11 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_liberar_seleccion);
-
         try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmLiberarSeleccion.this);
+            BaseHelper.tryClose(db);
             Bundle bundle = getIntent().getExtras();
 
             if (bundle != null) {
@@ -60,15 +63,10 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                 System.out.println("//////clase" + clase);
                 System.out.println("//////ubicacion" + ubicacion);
                 System.out.println("//////desdeOpciones" + desdeOpciones);
-
             }
 
             contrasenia = findViewById(R.id.frm_liberar_seleccion_contrasenia);
             aceptar = findViewById(R.id.frm_liberar_seleccion_btn_aceptar);
-
-            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-            usuario = new Usuario().selectUsuario(db);
-            BaseHelper.tryClose(db);
 
             aceptar.setOnClickListener(new View.OnClickListener() {
                 @Override

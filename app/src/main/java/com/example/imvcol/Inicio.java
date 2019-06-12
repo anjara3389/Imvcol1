@@ -36,32 +36,7 @@ public class Inicio extends AppCompatActivity {
                     && usuario.getnSubgrupos2() + 1 == new Subgrupo2().countSubgrupos2(db)
                     && usuario.getnSubgrupos3() + 1 == new Subgrupo3().countSubgrupos3(db)
                     && usuario.getnClases() + 1 == new Clase().countClases(db)) {
-                System.out.println("//////PASA0");
-                SimpleDateFormat dformat = new SimpleDateFormat("yyyy-MM-dd");
-
-                Date now = dformat.parse(dformat.format(new Date()));
-                System.out.println( "//////now" + now);
-                Date fechaLogin = dformat.parse(usuario.getfecha());
-                System.out.println( "//////fechaLogin" + fechaLogin);
-
-
-                if (fechaLogin.compareTo(now) != 0) {
-                    System.out.println("//////PASA1");
-                    new Usuario().delete(db);
-                    new Inventario().delete(db);
-                    new Bodega().delete(db);
-                    new Producto().delete(db);
-                    new Grupo().delete(db);
-                    new Subgrupo().delete(db);
-                    new Subgrupo2().delete(db);
-                    new Subgrupo3().delete(db);
-                    new Clase().delete(db);
-
-                    Intent i = new Intent(Inicio.this, FrmLogin.class);
-                    startActivityForResult(i, 1);
-                    Toast.makeText(Inicio.this, "La sesión es antigua. Debe iniciar sesión otra vez", Toast.LENGTH_LONG).show();
-                    finish();
-                } else {
+                if (!usuario.deleteOldSesion(Inicio.this)) {
                     System.out.println("//////PASA2");
                     Intent i = new Intent(this, FrmContinuarSesion.class);
                     startActivityForResult(i, 1);

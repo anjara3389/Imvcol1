@@ -1,6 +1,7 @@
 package com.example.imvcol;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
