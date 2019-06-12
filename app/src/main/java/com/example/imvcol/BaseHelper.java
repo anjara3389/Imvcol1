@@ -14,7 +14,7 @@ public class BaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "invfiscol";
 
-    public static final int VERSION = 18;
+    public static final int VERSION = 19;
     String bodega = "CREATE TABLE bodega(" +
             "bodega TEXT," +
             "descripcion TEXT," +
@@ -44,7 +44,8 @@ public class BaseHelper extends SQLiteOpenHelper {
             "nSubgrupos INT," +
             "nSubgrupos2 INT," +
             "nSubgrupos3 INT," +
-            "nClases INT)";
+            "nClases INT," +
+            "fecha TEXT)";
     String subgrupo = "CREATE TABLE subgrupo(" +
             "subgrupo TEXT," +
             "descripcion TEXT," +

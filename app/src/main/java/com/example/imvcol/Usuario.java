@@ -25,6 +25,7 @@ public class Usuario {
     private Integer nSubgrupos2;
     private Integer nSubgrupos3;
     private Integer nClases;
+    private String fecha;
 
     public final static int MODO_LISTA = 0;
     public final static int MODO_BARRAS = 1;
@@ -51,7 +52,8 @@ public class Usuario {
                    Integer nSubgrupos,
                    Integer nSubgrupos2,
                    Integer nSubgrupos3,
-                   Integer nClases) {
+                   Integer nClases,
+                   String fecha) {
         this.usuario = usuario;
         this.clave = clave;
         this.currBodega = currBodega;
@@ -71,6 +73,7 @@ public class Usuario {
         this.nSubgrupos2 = nSubgrupos2;
         this.nSubgrupos3 = nSubgrupos3;
         this.nClases = nClases;
+        this.fecha = fecha;
     }
 
     public ContentValues getValues() {
@@ -94,6 +97,7 @@ public class Usuario {
         c.put("nSubgrupos2", nSubgrupos2);
         c.put("nSubgrupos3", nSubgrupos3);
         c.put("nClases", nClases);
+        c.put("fecha", fecha);
         return c;
     }
 
@@ -116,6 +120,7 @@ public class Usuario {
         c.put("nSubgrupos2", nSubgrupos2);
         c.put("nSubgrupos3", nSubgrupos3);
         c.put("nClases", nClases);
+        c.put("fecha", fecha);
         return c;
     }
 
@@ -160,7 +165,8 @@ public class Usuario {
                     rawUsuario[15] != null ? Integer.parseInt(rawUsuario[15].toString()) : null,//nSubgrupos
                     rawUsuario[16] != null ? Integer.parseInt(rawUsuario[16].toString()) : null,//nSubgrupos2
                     rawUsuario[17] != null ? Integer.parseInt(rawUsuario[17].toString()) : null,//nSubgrupos3
-                    rawUsuario[18] != null ? Integer.parseInt(rawUsuario[18].toString()) : null);//Nclases
+                    rawUsuario[18] != null ? Integer.parseInt(rawUsuario[18].toString()) : null,//Nclases
+                    rawUsuario[19] != null ? rawUsuario[19].toString() : null);//fecha
         } else {
             return null;
         }
@@ -342,6 +348,14 @@ public class Usuario {
 
     public void setnClases(Integer nClases) {
         this.nClases = nClases;
+    }
+
+    public String getfecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 
 }

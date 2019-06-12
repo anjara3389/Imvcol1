@@ -25,7 +25,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.CancellationException;
 
 
@@ -105,6 +107,10 @@ public class FrmLogin extends AppCompatActivity {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
 
                         new Usuario().delete(db);
+
+                        SimpleDateFormat dformat = new SimpleDateFormat("yyyy-MM-dd");
+                        String date = dformat.format(new Date());
+
                         usuario = new Usuario(txtUsuario.getText().toString(),
                                 contrasenia.getText().toString(),
                                 null,
@@ -123,7 +129,8 @@ public class FrmLogin extends AppCompatActivity {
                                 null,
                                 null,
                                 null,
-                                null);
+                                null,
+                                date);
                         usuario.insert(db);
                         usuario = usuario.selectUsuario(db);
 
