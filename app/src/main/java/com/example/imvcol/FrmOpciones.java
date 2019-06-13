@@ -18,7 +18,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
@@ -78,9 +77,6 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 lblSubgrupo2.setVisibility(View.GONE);
                 lblSubgrupo3.setVisibility(View.GONE);
             }
-
-            //dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
-            //dialogUtils.showDialog(getWindow());
 
             db = BaseHelper.getReadable(FrmOpciones.this);
             wholeGrupos = new Grupo().selectGrupos(db);
@@ -695,8 +691,6 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     throw new Exception("Debe seleccionar un subgrupo");
                 } else {
                     Intent i = new Intent(FrmOpciones.this, FrmLiberarSeleccion.class);
-                    //dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
-                    //dialogUtils.showDialog(getWindow());
                     i.putExtra("grupo", changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())));
                     i.putExtra("subgrupo", changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())));
 

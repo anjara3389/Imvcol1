@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
 import org.json.JSONArray;
@@ -25,8 +24,6 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
     private TextView info;
     private Button btnInfo;
     private Usuario usuario;
-
-    private DialogUtils dialogUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +41,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
             btnInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dialogUtils = new DialogUtils(FrmGetInfoCodigo.this, "Cargando");
-                    dialogUtils.showDialog(FrmGetInfoCodigo.this.getWindow());
                     getInfoReferenciaFromWebservice();
-
                 }
             });
         } catch (Exception e) {
@@ -69,7 +63,6 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
 
                 ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmGetInfoCodigo.this);
                 if (resultsDatos.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
                     Toast.makeText(FrmGetInfoCodigo.this, "No se han encontrado datos de ésta referencia.", Toast.LENGTH_LONG).show();
                 } else {
@@ -80,7 +73,6 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
                             "Subgrupo3: " + (jsonResults.isNull("subgrupo3") ? "n/a" : jsonResults.getString("subgrupo3")) + "\n" +
                             "Clase: " + (jsonResults.isNull("clase") ? "n/a" : jsonResults.getString("clase")) + "\n" +
                             "Ubicación: " + (jsonResults.isNull("ubicacion") ? "n/a" : jsonResults.getString("ubicacion")));
-                    dialogUtils.dissmissDialog();
                 }
             }
         };

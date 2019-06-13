@@ -13,9 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.imvcol.Email.GMailSender;
 import com.example.imvcol.Email.SendEmailAsyncTask;
-import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
@@ -23,8 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +32,6 @@ public class FrmLogin extends AppCompatActivity {
     private EditText txtUsuario, contrasenia;
     private TextView olvidoContrasenia;
     private Button btnIngresar;
-    //private DialogUtils dialogUtils;
     private Usuario usuario;
 
     @Override
@@ -49,7 +44,6 @@ public class FrmLogin extends AppCompatActivity {
         txtUsuario = findViewById(R.id.frm_login_txt_usuario);
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
-        //dialogUtils = new DialogUtils(this, "Cargando");
         olvidoContrasenia = findViewById(R.id.frm_login_lbl_olvido_clave);
 
 
@@ -57,7 +51,6 @@ public class FrmLogin extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 try {
-                    //dialogUtils.showDialog(getWindow());
                     checkUserOnWebService(v);
                 } catch (CancellationException e) {
                     e.printStackTrace();
@@ -90,7 +83,6 @@ public class FrmLogin extends AppCompatActivity {
      */
     private void checkUserOnWebService(final View v) throws Exception {
         if (!NetUtils.isOnlineNet(FrmLogin.this)) {
-           // dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
@@ -140,7 +132,6 @@ public class FrmLogin extends AppCompatActivity {
                             Intent i = new Intent(v.getContext(), FrmSelectBodega.class);
                             startActivityForResult(i, 1);
                             BaseHelper.tryClose(db);
-                            //dialogUtils.dissmissDialog();
                             finish();
                         }
                     }

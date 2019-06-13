@@ -28,7 +28,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 import com.google.android.gms.common.api.ApiException;
@@ -173,8 +172,6 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         Toast.makeText(FrmSelectBodega.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
                     } else {
                         try {
-                            //dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
-                            //dialogUtils.showDialog(getWindow());
                             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                             currUser = new Usuario().selectUsuario(db);
                             currUser.setCurrBodega(mapBodega.get(spnBodega.getSelectedItemPosition()));

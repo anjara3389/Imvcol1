@@ -7,12 +7,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.text.Layout;
-import android.view.LayoutInflater;
-import android.view.View;
+
+
 import android.view.Window;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.DialogUtils;

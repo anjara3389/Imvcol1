@@ -6,11 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.example.imvcol.Utils.DialogUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Inicio extends AppCompatActivity {
 
     @Override

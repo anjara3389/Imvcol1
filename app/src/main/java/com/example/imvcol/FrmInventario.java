@@ -27,7 +27,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
@@ -65,7 +64,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
     private static final int LIBERAR_SELECCION_CONTRASENIA = 6;
     private Usuario usuario;
     private Inventario currentInventario;
-    private DialogUtils dialogUtils;
     private Spinner spnFaltantes;
     private HashMap<Integer, String> mapFaltantes;
     private CardView card;
@@ -790,9 +788,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             if (code == ENVIAR_DATOS && ans) {
                 try {
                     SQLiteDatabase db = BaseHelper.getWritable(this);
-
-                    dialogUtils = new DialogUtils(this, "Cargando");
-                    dialogUtils.showDialog(this.getWindow());
                     new Inventario().insertProductsNotOnInventario(db, usuario.getCurrBodega(),
                             new Date().toString(),
                             usuario.getUsuario(),
@@ -815,8 +810,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     if (new Inventario().countInventarios(db) == 0) {
                         throw new Exception("Debe liberar la selección");//CONTINUAR A
                     } else {
-                        dialogUtils = new DialogUtils(this, "Cargando");
-                        dialogUtils.showDialog(this.getWindow());
 
                         new Usuario().delete(db);
                         new Inventario().delete(db);
@@ -828,7 +821,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                         new Subgrupo3().delete(db);
                         new Clase().delete(db);
                         BaseHelper.tryClose(db);
-                        dialogUtils.dissmissDialog();
 
                         Intent i = new Intent(FrmInventario.this, FrmLogin.class);
                         startActivityForResult(i, 1);
@@ -845,9 +837,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 try {
                     SQLiteDatabase db = BaseHelper.getReadable(this);
                     if (new Inventario().countInventarios(db) == 0) {
-                        dialogUtils = new DialogUtils(this, "Cargando");
-                        dialogUtils.showDialog(this.getWindow());
-
                         freeWebserviceFisicos();
                     } else {
                         throw new Exception("No se puede liberar la selección debido a que ya tiene productos inventariados.");
@@ -862,7 +851,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 try {
                     Intent i = new Intent(FrmInventario.this, FrmLiberarSeleccion.class);
                     startActivityForResult(i, 1);
-                    dialogUtils.dissmissDialog();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -917,7 +905,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void insertResultsOnWebservice() throws Exception {
         if (!NetUtils.isOnlineNet(FrmInventario.this)) {
-            dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getWritable(this);
@@ -960,7 +947,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void checkWebserviceResults(final SQLiteDatabase db) throws Exception {
         if (!NetUtils.isOnlineNet(FrmInventario.this)) {
-            dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -970,7 +956,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
                     ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmInventario.this);
                     if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmInventario.this, "No se han podido enviar los datos, intente nuevament", Toast.LENGTH_LONG).show();
                     } else {
@@ -1002,8 +987,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             usuario.setDatosEnviados(true);
                             usuario.updateCurrent(db);
 
-                            dialogUtils.dissmissDialog();
-
                             Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
                             startActivityForResult(i, 1);
                             BaseHelper.tryClose(db);
@@ -1034,7 +1017,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void freeWebserviceFisicos() throws Exception {
         if (!NetUtils.isOnlineNet(FrmInventario.this)) {
-            dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -1064,7 +1046,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
     private void checkWebserviceFisicos() throws Exception {
         if (!NetUtils.isOnlineNet(FrmInventario.this)) {
-            dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -1075,7 +1056,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
 
                     ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmInventario.this);
                     if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmInventario.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
@@ -1104,7 +1084,6 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                             Intent i = new Intent(FrmInventario.this, FrmOpciones.class);
                             startActivityForResult(i, 1);
                             Toast.makeText(FrmInventario.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
-                            dialogUtils.dissmissDialog();
                             finish();
                             db.close();
 

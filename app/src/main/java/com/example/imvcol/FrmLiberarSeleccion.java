@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
 
@@ -26,7 +25,6 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
     private Button aceptar;
 
     private Usuario usuario;
-    private DialogUtils dialogUtils;
 
     private String grupo;
     private String subgrupo;
@@ -74,8 +72,6 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     System.out.println(contrasenia.getText());
                     if (contrasenia.getText().toString().equals("inv48")) {
                         try {
-                            dialogUtils = new DialogUtils(FrmLiberarSeleccion.this, "Cargando");
-                            dialogUtils.showDialog(FrmLiberarSeleccion.this.getWindow());
                             if (desdeOpciones == null) {
                                 FrmLiberarSeleccion.this.freeWebserviceFisicosTotal();
                             } else {
@@ -118,7 +114,6 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
     private void countWebserviceConDatos() throws Exception {
         System.out.println("//////PASÒ POR COUNT WEBSERVICE DATOS");
         if (!NetUtils.isOnlineNet(FrmLiberarSeleccion.this)) {
-            dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -130,13 +125,11 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     int cantidadFisicos = Integer.parseInt(rawResult.getString("computed"));
 
                     if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmLiberarSeleccion.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else if (cantidadFisicos > 0) {
                         System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
                         Toast.makeText(FrmLiberarSeleccion.this, "No se pueden liberar los productos. La referencias seleccionadas ya tienen registrado al menos el primer conteo en la base de datos.", Toast.LENGTH_LONG).show();
-                        dialogUtils.dissmissDialog();
                     } else {
                         freeWebserviceFisicosTotal();
                     }
@@ -189,7 +182,6 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
      */
     private void freeWebserviceFisicosTotal() throws Exception {
         if (!NetUtils.isOnlineNet(FrmLiberarSeleccion.this)) {
-            dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -247,7 +239,6 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
 
     private void checkWebserviceFisicosTotal() throws Exception {
         if (!NetUtils.isOnlineNet(FrmLiberarSeleccion.this)) {
-            dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -260,7 +251,6 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     if (resultsDatos.get(0).equals("[]")) {
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmLiberarSeleccion.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
-                        dialogUtils.dissmissDialog();
                     } else {
                         boolean validar = true;
 
@@ -295,13 +285,11 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                             Intent i = new Intent(FrmLiberarSeleccion.this, FrmOpciones.class);
                             startActivityForResult(i, 1);
                             Toast.makeText(FrmLiberarSeleccion.this, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
-                            dialogUtils.dissmissDialog();
                             finish();
                             db.close();
 
                         } else {
                             Toast.makeText(FrmLiberarSeleccion.this, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
-                            dialogUtils.dissmissDialog();
                         }
                     }
                 }
