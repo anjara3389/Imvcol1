@@ -914,7 +914,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     checkWebserviceResults(db);
                 }
             };
-            remote.init(this, this.getWindow());
+            remote.init(this, this.getWindow(),"Insertando resultados");
 
             ArrayList queryDatos = new ArrayList();
             ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
@@ -998,7 +998,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 }
             };
-            remote.init(FrmInventario.this, this.getWindow());
+            remote.init(FrmInventario.this, this.getWindow(),"Verificando resultados");
 
             ArrayList queryDatos = new ArrayList();
 
@@ -1026,7 +1026,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.init(this, this.getWindow());
+            remote.init(this, this.getWindow(),"Liberando físicos");
             String query = "UPDATE f SET fisico=0 " +
                     "FROM referencias_fis f " +
                     "JOIN referencias r on r.codigo=f.codigo " +
@@ -1093,7 +1093,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 }
             };
-            remote.init(FrmInventario.this, this.getWindow());
+            remote.init(FrmInventario.this, this.getWindow(),"Validando liberación");
 
             ArrayList queryDatos = new ArrayList();
 

@@ -392,7 +392,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     }
                 }
             };
-            remote.init(FrmSelectBodega.this, this.getWindow());
+            remote.init(FrmSelectBodega.this, this.getWindow(),"Cargando referencias");
             ArrayList queryDatos = new ArrayList();
             queryDatos.add("SELECT COUNT(*) AS COUNT " +
                     "FROM referencias_fis F " +

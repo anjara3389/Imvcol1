@@ -43,10 +43,10 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
         this.query = query;
     }
 
-    public void init(Context context, Window window) {
+    public void init(Context context, Window window, String loadingMensaje) {
         this.ctx = context;
         this.window = window;
-        dialogUtils = new DialogUtils(this.ctx, "Cargando");
+        dialogUtils = new DialogUtils(this.ctx, loadingMensaje);
         dialogUtils.showDialog(this.window);
     }
 

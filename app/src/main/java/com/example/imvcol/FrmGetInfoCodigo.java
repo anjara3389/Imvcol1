@@ -76,7 +76,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
                 }
             }
         };
-        remote.init(FrmGetInfoCodigo.this, getWindow());
+        remote.init(FrmGetInfoCodigo.this, getWindow(),"Cargando");
 
         ArrayList queryDatos = new ArrayList();
 

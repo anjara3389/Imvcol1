@@ -254,7 +254,7 @@ public class Usuario {
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.init(ctx, window);
+            remote.init(ctx, window,"Liberando selección");
             String query = "UPDATE f SET fisico=0 " +
                     "FROM referencias_fis f " +
                     "JOIN referencias r on r.codigo=f.codigo " +
@@ -325,7 +325,7 @@ public class Usuario {
                     }
                 }
             };
-            remote.init(ctx, window);
+            remote.init(ctx, window,"Liberando selecciòn");
 
             ArrayList queryDatos = new ArrayList();
 

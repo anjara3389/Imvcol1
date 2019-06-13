@@ -138,7 +138,7 @@ public class FrmLogin extends AppCompatActivity {
                 }
             };
 
-            remoteQuery.init(v.getContext(), this.getWindow());
+            remoteQuery.init(v.getContext(), this.getWindow(), "Validando usuario");
             ArrayList queryUsers = new ArrayList();
 
             queryUsers.add("SELECT * " +
@@ -180,11 +180,11 @@ public class FrmLogin extends AppCompatActivity {
                         emailTask.init(FrmLogin.this, getWindow(), jsonResults.getString("mail"), jsonResults.getString("clave"));
                         emailTask.execute();
                     }
-                   // dialogUtils.dissmissDialog();
+                    // dialogUtils.dissmissDialog();
                 }
             }
         };
-        remote.init(FrmLogin.this, this.getWindow());
+        remote.init(FrmLogin.this, this.getWindow(), "Cargando");
 
         ArrayList queryDatos = new ArrayList();
 
@@ -216,7 +216,7 @@ public class FrmLogin extends AppCompatActivity {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
-                   //dialogUtils.dissmissDialog();
+                    //dialogUtils.dissmissDialog();
                     if (resultsDatos.get(0) == null ||
                             resultsDatos.get(1) == null ||
                             resultsDatos.get(2) == null ||
@@ -228,7 +228,7 @@ public class FrmLogin extends AppCompatActivity {
                     }
                 }
             };
-            remote.init(v.getContext(), this.getWindow());
+            remote.init(v.getContext(), this.getWindow(), "Cargando");
 
             ArrayList queryDatos = new ArrayList();
             queryDatos.add("SELECT COUNT(*) AS COUNT " +

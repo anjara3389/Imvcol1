@@ -418,7 +418,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     }
                 }
             };
-            remote.init(v.getContext(), this.getWindow());
+            remote.init(v.getContext(), this.getWindow(),"Cargando");
 
             ArrayList queryDatos = new ArrayList();
 
@@ -452,7 +452,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.init(this, this.getWindow());
+            remote.init(this, this.getWindow(),"Actualizando físicos");
             String query = "UPDATE F SET fisico=1 " +
                     "FROM referencias_fis F " +
                     "JOIN referencias r on r.codigo=F.codigo " +
@@ -508,7 +508,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
             }
         };
-        remote.init(FrmOpciones.this, this.getWindow());
+        remote.init(FrmOpciones.this, this.getWindow(),"Validando físicos");
 
         ArrayList queryDatos = new ArrayList();
 
@@ -565,7 +565,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     }
                 }
             };
-            remote.init(FrmOpciones.this, this.getWindow());
+            remote.init(FrmOpciones.this, this.getWindow(),"Obteniendo porcentaje");
 
             ArrayList queryDatos = new ArrayList();
 
