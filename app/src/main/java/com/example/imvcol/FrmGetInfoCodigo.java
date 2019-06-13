@@ -38,7 +38,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
             btnInfo = findViewById(R.id.frm_get_info_codigo_btn_info);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
-            usuario.deleteOldSesion(FrmGetInfoCodigo.this);
+            usuario.deleteOldSesion(FrmGetInfoCodigo.this, usuario, this.getWindow());
             BaseHelper.tryClose(db);
 
             btnInfo.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +84,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
                 }
             }
         };
-        remote.setContext(FrmGetInfoCodigo.this);
+        remote.init(FrmGetInfoCodigo.this, getWindow());
 
         ArrayList queryDatos = new ArrayList();
 

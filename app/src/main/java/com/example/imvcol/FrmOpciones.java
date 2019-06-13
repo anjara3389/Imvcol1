@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
-    DialogUtils dialogUtils;
+    //DialogUtils dialogUtils;
 
     private Spinner spnGrupo, spnSubgrupo, spnSubgrupo3, spnSubgrupo2, spnClase, spnUbicacion;
     private TextView lblSubgrupo2, lblSubgrupo3, lblClase, lblPorcentaje;
@@ -53,7 +53,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         try {
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
-            usuario.deleteOldSesion(FrmOpciones.this);
+            usuario.deleteOldSesion(FrmOpciones.this, usuario, this.getWindow());
             BaseHelper.tryClose(db);
 
             Button btnAceptar = findViewById(R.id.frm_opciones_btn_aceptar);
@@ -127,8 +127,8 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         } else if (isEmptyUbicacion() && swSubgrObligatorio.isChecked() && changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())) == null) {
                             throw new Exception("Debe seleccionar un subgrupo");
                         } else {
-                            dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
-                            dialogUtils.showDialog(getWindow());
+                            //dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
+                            //dialogUtils.showDialog(getWindow());
                             usuario.setCurrGrupo(changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())));
                             usuario.setCurrSubgr(changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())));
                             if (usuario.getModo() == usuario.MODO_LISTA) {
@@ -152,15 +152,15 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            if (dialogUtils != null) {
-                dialogUtils.dissmissDialog();
-            }
+            //if (dialogUtils != null) {
+                //dialogUtils.dissmissDialog();
+            //}
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            if (dialogUtils != null) {
-                dialogUtils.dissmissDialog();
-            }
+           // if (dialogUtils != null) {
+            //    dialogUtils.dissmissDialog();
+            //}
         }
     }
 
@@ -398,7 +398,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
     private void countWebserviceFisicos(final View v) throws Exception {
         if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
-            dialogUtils.dissmissDialog();
+            //dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -410,19 +410,19 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     int cantidadFisicos = Integer.parseInt(rawResult.getString("computed"));
 
                     if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
+                        //dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
                         Toast.makeText(v.getContext(), "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else if (cantidadFisicos > 0) {
                         System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
                         Toast.makeText(v.getContext(), "No se pueden cargar las selecciones. Hay productos que ya han sido tomados para inventario por otra persona.", Toast.LENGTH_LONG).show();
-                        dialogUtils.dissmissDialog();
+                       // dialogUtils.dissmissDialog();
                     } else {
                         updateWebserviceFisicos();
                     }
                 }
             };
-            remote.setContext(v.getContext());
+            remote.init(v.getContext(), this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
 
@@ -446,7 +446,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
     private void updateWebserviceFisicos() throws Exception {
         if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
-            dialogUtils.dissmissDialog();
+            //dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -456,7 +456,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.setContext(this);
+            remote.init(this, this.getWindow());
             String query = "UPDATE F SET fisico=1 " +
                     "FROM referencias_fis F " +
                     "JOIN referencias r on r.codigo=F.codigo " +
@@ -484,7 +484,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
                 ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmOpciones.this);
                 if (resultsDatos.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
+                    //dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
                     Toast.makeText(FrmOpciones.this, "No se han podido seleccionar fisicos, intente nuevamente", Toast.LENGTH_LONG).show();
                 } else {
@@ -501,7 +501,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         db = BaseHelper.getWritable(FrmOpciones.this);
                         usuario.setDatosEnviados(false);
                         usuario.updateCurrent(db);
-                        dialogUtils.dissmissDialog();
+                        //dialogUtils.dissmissDialog();
                         Intent i = new Intent(FrmOpciones.this, FrmInventario.class);
                         startActivityForResult(i, 1);
                         finish();
@@ -512,7 +512,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
             }
         };
-        remote.setContext(FrmOpciones.this);
+        remote.init(FrmOpciones.this, this.getWindow());
 
         ArrayList queryDatos = new ArrayList();
 
@@ -534,7 +534,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
     private void getPorcentajeOnWebService() throws Exception {
         if (!NetUtils.isOnlineNet(FrmOpciones.this)) {
-            dialogUtils.dissmissDialog();
+            //dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -543,7 +543,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
                     if (resultsDatos.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
+              //          dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmOpciones.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
@@ -569,7 +569,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     }
                 }
             };
-            remote.setContext(FrmOpciones.this);
+            remote.init(FrmOpciones.this, this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
 
@@ -695,8 +695,8 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     throw new Exception("Debe seleccionar un subgrupo");
                 } else {
                     Intent i = new Intent(FrmOpciones.this, FrmLiberarSeleccion.class);
-                    dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
-                    dialogUtils.showDialog(getWindow());
+                    //dialogUtils = new DialogUtils(FrmOpciones.this, "Cargando");
+                    //dialogUtils.showDialog(getWindow());
                     i.putExtra("grupo", changeValue(mapGrupos.get(spnGrupo.getSelectedItemPosition())));
                     i.putExtra("subgrupo", changeValue(mapSubgrupos.get(spnSubgrupo.getSelectedItemPosition())));
 
@@ -712,7 +712,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                         i.putExtra("desdeOpciones", "desdeOpciones");
                     }
                     startActivityForResult(i, 1);
-                    dialogUtils.dissmissDialog();
+                    //dialogUtils.dissmissDialog();
                     finish();
                 }
             } catch (Exception e) {

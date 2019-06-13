@@ -36,7 +36,7 @@ public class FrmLogin extends AppCompatActivity {
     private EditText txtUsuario, contrasenia;
     private TextView olvidoContrasenia;
     private Button btnIngresar;
-    private DialogUtils dialogUtils;
+    //private DialogUtils dialogUtils;
     private Usuario usuario;
 
     @Override
@@ -49,7 +49,7 @@ public class FrmLogin extends AppCompatActivity {
         txtUsuario = findViewById(R.id.frm_login_txt_usuario);
         contrasenia = findViewById(R.id.frm_login_txt_contrasenia);
         btnIngresar = findViewById(R.id.frm_login_btn_ingresar);
-        dialogUtils = new DialogUtils(this, "Cargando");
+        //dialogUtils = new DialogUtils(this, "Cargando");
         olvidoContrasenia = findViewById(R.id.frm_login_lbl_olvido_clave);
 
 
@@ -57,7 +57,7 @@ public class FrmLogin extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 try {
-                    dialogUtils.showDialog(getWindow());
+                    //dialogUtils.showDialog(getWindow());
                     checkUserOnWebService(v);
                 } catch (CancellationException e) {
                     e.printStackTrace();
@@ -90,7 +90,7 @@ public class FrmLogin extends AppCompatActivity {
      */
     private void checkUserOnWebService(final View v) throws Exception {
         if (!NetUtils.isOnlineNet(FrmLogin.this)) {
-            dialogUtils.dissmissDialog();
+           // dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
@@ -101,7 +101,7 @@ public class FrmLogin extends AppCompatActivity {
                         throw new Exception("No se han podido cargar el usuario, intente nuevamente");
                     }
                     if (resultAsync.get(0).equals("[]")) {
-                        dialogUtils.dissmissDialog();
+                        //dialogUtils.dissmissDialog();
                         Toast.makeText(v.getContext(), "Usuario y/o contraseña incorrectos", Toast.LENGTH_LONG).show();
                     } else {
                         SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
@@ -140,14 +140,14 @@ public class FrmLogin extends AppCompatActivity {
                             Intent i = new Intent(v.getContext(), FrmSelectBodega.class);
                             startActivityForResult(i, 1);
                             BaseHelper.tryClose(db);
-                            dialogUtils.dissmissDialog();
+                            //dialogUtils.dissmissDialog();
                             finish();
                         }
                     }
                 }
             };
 
-            remoteQuery.setContext(v.getContext());
+            remoteQuery.init(v.getContext(), this.getWindow());
             ArrayList queryUsers = new ArrayList();
 
             queryUsers.add("SELECT * " +
@@ -174,7 +174,7 @@ public class FrmLogin extends AppCompatActivity {
 
                 ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), FrmLogin.this);
                 if (resultsDatos.get(0).equals("[]")) {
-                    dialogUtils.dissmissDialog();
+                    //dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
                     Toast.makeText(FrmLogin.this, "El usuario no exíste.", Toast.LENGTH_LONG).show();
                 } else {
@@ -189,11 +189,11 @@ public class FrmLogin extends AppCompatActivity {
                         emailTask.init(FrmLogin.this, getWindow(), jsonResults.getString("mail"), jsonResults.getString("clave"));
                         emailTask.execute();
                     }
-                    dialogUtils.dissmissDialog();
+                   // dialogUtils.dissmissDialog();
                 }
             }
         };
-        remote.setContext(FrmLogin.this);
+        remote.init(FrmLogin.this, this.getWindow());
 
         ArrayList queryDatos = new ArrayList();
 
@@ -218,14 +218,14 @@ public class FrmLogin extends AppCompatActivity {
      */
     private void getDataFromWebservice(final View v, final SQLiteDatabase db) throws Exception {
         if (!NetUtils.isOnlineNet(FrmLogin.this)) {
-            dialogUtils.dissmissDialog();
+            //dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
-                    dialogUtils.dissmissDialog();
+                   //dialogUtils.dissmissDialog();
                     if (resultsDatos.get(0) == null ||
                             resultsDatos.get(1) == null ||
                             resultsDatos.get(2) == null ||
@@ -237,7 +237,7 @@ public class FrmLogin extends AppCompatActivity {
                     }
                 }
             };
-            remote.setContext(v.getContext());
+            remote.init(v.getContext(), this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
             queryDatos.add("SELECT COUNT(*) AS COUNT " +
@@ -339,7 +339,7 @@ public class FrmLogin extends AppCompatActivity {
         Intent i = new Intent(this, FrmSelectBodega.class);
         startActivityForResult(i, 1);
         BaseHelper.tryClose(db);
-        dialogUtils.dissmissDialog();
+        //dialogUtils.dissmissDialog();
         finish();
     }
 }

@@ -10,10 +10,12 @@ import android.os.AsyncTask;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.imvcol.Utils.DialogUtils;
 import com.example.imvcol.Utils.NetUtils;
 
 import java.io.BufferedReader;
@@ -29,8 +31,10 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
 
     private ArrayList query;
     private static Context ctx;
+    private static Window window;
 
     private final String USER_AGENT = "Mozilla/5.0";
+    private DialogUtils dialogUtils;
 
     public abstract void receiveData(Object object) throws Exception;
 
@@ -42,8 +46,11 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
         this.query = query;
     }
 
-    public void setContext(Context context) {
+    public void init(Context context, Window window) {
         this.ctx = context;
+        this.window = window;
+        dialogUtils = new DialogUtils(this.ctx, "Cargando");
+        dialogUtils.showDialog(this.window);
     }
 
     protected void onPreExecute() {
@@ -131,6 +138,7 @@ public abstract class ExecuteRemoteQuery extends AsyncTask<URL, Integer, ArrayLi
     }
 
     protected void onPostExecute(ArrayList result) {
+        dialogUtils.dissmissDialog();
         try {
             if (result != null) {
                 receiveData(result);

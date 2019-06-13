@@ -67,7 +67,7 @@ import java.util.Map;
 import butterknife.ButterKnife;
 
 public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
-    DialogUtils dialogUtils;
+    //DialogUtils dialogUtils;
     private TextView txtMensaje;
     private TextView txtFechaGPS;
     private Spinner spnBodega;
@@ -173,8 +173,8 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                         Toast.makeText(FrmSelectBodega.this, "Debe seleccionar una bodega", Toast.LENGTH_LONG).show();
                     } else {
                         try {
-                            dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
-                            dialogUtils.showDialog(getWindow());
+                            //dialogUtils = new DialogUtils(FrmSelectBodega.this, "Cargando");
+                            //dialogUtils.showDialog(getWindow());
                             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
                             currUser = new Usuario().selectUsuario(db);
                             currUser.setCurrBodega(mapBodega.get(spnBodega.getSelectedItemPosition()));
@@ -335,7 +335,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                 stopLocationUpdates();
                 break;
             case R.id.action_dar_informacion:
-                Intent rl = new Intent(this,  FrmGetInfoCodigo.class);
+                Intent rl = new Intent(this, FrmGetInfoCodigo.class);
                 startActivityForResult(rl, 1);
                 break;
             default:
@@ -375,7 +375,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
 
     private void getWebserviceProducts() throws Exception {
         if (!NetUtils.isOnlineNet(FrmSelectBodega.this)) {
-            dialogUtils.dissmissDialog();
+            //dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
@@ -385,7 +385,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     System.out.println("productos1" + resultsDatos);
                     ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), FrmSelectBodega.this);
                     if (rawProductos.equals("[]")) {
-                        dialogUtils.dissmissDialog();
+              //          dialogUtils.dissmissDialog();
                         Toast.makeText(FrmSelectBodega.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
                         fillProductsOnDatabase(resultsDatos);
@@ -395,7 +395,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     }
                 }
             };
-            remote.setContext(FrmSelectBodega.this);
+            remote.init(FrmSelectBodega.this, this.getWindow());
             ArrayList queryDatos = new ArrayList();
             queryDatos.add("SELECT COUNT(*) AS COUNT " +
                     "FROM referencias_fis F " +

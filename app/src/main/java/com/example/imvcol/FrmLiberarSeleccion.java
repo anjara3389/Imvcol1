@@ -43,7 +43,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         try {
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
-            usuario.deleteOldSesion(FrmLiberarSeleccion.this);
+            usuario.deleteOldSesion(FrmLiberarSeleccion.this, usuario, this.getWindow());
             BaseHelper.tryClose(db);
             Bundle bundle = getIntent().getExtras();
 
@@ -142,7 +142,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     }
                 }
             };
-            remote.setContext(FrmLiberarSeleccion.this);
+            remote.init(FrmLiberarSeleccion.this, this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
 
@@ -199,7 +199,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.setContext(this);
+            remote.init(this, this.getWindow());
             String query = "UPDATE f SET fisico=0, " +
                     "toma_1=NULL, " +
                     "toma_2=NULL, " +
@@ -306,7 +306,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     }
                 }
             };
-            remote.setContext(FrmLiberarSeleccion.this);
+            remote.init(FrmLiberarSeleccion.this, this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
 

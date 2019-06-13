@@ -36,7 +36,7 @@ public class Inicio extends AppCompatActivity {
                     && usuario.getnSubgrupos2() + 1 == new Subgrupo2().countSubgrupos2(db)
                     && usuario.getnSubgrupos3() + 1 == new Subgrupo3().countSubgrupos3(db)
                     && usuario.getnClases() + 1 == new Clase().countClases(db)) {
-                if (!usuario.deleteOldSesion(Inicio.this)) {
+                if (!usuario.deleteOldSesion(Inicio.this, usuario, this.getWindow())) {
                     System.out.println("//////PASA2");
                     Intent i = new Intent(this, FrmContinuarSesion.class);
                     startActivityForResult(i, 1);

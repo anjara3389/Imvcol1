@@ -1,14 +1,23 @@
 package com.example.imvcol;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.Window;
 import android.widget.Toast;
+
+import com.example.imvcol.Utils.NetUtils;
+import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Usuario {
@@ -221,18 +230,120 @@ public class Usuario {
         ((Activity) context).finish();
     }
 
-    public boolean deleteOldSesion(Context context) throws ParseException {
+    public boolean deleteOldSesion(Context context, Usuario usuario, Window window) throws Exception {
         SimpleDateFormat dformat = new SimpleDateFormat("yyyy-MM-dd");
 
         Date now = dformat.parse(dformat.format(new Date()));
         Date fechaLogin = dformat.parse(this.getfecha());
 
         if (fechaLogin.compareTo(now) != 0) {
-            deleteSession(context);
-            Toast.makeText(context, "La sesión es antigua. Debe iniciar sesión otra vez", Toast.LENGTH_LONG).show();
+            freeFisicosFromWebservice(context, usuario, window, null);
             return true;
         }
         return false;
+    }
+
+    private void freeFisicosFromWebservice(final Context ctx, final Usuario usuario, final Window window, final Class going) throws Exception {
+        if (!NetUtils.isOnlineNet(ctx)) {
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    checkWebserviceFisicos(ctx, usuario, window, going);
+                }
+            };
+            ArrayList queryDatos = new ArrayList();
+            remote.init(ctx, window);
+            String query = "UPDATE f SET fisico=0 " +
+                    "FROM referencias_fis f " +
+                    "JOIN referencias r on r.codigo=f.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) " +
+                    "AND f.fisico=1  ";
+
+            query += usuario.getFilterQueryForWebservice();
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
+    }
+
+    private void checkWebserviceFisicos(final Context ctx, final Usuario usuario, Window window, final Class going) throws Exception {
+        if (!NetUtils.isOnlineNet(ctx)) {
+            throw new Exception("No hay conexión a internet");
+        } else {
+            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+                @Override
+                public void receiveData(Object object) throws Exception {
+                    SQLiteDatabase db = BaseHelper.getWritable(ctx);
+                    ArrayList resultsDatos = (ArrayList) object;
+
+                    ArrayList rawResults = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(0)), ctx);
+                    if (resultsDatos.get(0).equals("[]")) {
+                        BaseHelper.tryClose(db);
+                        Toast.makeText(ctx, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                    } else {
+                        boolean validar = true;
+
+                        for (int i = 0; i < rawResults.size(); i++) {
+                            JSONObject fisico = ((JSONObject) rawResults.get(i));
+                            if (fisico.getInt("fisico") == 1) {
+                                validar = false;
+                            }
+                        }
+
+                        if (validar == true) {
+                            db = BaseHelper.getWritable(ctx);
+
+                            usuario.setCurrGrupo(null);
+                            usuario.setCurrSubgr(null);
+                            usuario.setCurrSubgr2(null);
+                            usuario.setCurrSubgr3(null);
+                            usuario.setCurrClase(null);
+                            usuario.setCurrUbicacion(null);
+                            usuario.setCurrConteo(1);
+                            usuario.updateCurrent(db);
+
+                            if (going != null) {
+                                new Inventario().delete(db);
+                                Intent i = new Intent(ctx, going);
+                                ((Activity) ctx).startActivityForResult(i, 1);
+                                Toast.makeText(ctx, "Se ha liberado la selección exitosamente", Toast.LENGTH_LONG).show();
+                                ((Activity) ctx).finish();
+                            } else {
+                                deleteSession(ctx);
+                                Toast.makeText(ctx, "La sesión es antigua. Debe iniciar sesión otra vez", Toast.LENGTH_LONG).show();
+                            }
+                            db.close();
+                        } else {
+                            Toast.makeText(ctx, "No se han podido liberar selección, intente nuevamente", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            };
+            remote.init(ctx, window);
+
+            ArrayList queryDatos = new ArrayList();
+
+            String query = "SELECT fisico " +
+                    "FROM referencias_fis f " +
+                    "JOIN referencias r on r.codigo=f.codigo " +
+                    "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
+                    "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
+                    "AND s.ano=YEAR(getdate()) " +
+                    "AND s.mes=MONTH(getdate()) ";
+
+            query += usuario.getFilterQueryForWebservice();
+
+            queryDatos.add(query);
+            System.out.println("QUERYYYYYY///" + query);
+            remote.setQuery(queryDatos);
+            remote.execute();
+        }
     }
 
 

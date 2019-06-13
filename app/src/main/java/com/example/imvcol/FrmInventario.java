@@ -144,7 +144,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             disableEnableCantidad(false);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
-            usuario.deleteOldSesion(FrmInventario.this);
+            usuario.deleteOldSesion(FrmInventario.this, this.usuario, this.getWindow());
 
             info.setText("Bodega: " + (usuario.getCurrBodega() == null ? "n/a" : usuario.getCurrBodega()) +
                     "   Grupo: " + (usuario.getCurrGrupo() == null ? "n/a" : usuario.getCurrGrupo()) +
@@ -927,7 +927,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     checkWebserviceResults(db);
                 }
             };
-            remote.setContext(this);
+            remote.init(this, this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
             ArrayList<Inventario> inventarios = new Inventario().selectInventarios(db);
@@ -1015,7 +1015,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 }
             };
-            remote.setContext(FrmInventario.this);
+            remote.init(FrmInventario.this, this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
 
@@ -1044,7 +1044,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.setContext(this);
+            remote.init(this, this.getWindow());
             String query = "UPDATE f SET fisico=0 " +
                     "FROM referencias_fis f " +
                     "JOIN referencias r on r.codigo=f.codigo " +
@@ -1114,7 +1114,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                     }
                 }
             };
-            remote.setContext(FrmInventario.this);
+            remote.init(FrmInventario.this, this.getWindow());
 
             ArrayList queryDatos = new ArrayList();
 
