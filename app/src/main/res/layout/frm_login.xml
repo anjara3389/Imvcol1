@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="180dp"
-        android:text="INVFISCOL v4.1" />
+        android:text="INVFISCOL v4.2" />
 
     <TextView
         android:id="@+id/frm_login_lbl_olvido_clave"
