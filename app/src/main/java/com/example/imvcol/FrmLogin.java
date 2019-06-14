@@ -138,7 +138,7 @@ public class FrmLogin extends AppCompatActivity {
                 }
             };
 
-            remoteQuery.init(v.getContext(), this.getWindow(), "Validando usuario");
+            remoteQuery.init(v.getContext(), this.getWindow(), "Cargando");
             ArrayList queryUsers = new ArrayList();
 
             queryUsers.add("SELECT * " +
@@ -146,7 +146,6 @@ public class FrmLogin extends AppCompatActivity {
                     "WHERE USUARIO=UPPER('" + txtUsuario.getText() + "') " +
                     "AND CLAVE=UPPER('" + contrasenia.getText() + "') " +
                     "AND BLOQUEADO IS NULL");
-            queryUsers.add(usuario.getQueryInsertLog("Inicio de sesión"));
 
             remoteQuery.setQuery(queryUsers);
             remoteQuery.execute();
@@ -249,6 +248,7 @@ public class FrmLogin extends AppCompatActivity {
             queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
             queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
             queryDatos.add("SELECT * FROM referencias_cla");
+            queryDatos.add(usuario.getQueryInsertLog("Inicio de sesión"));
 
             remote.setQuery(queryDatos);
             remote.execute();
@@ -270,7 +270,7 @@ public class FrmLogin extends AppCompatActivity {
         new Subgrupo3().insertEmpty(db);
         new Clase().insertEmpty(db);
 
-        for (int i = 0; i < resultsDatos.size(); i++) {
+        for (int i = 0; i < resultsDatos.size()-1; i++) {
             ArrayList raw = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(i)), this);
             System.out.println("ESTE ES COUNT " + raw.get(0));
             if (i < 6) {

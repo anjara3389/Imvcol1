@@ -361,7 +361,7 @@ public class Usuario {
                 "GETDATE ( )," +
                 "0 ," +
                 "'App Invfiscol: " + log + "'," +
-                "'" + this.usuario + "')";
+                "UPPER('" + this.usuario + "'))";
     }
 
 
