@@ -191,7 +191,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.init(this, this.getWindow(),"Liberando físicos");
+            remote.init(this, this.getWindow(),"Cargando");
             String query = "UPDATE f SET fisico=0, " +
                     "toma_1=NULL, " +
                     "toma_2=NULL, " +
@@ -294,7 +294,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     }
                 }
             };
-            remote.init(FrmLiberarSeleccion.this, this.getWindow(),"Verificando");
+            remote.init(FrmLiberarSeleccion.this, this.getWindow(),"Cargando");
 
             ArrayList queryDatos = new ArrayList();
 
