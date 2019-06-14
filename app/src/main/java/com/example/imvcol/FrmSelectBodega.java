@@ -382,7 +382,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     System.out.println("productos1" + resultsDatos);
                     ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), FrmSelectBodega.this);
                     if (rawProductos.equals("[]")) {
-              //          dialogUtils.dissmissDialog();
+                        //          dialogUtils.dissmissDialog();
                         Toast.makeText(FrmSelectBodega.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
                         fillProductsOnDatabase(resultsDatos);
@@ -392,7 +392,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     }
                 }
             };
-            remote.init(FrmSelectBodega.this, this.getWindow(),"Cargando");
+            remote.init(FrmSelectBodega.this, this.getWindow(), "Cargando");
             ArrayList queryDatos = new ArrayList();
             queryDatos.add("SELECT COUNT(*) AS COUNT " +
                     "FROM referencias_fis F " +
@@ -418,6 +418,7 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
                     "AND F.fisico=0";
             queryDatos.add(query);
+            queryDatos.add(currUser.getQueryInsertLog("Selecciona bodega " + currUser.getCurrBodega()));
             System.out.println("QUERYYYYYY///" + query);
             remote.setQuery(queryDatos);
             remote.execute();

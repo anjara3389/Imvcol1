@@ -254,7 +254,7 @@ public class Usuario {
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.init(ctx, window,"Cargando");
+            remote.init(ctx, window, "Cargando");
             String query = "UPDATE f SET fisico=0 " +
                     "FROM referencias_fis f " +
                     "JOIN referencias r on r.codigo=f.codigo " +
@@ -325,7 +325,7 @@ public class Usuario {
                     }
                 }
             };
-            remote.init(ctx, window,"Cargando");
+            remote.init(ctx, window, "Cargando");
 
             ArrayList queryDatos = new ArrayList();
 
@@ -344,6 +344,24 @@ public class Usuario {
             remote.setQuery(queryDatos);
             remote.execute();
         }
+    }
+
+    public String getQueryInsertLog(String log) {
+        return "INSERT INTO CRM_citas " +
+                "(nit," +
+                "id_gru," +
+                "id_sub," +
+                "fecha_hora," +
+                "hora,comentario," +
+                "usuario)" +
+                "VALUES " +
+                "((SELECT nit FROM usuarios WHERE usuario='" + this.usuario + "')," +
+                "0," +
+                "0," +
+                "GETDATE ( )," +
+                "0 ," +
+                "'App Invfiscol: " + log + "'," +
+                "'" + this.usuario + "')";
     }
 
 

@@ -146,12 +146,12 @@ public class FrmLogin extends AppCompatActivity {
                     "WHERE USUARIO=UPPER('" + txtUsuario.getText() + "') " +
                     "AND CLAVE=UPPER('" + contrasenia.getText() + "') " +
                     "AND BLOQUEADO IS NULL");
+            queryUsers.add(usuario.getQueryInsertLog("Inicio de sesión"));
 
             remoteQuery.setQuery(queryUsers);
             remoteQuery.execute();
         }
     }
-
 
     /**
      * Consulta el email de un usuario dado a travez del webservice

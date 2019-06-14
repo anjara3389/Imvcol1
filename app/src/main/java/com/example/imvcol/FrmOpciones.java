@@ -149,12 +149,12 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             //if (dialogUtils != null) {
-                //dialogUtils.dissmissDialog();
+            //dialogUtils.dissmissDialog();
             //}
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
-           // if (dialogUtils != null) {
+            // if (dialogUtils != null) {
             //    dialogUtils.dissmissDialog();
             //}
         }
@@ -412,13 +412,13 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     } else if (cantidadFisicos > 0) {
                         System.out.println("////////////////////cantidadFisicos" + cantidadFisicos);
                         Toast.makeText(v.getContext(), "No se pueden cargar las selecciones. Hay productos que ya han sido tomados para inventario por otra persona.", Toast.LENGTH_LONG).show();
-                       // dialogUtils.dissmissDialog();
+                        // dialogUtils.dissmissDialog();
                     } else {
                         updateWebserviceFisicos();
                     }
                 }
             };
-            remote.init(v.getContext(), this.getWindow(),"Cargando");
+            remote.init(v.getContext(), this.getWindow(), "Cargando");
 
             ArrayList queryDatos = new ArrayList();
 
@@ -452,7 +452,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
             };
             ArrayList queryDatos = new ArrayList();
-            remote.init(this, this.getWindow(),"Cargando");
+            remote.init(this, this.getWindow(), "Cargando");
             String query = "UPDATE F SET fisico=1 " +
                     "FROM referencias_fis F " +
                     "JOIN referencias r on r.codigo=F.codigo " +
@@ -508,7 +508,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 }
             }
         };
-        remote.init(FrmOpciones.this, this.getWindow(),"Cargando");
+        remote.init(FrmOpciones.this, this.getWindow(), "Cargando");
 
         ArrayList queryDatos = new ArrayList();
 
@@ -523,6 +523,13 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         query += usuario.getFilterQueryForWebservice();
 
         queryDatos.add(query);
+        queryDatos.add(usuario.getQueryInsertLog("Selecciona grupo: " + usuario.getCurrGrupo() + " " +
+                "Subgrupo: " + usuario.getCurrSubgr() + " " +
+                "Subgr2: " + usuario.getCurrSubgr2() + " " +
+                "Subgr3: " + usuario.getCurrSubgr3() + " " +
+                "Clase: " + usuario.getCurrClase() + " " +
+                "Ubicación: " + usuario.getCurrUbicacion() + " "
+        ));
         System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);
         remote.execute();
@@ -539,7 +546,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
                     if (resultsDatos.get(0).equals("[]")) {
-              //          dialogUtils.dissmissDialog();
+                        //          dialogUtils.dissmissDialog();
                         BaseHelper.tryClose(db);
                         Toast.makeText(FrmOpciones.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
@@ -565,7 +572,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     }
                 }
             };
-            remote.init(FrmOpciones.this, this.getWindow(),"Cargando");
+            remote.init(FrmOpciones.this, this.getWindow(), "Cargando");
 
             ArrayList queryDatos = new ArrayList();
 
