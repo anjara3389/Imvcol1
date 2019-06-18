@@ -64,4 +64,18 @@ public class FrmInventarios extends AppCompatActivity {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG);
         }
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            Usuario usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmInventarios.this, usuario, this.getWindow());
+            BaseHelper.tryClose(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmInventarios.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 }

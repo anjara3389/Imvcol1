@@ -51,6 +51,20 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmGetInfoCodigo.this, this.usuario, this.getWindow());
+            BaseHelper.tryClose(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmGetInfoCodigo.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
     /**
      * Consulta grupo,subgr,subgr2,subgr3,clase,ubicación del código de un producto y escribe la información en un Text View.
      */

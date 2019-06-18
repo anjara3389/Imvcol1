@@ -305,6 +305,20 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         });
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmInventario.this, this.usuario, this.getWindow());
+            BaseHelper.tryClose(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
     private Double operarEnLaCantidad(SQLiteDatabase db) {
         try {
             Cursor c = db.rawQuery("SELECT " + cantidad.getText().toString(), null);

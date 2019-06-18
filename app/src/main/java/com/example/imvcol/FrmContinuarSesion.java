@@ -123,4 +123,18 @@ public class FrmContinuarSesion extends AppCompatActivity implements YesNoDialog
             }
         }
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmContinuarSesion.this, this.usuario, this.getWindow());
+            BaseHelper.tryClose(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmContinuarSesion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 }

@@ -159,6 +159,19 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             //}
         }
     }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmOpciones.this, this.usuario, this.getWindow());
+            BaseHelper.tryClose(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmOpciones.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 
     private boolean isEmptyUbicacion() {
         return spnUbicacion.getSelectedItem().toString().equals("Seleccione una ubicación");

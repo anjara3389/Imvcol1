@@ -106,6 +106,20 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        try {
+            SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
+            usuario = new Usuario().selectUsuario(db);
+            usuario.deleteOldSesion(FrmLiberarSeleccion.this, this.usuario, this.getWindow());
+            BaseHelper.tryClose(db);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(FrmLiberarSeleccion.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
     /**
      * Cuenta las referencias que ya tengan al menos conteo 1 en la base de datos por medio del webservice.
      *
