@@ -190,6 +190,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                                 usuario.getCurrClase(),
                                 usuario.getCurrUbicacion());
                         if (productos == null || productos.length == 0) {
+                            limpiar();
                             throw new Exception("El producto no exíste dentro del grupo seleccionado");
                         } else {
                             final ArrayList<String> nombres = new ArrayList();
@@ -329,6 +330,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
                 usuario.getCurrUbicacion());
         BaseHelper.tryClose(db);
         if (selectedProduct == null) {
+            limpiar();
             throw new Exception("El producto no exíste dentro del grupo seleccionado");
         } else {
             producto.setText(selectedProduct[1].toString());
