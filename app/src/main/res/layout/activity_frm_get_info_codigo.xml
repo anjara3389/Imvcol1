@@ -6,17 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".FrmGetInfoCodigo">
 
-    <EditText
-        android:id="@+id/frm_get_info_codigo_txt_codigo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginRight="20dp"
-        android:ems="10"
-        android:hint="ingrese código de una referencia"
-        android:inputType="text" />
-
     <Button
         android:id="@+id/frm_get_info_codigo_btn_info"
         android:layout_width="match_parent"
@@ -30,12 +19,41 @@
         tools:layout_editor_absoluteX="169dp"
         tools:layout_editor_absoluteY="500dp" />
 
+    <EditText
+        android:id="@+id/frm_get_info_codigo_txt_codigo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginRight="20dp"
+        android:ems="10"
+        android:hint="ingrese código de una referencia"
+        android:inputType="text" />
+
+    <TextView
+        android:id="@+id/frm_get_info_codigo_lbl_info3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="300dp"
+        android:layout_marginRight="20dp"
+        android:textSize="18sp" />
+
     <TextView
         android:id="@+id/frm_get_info_codigo_lbl_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="350dp"
+        android:layout_marginRight="20dp"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/frm_get_info_codigo_lbl_info2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="350dp"
         android:layout_marginRight="20dp"
         android:textSize="18sp" />
 </RelativeLayout>

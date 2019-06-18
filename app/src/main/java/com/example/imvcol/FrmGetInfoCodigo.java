@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class FrmGetInfoCodigo extends AppCompatActivity {
 
     private EditText codigo;
-    private TextView info;
+    private TextView info, info2, info3;
     private Button btnInfo;
     private Usuario usuario;
 
@@ -32,6 +32,8 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
         try {
             codigo = findViewById(R.id.frm_get_info_codigo_txt_codigo);
             info = findViewById(R.id.frm_get_info_codigo_lbl_info);
+            info2 = findViewById(R.id.frm_get_info_codigo_lbl_info2);
+            info3 = findViewById(R.id.frm_get_info_codigo_lbl_info3);
             btnInfo = findViewById(R.id.frm_get_info_codigo_btn_info);
             SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
             usuario = new Usuario().selectUsuario(db);
@@ -81,22 +83,33 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
                     Toast.makeText(FrmGetInfoCodigo.this, "No se han encontrado datos de ésta referencia.", Toast.LENGTH_LONG).show();
 
                     info.setText("");
+                    info2.setText("");
+                    info3.setText("");
                 } else {
                     JSONObject jsonResults = ((JSONObject) rawResults.get(0));
-                    info.setText("Grupo: " + (jsonResults.isNull("grupo") ? "n/a" : jsonResults.getString("grupo")) + "\n" +
-                            "Subgrupo: " + (jsonResults.isNull("subgrupo") ? "n/a" : jsonResults.getString("subgrupo")) + "\n" +
-                            "Subgrupo2: " + (jsonResults.isNull("subgrupo2") ? "n/a" : jsonResults.getString("subgrupo2")) + "\n" +
-                            "Subgrupo3: " + (jsonResults.isNull("subgrupo3") ? "n/a" : jsonResults.getString("subgrupo3")) + "\n" +
-                            "Clase: " + (jsonResults.isNull("clase") ? "n/a" : jsonResults.getString("clase")) + "\n" +
-                            "Ubicación: " + (jsonResults.isNull("ubicacion") ? "n/a" : jsonResults.getString("ubicacion")));
+                    info3.setText(jsonResults.isNull("descripcion") ? "n/a" : jsonResults.getString("descripcion"));
+                    info.setText(
+                            "Grupo:" + "\n" +
+                                    "Subgrupo:" + "\n" +
+                                    "Subgrupo2:" + "\n" +
+                                    "Subgrupo3:" + "\n" +
+                                    "Clase:" + "\n" +
+                                    "Ubicación:");
+                    info2.setText(
+                            (jsonResults.isNull("grupo") ? "n/a" : jsonResults.getString("grupo")) + "\n" +
+                                    (jsonResults.isNull("subgrupo") ? "n/a" : jsonResults.getString("subgrupo")) + "\n" +
+                                    (jsonResults.isNull("subgrupo2") ? "n/a" : jsonResults.getString("subgrupo2")) + "\n" +
+                                    (jsonResults.isNull("subgrupo3") ? "n/a" : jsonResults.getString("subgrupo3")) + "\n" +
+                                    (jsonResults.isNull("clase") ? "n/a" : jsonResults.getString("clase")) + "\n" +
+                                    (jsonResults.isNull("ubicacion") ? "n/a" : jsonResults.getString("ubicacion")));
                 }
             }
         };
-        remote.init(FrmGetInfoCodigo.this, getWindow(),"Cargando");
+        remote.init(FrmGetInfoCodigo.this, getWindow(), "Cargando");
 
         ArrayList queryDatos = new ArrayList();
 
-        String query = "SELECT r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase,f.ubicacion " +
+        String query = "SELECT r.descripcion,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase,f.ubicacion " +
                 "FROM referencias_fis f " +
                 "JOIN referencias r on r.codigo=f.codigo " +
                 "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
