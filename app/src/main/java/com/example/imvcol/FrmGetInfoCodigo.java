@@ -65,6 +65,8 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
                 if (resultsDatos.get(0).equals("[]")) {
                     BaseHelper.tryClose(db);
                     Toast.makeText(FrmGetInfoCodigo.this, "No se han encontrado datos de ésta referencia.", Toast.LENGTH_LONG).show();
+
+                    info.setText("");
                 } else {
                     JSONObject jsonResults = ((JSONObject) rawResults.get(0));
                     info.setText("Grupo: " + (jsonResults.isNull("grupo") ? "n/a" : jsonResults.getString("grupo")) + "\n" +

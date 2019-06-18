@@ -403,7 +403,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     "AND s.bodega='" + currUser.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate()) " +
-                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
+                    "AND (a.alterno IN(SELECT TOP 1 alt.alterno " +
+                    "FROM referencias_alt alt " +
+                    "WHERE alt.codigo=r.codigo) OR a.alterno IS NULL) " +
                     "AND F.fisico=0");
 
             String query = "SELECT r.codigo,r.descripcion,s.stock,a.alterno,r.grupo,r.subgrupo,r.subgrupo2,r.subgrupo3,r.clase,F.ubicacion " +
@@ -415,7 +417,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     "AND s.bodega='" + currUser.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
                     "AND s.mes=MONTH(getdate()) " +
-                    "AND (a.cantidad_alt=1 OR a.cantidad_alt IS NULL) " +
+                    "AND (a.alterno IN(SELECT TOP 1 alt.alterno " +
+                    "FROM referencias_alt alt " +
+                    "WHERE alt.codigo=r.codigo) OR a.alterno IS NULL) " +
                     "AND F.fisico=0";
             queryDatos.add(query);
             queryDatos.add(currUser.getQueryInsertLog("Selecciona bodega " + currUser.getCurrBodega()));
