@@ -248,6 +248,9 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
         ArrayAdapter<String> adapterBodegas = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, dataSpnBodegas);
         adapterBodegas.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnBodega.setAdapter(adapterBodegas);
+        if (this.dataSpnBodegas.length == 2) {
+            spnBodega.setSelection(1);
+        }
     }
 
     /*private void filterBodegasByLocation() {
