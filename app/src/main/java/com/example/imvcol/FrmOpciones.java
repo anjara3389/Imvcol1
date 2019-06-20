@@ -135,6 +135,8 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
 
                             if (!isEmptyUbicacion()) {
                                 usuario.setCurrUbicacion(spnUbicacion.getSelectedItem().toString());
+                            } else {
+                                usuario.setCurrUbicacion(null);
                             }
                             countWebserviceFisicos(v);
                         }
@@ -159,6 +161,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             //}
         }
     }
+
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -614,7 +617,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     "AND s.mes=MONTH(getdate()) " +
                     "AND (a.alterno IN(SELECT TOP 1 alt.alterno " +
                     "FROM referencias_alt alt " +
-                    "WHERE alt.codigo=r.codigo) OR a.alterno IS NULL) " ;
+                    "WHERE alt.codigo=r.codigo) OR a.alterno IS NULL) ";
 
 
             queryDatos.add(query);
