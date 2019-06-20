@@ -29,14 +29,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.NetUtils;
-import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
+import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
 import com.example.imvcol.com.google.zxing.integration.android.IntentIntegrator;
 import com.example.imvcol.com.google.zxing.integration.android.IntentResult;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import org.bouncycastle.asn1.esf.ESFAttributes;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -928,7 +927,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getWritable(this);
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     checkWebserviceResults(db);
@@ -969,7 +968,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         if (!NetUtils.isOnlineNet(FrmInventario.this)) {
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
@@ -1040,7 +1039,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         if (!NetUtils.isOnlineNet(FrmInventario.this)) {
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     checkWebserviceFisicos();
@@ -1069,7 +1068,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
         if (!NetUtils.isOnlineNet(FrmInventario.this)) {
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     SQLiteDatabase db = BaseHelper.getWritable(FrmInventario.this);

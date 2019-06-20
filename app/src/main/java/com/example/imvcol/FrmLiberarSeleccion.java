@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.NetUtils;
-import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
+import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -131,7 +131,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
@@ -198,7 +198,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         if (!NetUtils.isOnlineNet(FrmLiberarSeleccion.this)) {
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     checkWebserviceFisicosTotal();
@@ -255,7 +255,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
         if (!NetUtils.isOnlineNet(FrmLiberarSeleccion.this)) {
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     SQLiteDatabase db = BaseHelper.getWritable(FrmLiberarSeleccion.this);

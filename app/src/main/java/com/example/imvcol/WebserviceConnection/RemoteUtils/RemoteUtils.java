@@ -1,31 +1,30 @@
-package com.example.imvcol.WebserviceConnection;
+package com.example.imvcol.WebserviceConnection.RemoteUtils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.view.View;
 import android.view.Window;
 
 import com.example.imvcol.BaseHelper;
 import com.example.imvcol.Usuario;
 import com.example.imvcol.Utils.NetUtils;
+import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
 
 import java.util.ArrayList;
-import java.util.function.Function;
 
-public abstract class WriteLogs {
+public abstract class RemoteUtils {
 
 
-    public abstract void receiveAfter() throws Exception;
+    public abstract void performAfter() throws Exception;
 
     public void insertLogOnWservice(Context ctx, Window window, String mensaje) throws Exception {
         if (!NetUtils.isOnlineNet(ctx)) {
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
-                    receiveAfter();
+                    performAfter();
                 }
             };
             remote.init(ctx, window, "Cargando");

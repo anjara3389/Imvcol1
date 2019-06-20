@@ -1,7 +1,6 @@
 package com.example.imvcol;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
+import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -71,7 +70,7 @@ public class FrmGetInfoCodigo extends AppCompatActivity {
      * Consulta grupo,subgr,subgr2,subgr3,clase,ubicación del código de un producto y escribe la información en un Text View.
      */
     private void getInfoReferenciaFromWebservice() {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+        @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
                 SQLiteDatabase db = BaseHelper.getWritable(FrmGetInfoCodigo.this);

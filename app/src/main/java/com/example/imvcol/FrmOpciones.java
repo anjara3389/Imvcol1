@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imvcol.Utils.NetUtils;
-import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
+import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -414,7 +414,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;
@@ -461,7 +461,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             //dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) {
                     checkWebserviceFisicos();
@@ -488,7 +488,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
     }
 
     private void checkWebserviceFisicos() {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+        @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
                 SQLiteDatabase db = BaseHelper.getWritable(FrmOpciones.this);
@@ -557,7 +557,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
             throw new Exception("No hay conexión a internet");
         } else {
             final SQLiteDatabase db = BaseHelper.getReadable(getApplicationContext());
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultsDatos = (ArrayList) object;

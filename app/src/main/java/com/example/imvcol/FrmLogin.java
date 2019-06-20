@@ -3,7 +3,6 @@ package com.example.imvcol;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,8 +14,8 @@ import android.widget.Toast;
 
 import com.example.imvcol.Email.SendEmailAsyncTask;
 import com.example.imvcol.Utils.NetUtils;
-import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
-import com.example.imvcol.WebserviceConnection.WriteLogs;
+import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
+import com.example.imvcol.WebserviceConnection.RemoteUtils.RemoteUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,7 +85,7 @@ public class FrmLogin extends AppCompatActivity {
         if (!NetUtils.isOnlineNet(FrmLogin.this)) {
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remoteQuery = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remoteQuery = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
                     ArrayList resultAsync = (ArrayList) object;
@@ -157,7 +156,7 @@ public class FrmLogin extends AppCompatActivity {
      * Consulta el email de un usuario dado a travez del webservice
      */
     private void getMailFromWservice() {
-        @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+        @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
             @Override
             public void receiveData(Object object) throws Exception {
                 SQLiteDatabase db = BaseHelper.getWritable(FrmLogin.this);
@@ -212,12 +211,12 @@ public class FrmLogin extends AppCompatActivity {
             //dialogUtils.dissmissDialog();
             throw new Exception("No hay conexión a internet");
         } else {
-            @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
+            @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(final Object object) throws Exception {
-                    @SuppressLint("StaticFieldLeak") WriteLogs logs = new WriteLogs() {
+                    @SuppressLint("StaticFieldLeak") RemoteUtils logs = new RemoteUtils() {
                         @Override
-                        public void receiveAfter() throws Exception {
+                        public void performAfter() throws Exception {
                             ArrayList resultsDatos = (ArrayList) object;
                             //dialogUtils.dissmissDialog();
                             if (resultsDatos.get(0) == null ||
