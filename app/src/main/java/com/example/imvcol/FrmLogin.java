@@ -214,7 +214,7 @@ public class FrmLogin extends AppCompatActivity {
             @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(final Object object) throws Exception {
-                    @SuppressLint("StaticFieldLeak") RemoteUtils logs = new RemoteUtils() {
+                    @SuppressLint("StaticFieldLeak") RemoteUtils remoteUtils = new RemoteUtils() {
                         @Override
                         public void performAfter() throws Exception {
                             ArrayList resultsDatos = (ArrayList) object;
@@ -231,7 +231,7 @@ public class FrmLogin extends AppCompatActivity {
                             }
                         }
                     };
-                    logs.insertLogOnWservice(FrmLogin.this, FrmLogin.this.getWindow(),"Inicio de sesión");
+                    remoteUtils.insertLogsOnWservice(FrmLogin.this, FrmLogin.this.getWindow(), "Inicio de sesión");
                 }
 
             };
@@ -342,6 +342,7 @@ public class FrmLogin extends AppCompatActivity {
         finish();
     }
 }
+
 
 
 

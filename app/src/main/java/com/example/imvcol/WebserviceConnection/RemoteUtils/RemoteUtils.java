@@ -17,7 +17,7 @@ public abstract class RemoteUtils {
 
     public abstract void performAfter() throws Exception;
 
-    public void insertLogOnWservice(Context ctx, Window window, String mensaje) throws Exception {
+    public void insertLogsOnWservice(Context ctx, Window window, String mensaje) throws Exception {
         if (!NetUtils.isOnlineNet(ctx)) {
             throw new Exception("No hay conexión a internet");
         } else {

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
+import com.example.imvcol.WebserviceConnection.RemoteUtils.RemoteUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -510,13 +511,26 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                     }
 
                     if (validar == true) {
-                        db = BaseHelper.getWritable(FrmOpciones.this);
-                        usuario.setDatosEnviados(false);
-                        usuario.updateCurrent(db);
-                        //dialogUtils.dissmissDialog();
-                        Intent i = new Intent(FrmOpciones.this, FrmInventario.class);
-                        startActivityForResult(i, 1);
-                        finish();
+
+                        @SuppressLint("StaticFieldLeak") RemoteUtils remoteUtils = new RemoteUtils() {
+                            @Override
+                            public void performAfter() {
+                                SQLiteDatabase db = BaseHelper.getWritable(FrmOpciones.this);
+                                usuario.setDatosEnviados(false);
+                                usuario.updateCurrent(db);
+                                //dialogUtils.dissmissDialog();
+                                Intent i = new Intent(FrmOpciones.this, FrmInventario.class);
+                                startActivityForResult(i, 1);
+                                finish();
+                            }
+                        };
+                        remoteUtils.insertLogsOnWservice(FrmOpciones.this, FrmOpciones.this.getWindow(), "Selecciona grupo: " + usuario.getCurrGrupo() + " " +
+                                "Subgrupo: " + usuario.getCurrSubgr() + " " +
+                                "Subgr2: " + usuario.getCurrSubgr2() + " " +
+                                "Subgr3: " + usuario.getCurrSubgr3() + " " +
+                                "Clase: " + usuario.getCurrClase() + " " +
+                                "Ubicación: " + usuario.getCurrUbicacion() + " ");
+
 
                     } else {
                         Toast.makeText(FrmOpciones.this, "No se han podido seleccionar fisicos, intente nuevamente", Toast.LENGTH_LONG).show();
@@ -539,13 +553,13 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
         query += usuario.getFilterQueryForWebservice();
 
         queryDatos.add(query);
-        queryDatos.add(usuario.getQueryInsertLog("Selecciona grupo: " + usuario.getCurrGrupo() + " " +
+        /*queryDatos.add(usuario.getQueryInsertLog("Selecciona grupo: " + usuario.getCurrGrupo() + " " +
                 "Subgrupo: " + usuario.getCurrSubgr() + " " +
                 "Subgr2: " + usuario.getCurrSubgr2() + " " +
                 "Subgr3: " + usuario.getCurrSubgr3() + " " +
                 "Clase: " + usuario.getCurrClase() + " " +
                 "Ubicación: " + usuario.getCurrUbicacion() + " "
-        ));
+        ));*/
         System.out.println("QUERYYYYYY///" + query);
         remote.setQuery(queryDatos);
         remote.execute();

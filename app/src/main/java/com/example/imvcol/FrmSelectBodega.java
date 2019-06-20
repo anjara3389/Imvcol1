@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.AsyncRemoteQuery.AsyncRemoteQuery;
+import com.example.imvcol.WebserviceConnection.RemoteUtils.RemoteUtils;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -377,17 +378,24 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
             @SuppressLint("StaticFieldLeak") AsyncRemoteQuery remote = new AsyncRemoteQuery() {
                 @Override
                 public void receiveData(Object object) throws Exception {
-                    ArrayList resultsDatos = (ArrayList) object;
+                    final ArrayList resultsDatos = (ArrayList) object;
                     System.out.println("productos1" + resultsDatos);
                     ArrayList rawProductos = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(1)), FrmSelectBodega.this);
                     if (rawProductos.equals("[]")) {
                         //          dialogUtils.dissmissDialog();
                         Toast.makeText(FrmSelectBodega.this, "No se han podido cargar los datos, intente nuevamente", Toast.LENGTH_LONG).show();
                     } else {
-                        fillProductsOnDatabase(resultsDatos);
-                        Intent i = new Intent(FrmSelectBodega.this, FrmOpciones.class);
-                        startActivityForResult(i, 1);
-                        finish();
+                        @SuppressLint("StaticFieldLeak") RemoteUtils remoteUtils = new RemoteUtils() {
+                            @Override
+                            public void performAfter() throws Exception {
+                                fillProductsOnDatabase(resultsDatos);
+                                Intent i = new Intent(FrmSelectBodega.this, FrmOpciones.class);
+                                startActivityForResult(i, 1);
+                                finish();
+                            }
+                        };
+                        remoteUtils.insertLogsOnWservice(FrmSelectBodega.this, FrmSelectBodega.this.getWindow(),
+                                "Selecciona bodega " + currUser.getCurrBodega());
                     }
                 }
             };
@@ -421,7 +429,6 @@ public class FrmSelectBodega extends AppCompatActivity implements YesNoDialogFra
                     "WHERE alt.codigo=r.codigo) OR a.alterno IS NULL) " +
                     "AND F.fisico=0";
             queryDatos.add(query);
-            queryDatos.add(currUser.getQueryInsertLog("Selecciona bodega " + currUser.getCurrBodega()));
             System.out.println("QUERYYYYYY///" + query);
             remote.setQuery(queryDatos);
             remote.execute();
