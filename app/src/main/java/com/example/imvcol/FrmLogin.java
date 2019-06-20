@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.imvcol.Email.SendEmailAsyncTask;
 import com.example.imvcol.Utils.NetUtils;
 import com.example.imvcol.WebserviceConnection.ExecuteRemoteQuery;
+import com.example.imvcol.WebserviceConnection.WriteLogs;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -213,19 +214,27 @@ public class FrmLogin extends AppCompatActivity {
         } else {
             @SuppressLint("StaticFieldLeak") ExecuteRemoteQuery remote = new ExecuteRemoteQuery() {
                 @Override
-                public void receiveData(Object object) throws Exception {
-                    ArrayList resultsDatos = (ArrayList) object;
-                    //dialogUtils.dissmissDialog();
-                    if (resultsDatos.get(0) == null ||
-                            resultsDatos.get(1) == null ||
-                            resultsDatos.get(2) == null ||
-                            resultsDatos.get(3) == null ||
-                            resultsDatos.get(4) == null) {
-                        throw new Exception("No se han podido cargar los datos, intente nuevamente");
-                    } else {
-                        fillDatabase(db, resultsDatos);
-                    }
+                public void receiveData(final Object object) throws Exception {
+                    @SuppressLint("StaticFieldLeak") WriteLogs logs = new WriteLogs() {
+                        @Override
+                        public void receiveAfter() throws Exception {
+                            ArrayList resultsDatos = (ArrayList) object;
+                            //dialogUtils.dissmissDialog();
+                            if (resultsDatos.get(0) == null ||
+                                    resultsDatos.get(1) == null ||
+                                    resultsDatos.get(2) == null ||
+                                    resultsDatos.get(3) == null ||
+                                    resultsDatos.get(4) == null) {
+                                throw new Exception("No se han podido cargar los datos, intente nuevamente");
+                            } else {
+                                SQLiteDatabase db = BaseHelper.getReadable(FrmLogin.this);
+                                fillDatabase(db, resultsDatos);
+                            }
+                        }
+                    };
+                    logs.insertLogOnWservice(FrmLogin.this, FrmLogin.this.getWindow(),"Inicio de sesión");
                 }
+
             };
             remote.init(v.getContext(), this.getWindow(), "Cargando");
 
@@ -248,7 +257,7 @@ public class FrmLogin extends AppCompatActivity {
             queryDatos.add("SELECT * FROM REFERENCIAS_SUB2");
             queryDatos.add("SELECT * FROM REFERENCIAS_SUB3");
             queryDatos.add("SELECT * FROM referencias_cla");
-            queryDatos.add(usuario.getQueryInsertLog("Inicio de sesión"));
+            //queryDatos.add(usuario.getQueryInsertLog("Inicio de sesión"));
 
             remote.setQuery(queryDatos);
             remote.execute();
@@ -270,7 +279,7 @@ public class FrmLogin extends AppCompatActivity {
         new Subgrupo3().insertEmpty(db);
         new Clase().insertEmpty(db);
 
-        for (int i = 0; i < resultsDatos.size()-1; i++) {
+        for (int i = 0; i < resultsDatos.size() - 1; i++) {
             ArrayList raw = ArrayUtils.convertToArrayList(new JSONArray((String) resultsDatos.get(i)), this);
             System.out.println("ESTE ES COUNT " + raw.get(0));
             if (i < 6) {
