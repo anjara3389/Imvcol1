@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ import java.util.HashMap;
 public class FrmInventario extends AppCompatActivity implements YesNoDialogFragment.MyDialogDialogListener {
 
     private EditText producto, numero, cantidad;
+    private ScrollView scroll;
     private TextView info;
     private Button btnCargar, btnAceptar, btnCancelar;
     private RadioButton rbCodigo;
@@ -88,7 +90,7 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             spnFaltantes = findViewById(R.id.frm_inventario_spn_faltantes);
             card = findViewById(R.id.frm_inventario_card);
             info = findViewById(R.id.frm_inventario_lbl_info);
-
+            scroll = findViewById(R.id.frm_inventario_scroll_view);
 
             listaProductos = findViewById(R.id.frm_inventario_lst);
             listaProductos.setClickable(true);
@@ -591,10 +593,12 @@ public class FrmInventario extends AppCompatActivity implements YesNoDialogFragm
             rbLectura.setChecked(false);
             disableEnableCargar(true);
             prepareFaltantesSpinner();
+
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(FrmInventario.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+        scroll.fullScroll(View.FOCUS_UP);
     }
 
     private void disableEnableCargar(boolean enable) {
