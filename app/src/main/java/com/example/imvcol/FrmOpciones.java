@@ -495,7 +495,7 @@ public class FrmOpciones extends AppCompatActivity implements YesNoDialogFragmen
                 if (resultsDatos.get(0).equals("[]")) {
                     //dialogUtils.dissmissDialog();
                     BaseHelper.tryClose(db);
-                    Toast.makeText(FrmOpciones.this, "No se han podido seleccionar fisicos, intente nuevamente", Toast.LENGTH_LONG).show();
+                    Toast.makeText(FrmOpciones.this, "No se encontraron productos dentro de la selección asignada o hubo un error al marcar los físicos. ", Toast.LENGTH_LONG).show();
                 } else {
                     boolean validar = true;
 

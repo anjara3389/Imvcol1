@@ -178,8 +178,8 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
             if (clase != null) {
                 query += "AND r.clase='" + clase + "'";
             }
-            if (usuario.getCurrUbicacion() != null) {
-                query += "AND f.ubicacion='" + usuario.getCurrUbicacion() + "'";
+            if (ubicacion != null) {
+                query += "AND f.ubicacion='" + ubicacion + "'";
             }
 
             queryDatos.add(query);
@@ -219,7 +219,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     "JOIN v_referencias_sto s on f.codigo=s.codigo AND f.bodega=s.bodega " +
                     "WHERE f.bodega='" + usuario.getCurrBodega() + "' " +
                     "AND s.ano=YEAR(getdate()) " +
-                    "AND s.mes=MONTH(getdate())";
+                    "AND s.mes=MONTH(getdate()) ";
             //"AND f.fisico=1  ";
 
             if (desdeOpciones == null) {
@@ -241,7 +241,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     query += "AND r.clase='" + clase + "'";
                 }
                 if (ubicacion != null) {
-                    query += "AND r.ubicacion='" + ubicacion + "'";
+                    query += "AND f.ubicacion='" + ubicacion + "'";
                 }
             }
             queryDatos.add(query);
@@ -347,7 +347,7 @@ public class FrmLiberarSeleccion extends AppCompatActivity {
                     query += "AND r.clase='" + clase + "'";
                 }
                 if (ubicacion != null) {
-                    query += "AND r.ubicacion='" + ubicacion + "'";
+                    query += "AND f.ubicacion='" + ubicacion + "'";
                 }
             }
 
